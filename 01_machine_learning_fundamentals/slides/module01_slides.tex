@@ -480,6 +480,7 @@
 % Slide 5 — SARIMA Forecast
 \begin{frame}{SARIMA --- Menangkap Pola Musiman}
   \begin{center}
+  {\small\textcolor{nvlightgreen}{Seasonal AutoRegressive Integrated Moving Average}}\\[0.4em]
   \begin{tikzpicture}[scale=0.85]
     % axes
     \draw[->,thick,white] (0,0) -- (9,0) node[right,white,font=\small] {Waktu};
@@ -590,21 +591,21 @@
     \node[white,font=\footnotesize\bfseries] at (1.5,3.5) {Prediksi: Tidak};
     \node[white,font=\footnotesize\bfseries] at (3.5,3.5) {Prediksi: Ya};
     % row headers
-    \node[white,font=\footnotesize\bfseries,rotate=90] at (-0.3,2.5) {Asli: Tidak};
-    \node[white,font=\footnotesize\bfseries,rotate=90] at (-0.3,0.5) {Asli: Ya};
-    % cells
-    \fill[nvgreen!60!black] (0,2) rectangle (3,3);
-    \node[white,font=\small\bfseries] at (1.5,2.5) {True Negative \checkmark};
-    \fill[nvorange!70!black] (3,2) rectangle (6,3);
-    \node[white,font=\small\bfseries] at (4.5,2.5) {False Positive (!)};
-    \fill[nvred!70!black] (0,0) rectangle (3,2);
-    \node[white,font=\small\bfseries] at (1.5,1.0) {False Negative (x)};
-    \fill[nvgreen!60!black] (3,0) rectangle (6,2);
-    \node[white,font=\small\bfseries] at (4.5,1.0) {True Positive \checkmark};
+    \node[white,font=\footnotesize\bfseries,rotate=90] at (-0.3,2.25) {Asli: Tidak};
+    \node[white,font=\footnotesize\bfseries,rotate=90] at (-0.3,0.75) {Asli: Ya};
+    % cells — equal size: each 3 wide x 1.5 tall
+    \fill[nvgreen!60!black] (0,1.5) rectangle (3,3);
+    \node[white,font=\small\bfseries] at (1.5,2.25) {True Negative \checkmark};
+    \fill[nvorange!70!black] (3,1.5) rectangle (6,3);
+    \node[white,font=\small\bfseries] at (4.5,2.25) {False Positive (!)};
+    \fill[nvred!70!black] (0,0) rectangle (3,1.5);
+    \node[white,font=\small\bfseries] at (1.5,0.75) {False Negative (x)};
+    \fill[nvgreen!60!black] (3,0) rectangle (6,1.5);
+    \node[white,font=\small\bfseries] at (4.5,0.75) {True Positive \checkmark};
     % grid
     \draw[white,thick] (0,0) rectangle (6,3);
     \draw[white] (3,0) -- (3,3);
-    \draw[white] (0,2) -- (6,2);
+    \draw[white] (0,1.5) -- (6,1.5);
   \end{tikzpicture}
   \end{center}
   \vspace{0.4em}
@@ -737,6 +738,7 @@
     \toprule
     \textbf{Model} & \textbf{Batas Keputusan} & \textbf{Scaling?} & \textbf{Kecepatan} & \textbf{Interpretasi} \\
     \midrule
+    Logistic Reg.  & Garis lurus  & Ya    & Cepat  & Mudah  \\
     Decision Tree  & Kotak-kotak  & Tidak & Cepat  & Mudah  \\
     KNN            & Berliku      & Ya    & Lambat & Sulit  \\
     SVM Linear     & Garis lurus  & Ya    & Sedang & Sedang \\
@@ -780,10 +782,19 @@
   \draw[arrow] (vote.east) -- (result.west);
 \end{tikzpicture}
 \end{center}
-\vspace{0.3cm}
-\begin{center}
-  \small\color{nvlightgreen} Gabungkan prediksi beberapa model berbeda — ambil suara terbanyak!
-\end{center}
+\vspace{0.3em}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \centering
+    \textbf{\textcolor{nvorange}{Hard Voting}}\\
+    {\small Setiap model = 1 suara\\Mayoritas menang}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \centering
+    \textbf{\textcolor{nvgreen}{Soft Voting}}\\
+    {\small Rata-rata probabilitas\\Biasanya lebih akurat}
+  \end{column}
+\end{columns}
 \end{frame}
 
 % Slide 3 — Bagging & Random Forest
@@ -808,6 +819,7 @@
   \end{column}
   \begin{column}{0.52\textwidth}
     \begin{itemize}
+      \item[\textcolor{nvorange}{\textbullet}] \textbf{Bagging} = Bootstrap Aggregating: ambil sampel data acak berulang kali
       \item[\textcolor{nvgreen}{\textbullet}] Setiap pohon lihat data yang berbeda (\textit{bootstrap})
       \item[\textcolor{nvgreen}{\textbullet}] Setiap pohon hanya boleh tanya sebagian fitur
       \item[\textcolor{nvgreen}{\textbullet}] Hasil akhir = voting dari semua pohon
@@ -829,6 +841,17 @@
 \end{center}
 \end{frame}
 
+% Slide 4b — Ensemble Comparison
+\begin{frame}{Bagging vs Boosting --- Decision Boundary}
+\begin{center}
+  \includegraphics[width=0.95\textwidth]{figures/ensemble_comparison.pdf}
+\end{center}
+\vspace{0.2em}
+\begin{center}
+  \small\textcolor{nvlightgreen}{Dataset yang sama, strategi berbeda --- tidak ada yang selalu terbaik!}
+\end{center}
+\end{frame}
+
 % Slide 5 — XGBoost
 \begin{frame}{XGBoost --- Juara Kompetisi ML}
 \begin{center}
@@ -839,7 +862,7 @@
     \item[\textcolor{nvgreen}{\textbullet}] \textit{Gradient Boosting} versi super cepat
     \item[\textcolor{nvgreen}{\textbullet}] Built-in regularisasi (anti overfitting)
     \item[\textcolor{nvgreen}{\textbullet}] Bisa tangani data kosong otomatis
-    \item[\textcolor{nvgreen}{\textbullet}] Pemenang mayoritas kompetisi Kaggle 2015--2020
+    \item[\textcolor{nvgreen}{\textbullet}] Salah satu model paling dominan di kompetisi Kaggle
   \end{itemize}
   \vspace{0.4em}
   \colorbox{nvgreen!20}{\parbox{0.82\textwidth}{%
@@ -1216,7 +1239,7 @@ XGBClassifier(device="cuda")  # Hanya ini yang berubah!
 \end{lstlisting}
 \vspace{0.8em}
 \begin{center}
-  \textcolor{white}{NVIDIA berkontribusi langsung pada pengembangan XGBoost GPU}
+  \textcolor{white}{Perubahan kode: HANYA ganti \texttt{device} --- sisanya 100\% identik!}
 \end{center}
 \end{frame}
 
