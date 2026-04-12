@@ -2,6 +2,18 @@
 CLAUDE.md
 .claude/
 
+# LaTeX build artifacts
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
 # --------------------------------------------------------------------------------
 # File created using 'AnGitIgnored' extensions for Visual Studio Code: 
 # https://marketplace.visualstudio.com/items?itemName=AnAppWiLos.angitignored 

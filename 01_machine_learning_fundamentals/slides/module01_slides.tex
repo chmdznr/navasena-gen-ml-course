@@ -1,0 +1,1371 @@
+% ============================================================
+% NCA-GENL Module 01: Machine Learning Fundamentals
+% Custom NVIDIA Dark Beamer Theme
+% Compiler: xelatex
+% ============================================================
+\documentclass[aspectratio=169,t]{beamer}
+
+% ---- Fonts (xelatex) ----------------------------------------
+\usepackage{fontspec}
+\usepackage[sfdefault]{FiraSans}
+
+% ---- Core packages ------------------------------------------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% ============================================================
+% COLOR PALETTE
+% ============================================================
+\definecolor{nvbg}{HTML}{1A1A2E}        % dark navy background
+\definecolor{nvdark}{HTML}{1A1A2E}     % alias for nvbg
+\definecolor{nvcard}{HTML}{2D2D44}      % card / box background
+\definecolor{nvgreen}{HTML}{76B900}     % NVIDIA green (primary accent)
+\definecolor{nvlightgreen}{HTML}{A3D944}% secondary accent
+\definecolor{nvwhite}{HTML}{FFFFFF}
+\definecolor{nvgray}{HTML}{AAAACC}      % muted text
+\definecolor{nvdarkcard}{HTML}{23233A}  % slightly darker card
+\definecolor{nvred}{HTML}{EF5350}       % accent red
+\definecolor{nvorange}{HTML}{FF6F00}    % accent orange
+
+% ============================================================
+% LISTINGS STYLE
+% ============================================================
+\lstset{
+  backgroundcolor=\color{nvcard},
+  basicstyle=\ttfamily\small\color{nvwhite},
+  keywordstyle=\color{nvgreen}\bfseries,
+  stringstyle=\color{nvlightgreen},
+  commentstyle=\color{nvgray}\itshape,
+  numberstyle=\tiny\color{nvgray},
+  numbers=left,
+  numbersep=6pt,
+  frame=none,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2,
+  xleftmargin=8pt,
+  xrightmargin=4pt,
+}
+
+% ============================================================
+% BEAMER THEME — NVIDIA DARK
+% ============================================================
+\usetheme{default}
+\usecolortheme{default}
+\setbeamercolor{normal text}{fg=nvwhite, bg=nvbg}
+\setbeamercolor{background canvas}{bg=nvbg}
+\setbeamercolor{frametitle}{fg=nvwhite, bg=nvbg}
+\setbeamercolor{title}{fg=nvgreen}
+\setbeamercolor{subtitle}{fg=nvwhite}
+\setbeamercolor{author}{fg=nvgray}
+\setbeamercolor{date}{fg=nvgray}
+\setbeamercolor{item}{fg=nvgreen}
+\setbeamercolor{subitem}{fg=nvlightgreen}
+\setbeamercolor{subsubitem}{fg=nvgray}
+\setbeamercolor{block title}{fg=nvwhite, bg=nvcard}
+\setbeamercolor{block body}{fg=nvwhite, bg=nvdarkcard}
+\setbeamercolor{alerted text}{fg=nvgreen}
+\setbeamercolor{structure}{fg=nvgreen}
+\setbeamercolor{footline}{fg=nvgray, bg=nvbg}
+\setbeamercolor{section in toc}{fg=nvwhite}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% ---- Frame title with green underline -----------------------
+\setbeamertemplate{frametitle}{%
+  \vspace{0.3em}%
+  \begin{beamercolorbox}[wd=\paperwidth, leftskip=0.5cm]{frametitle}%
+    {\large\bfseries\insertframetitle}%
+    \ifx\insertframesubtitle\@empty\else
+      \\[0.1em]{\small\color{nvgray}\insertframesubtitle}%
+    \fi
+  \end{beamercolorbox}%
+  \begin{tikzpicture}[overlay, remember picture]
+    \draw[nvgreen, line width=1.5pt]
+      ([xshift=0.5cm, yshift=-0.1cm]current page.north west)
+      -- ([xshift=-0.5cm, yshift=-0.1cm]current page.north east);
+  \end{tikzpicture}%
+  \vspace{-0.3em}%
+}
+
+% ---- Footer -------------------------------------------------
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth, ht=2.2ex, dp=1.2ex]{footline}%
+    \hspace{0.6cm}%
+    {\footnotesize\color{nvgray}NCA-GENL | Machine Learning Fundamentals}%
+    \hfill%
+    {\footnotesize\color{nvgray}\insertframenumber\,/\,\inserttotalframenumber}%
+    \hspace{0.6cm}%
+  \end{beamercolorbox}%
+}
+
+% Remove headline
+\setbeamertemplate{headline}{}
+
+% Itemize bullets
+\setbeamertemplate{itemize item}{\color{nvgreen}\rule[0.3ex]{0.55em}{0.55em}}
+\setbeamertemplate{itemize subitem}{\color{nvlightgreen}\small$\blacktriangleright$}
+
+% ============================================================
+% CUSTOM COMMANDS
+% ============================================================
+
+% \acttitle{Act N}{Title}{Subtitle/question}
+\newcommand{\acttitle}[3]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+      % Full dark background
+      \fill[nvbg] (current page.south west) rectangle (current page.north east);
+      % Subtle horizontal accent bar
+      \fill[nvgreen] ([yshift=-2pt]current page.north west)
+        rectangle ([yshift=-5pt]current page.north east);
+      % Act label (top-left, small)
+      \node[anchor=north west, xshift=1.2cm, yshift=-1.0cm,
+            font=\large\bfseries, text=nvgreen] at (current page.north west) {#1};
+      % Main title (center, large, NVIDIA green)
+      \node[anchor=center, yshift=0.5cm,
+            font=\fontsize{32}{36}\selectfont\bfseries, text=nvgreen]
+            at (current page.center) {#2};
+      % Subtitle / question (center, below, white)
+      \node[anchor=center, yshift=-1.0cm,
+            font=\large, text=nvwhite]
+            at (current page.center) {\textit{#3}};
+      % Bottom accent line
+      \draw[nvcard, line width=2pt]
+        ([xshift=2cm, yshift=2.0cm]current page.south west)
+        -- ([xshift=-2cm, yshift=2.0cm]current page.south east);
+    \end{tikzpicture}
+  \end{frame}%
+}
+
+% Colored info box
+\newcommand{\nvbox}[2]{%
+  \begin{tikzpicture}
+    \node[fill=nvcard, rounded corners=4pt, inner sep=8pt,
+          text width=\linewidth-16pt, text=nvwhite]
+      {\textbf{\color{nvgreen}#1}\\\medskip#2};
+  \end{tikzpicture}%
+}
+
+% ============================================================
+% TITLE INFO
+% ============================================================
+\title{\color{nvgreen}Machine Learning Fundamentals}
+\subtitle{NCA-GENL --- Navasena Gen-ML Course}
+\author{Navasena Academy}
+\date{}
+
+% ============================================================
+% DOCUMENT
+% ============================================================
+\begin{document}
+
+% ----------------------------------------------------------
+% SLIDE 1 — Title slide
+% ----------------------------------------------------------
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    % Background fill
+    \fill[nvbg] (current page.south west) rectangle (current page.north east);
+    % Top accent bar
+    \fill[nvgreen] ([yshift=-3pt]current page.north west)
+      rectangle ([yshift=-7pt]current page.north east);
+    % Left green stripe
+    \fill[nvgreen!30] (current page.south west)
+      rectangle ([xshift=6pt]current page.north west);
+    % Course title
+    \node[anchor=center, yshift=1.6cm,
+          font=\fontsize{28}{32}\selectfont\bfseries, text=nvgreen]
+          at (current page.center) {Machine Learning Fundamentals};
+    % Subtitle
+    \node[anchor=center, yshift=0.5cm,
+          font=\large, text=nvwhite]
+          at (current page.center) {NCA-GENL --- Navasena Gen-ML Course};
+    % Divider
+    \draw[nvgreen, line width=1pt]
+      ([xshift=-5cm]current page.center)
+      -- ([xshift=5cm]current page.center);
+    % Author
+    \node[anchor=center, yshift=-0.5cm,
+          font=\normalsize, text=nvgray]
+          at (current page.center) {Navasena Academy};
+    % Powered by NVIDIA
+    \node[anchor=south, yshift=1.0cm,
+          font=\small\bfseries, text=nvgreen]
+          at (current page.south) {\rule[0.3ex]{1em}{1.5pt}\quad Powered by NVIDIA\quad\rule[0.3ex]{1em}{1.5pt}};
+  \end{tikzpicture}
+\end{frame}
+
+% ----------------------------------------------------------
+% SLIDE 2 — Act 1 transition
+% ----------------------------------------------------------
+\acttitle{Act 1}{Apa itu Machine Learning?}{Bagaimana komputer bisa belajar dari data?}
+
+% ----------------------------------------------------------
+% SLIDE 3 — Apa itu ML?
+% ----------------------------------------------------------
+\begin{frame}{Apa itu Machine Learning?}
+  \vspace{0.4em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvgreen}Konsep Dasar}
+      \vspace{0.5em}
+      \begin{itemize}\setlength\itemsep{0.6em}
+        \item Komputer belajar \textbf{pola} dari data
+        \item Tanpa diprogram secara \textbf{eksplisit}
+        \item Makin banyak data \textbf{$\rightarrow$ makin pintar}
+      \end{itemize}
+      \vspace{0.9em}
+      \begin{tikzpicture}
+        \node[fill=nvcard, rounded corners=4pt, inner sep=8pt,
+              text width=\linewidth-16pt, text=nvwhite] {
+          \color{nvgreen}\textbf{Definisi:}\\
+          \small ML adalah bidang AI di mana sistem belajar
+          dari pengalaman tanpa instruksi eksplisit untuk setiap kasus.
+        };
+      \end{tikzpicture}
+    \end{column}
+    \hfill
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvlightgreen}Contoh Nyata Sehari-hari}
+      \vspace{0.5em}
+      \begin{itemize}\setlength\itemsep{0.6em}
+        \item \textbf{Spotify} tahu lagu kesukaanmu
+        \item \textbf{Gmail} tahu mana yang spam
+        \item \textbf{Google Maps} prediksi waktu tempuh
+      \end{itemize}
+      \vspace{0.9em}
+      \begin{tikzpicture}
+        \node[fill=nvcard, rounded corners=4pt, inner sep=8pt,
+              text width=\linewidth-16pt, text=nvwhite] {
+          \color{nvlightgreen}\textbf{Kunci:}\\
+          \small Semua layanan ini menggunakan pola
+          dari data historis jutaan pengguna.
+        };
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% SLIDE 4 — Jenis-jenis ML
+% ----------------------------------------------------------
+\begin{frame}{Tiga Jenis Machine Learning}
+  \vspace{0.3em}
+  \begin{center}
+    \includegraphics[width=0.88\textwidth, height=0.78\textheight,
+                     keepaspectratio]{figures/ml_types.pdf}
+  \end{center}
+\end{frame}
+
+% ----------------------------------------------------------
+% SLIDE 5 — Roadmap / Timeline
+% ----------------------------------------------------------
+\begin{frame}{Peta Perjalanan Modul 1}
+  \vspace{0.8em}
+  \begin{center}
+  \begin{tikzpicture}[
+    node distance=0mm,
+    every node/.style={font=\tiny},
+    dot/.style={circle, minimum size=7pt, inner sep=0pt, draw=none},
+    supervised/.style={dot, fill=nvgreen},
+    unsupervised/.style={dot, fill=nvlightgreen},
+    forecast/.style={dot, fill=yellow!80!orange},
+    gpu/.style={dot, fill=orange},
+    ]
+
+    % Nodes equally spaced along x axis
+    \def\xs{1.35}  % x spacing between sessions
+    \foreach \i/\label/\style in {
+      1/{Linear\\Regression}/supervised,
+      2/{Logistic\\Regression}/supervised,
+      3/{Decision\\Tree}/supervised,
+      4/{KNN}/supervised,
+      5/{SVM}/supervised,
+      6/{Ensemble\\Methods}/supervised,
+      7/{XGBoost}/supervised,
+      8/{Clustering}/unsupervised,
+      9/{Time\\Series}/forecast,
+      10/{NVIDIA\\GPU}/gpu}
+    {
+      \pgfmathsetmacro{\xpos}{(\i-1)*\xs}
+      \node[\style, label={[font=\tiny, text=nvwhite, align=center]below:{\label}}]
+        (n\i) at (\xpos, 0) {};
+      \node[font=\tiny\bfseries, text=nvgreen, above=4pt of n\i] {\i};
+    }
+
+    % Connecting line
+    \draw[nvgray, line width=1pt]
+      (n1.east) -- (n2.west)
+      (n2.east) -- (n3.west)
+      (n3.east) -- (n4.west)
+      (n4.east) -- (n5.west)
+      (n5.east) -- (n6.west)
+      (n6.east) -- (n7.west)
+      (n7.east) -- (n8.west)
+      (n8.east) -- (n9.west)
+      (n9.east) -- (n10.west);
+
+    % Group brackets / labels
+    \draw[nvgreen, line width=0.8pt]
+      ([yshift=-14pt]n1.south) -- ([yshift=-14pt]n7.south);
+    \node[text=nvgreen, font=\tiny\bfseries] at ({3*\xs}, -20pt)
+      {Supervised Learning};
+
+    \draw[nvlightgreen, line width=0.8pt]
+      ([yshift=-14pt]n8.south) -- ([yshift=-14pt]n8.south);
+    \node[text=nvlightgreen, font=\tiny\bfseries] at ({7*\xs}, -20pt)
+      {Unsupervised};
+
+    \draw[yellow!80!orange, line width=0.8pt]
+      ([yshift=-14pt]n9.south) -- ([yshift=-14pt]n9.south);
+    \node[text=yellow!80!orange, font=\tiny\bfseries] at ({8*\xs}, -20pt)
+      {Forecasting};
+
+    \draw[orange, line width=0.8pt]
+      ([yshift=-14pt]n10.south) -- ([yshift=-14pt]n10.south);
+    \node[text=orange, font=\tiny\bfseries] at ({9*\xs}, -20pt)
+      {GPU};
+
+  \end{tikzpicture}
+  \end{center}
+
+  \vspace{1.0em}
+  \begin{center}
+    \begin{tikzpicture}
+      \node[fill=nvcard, rounded corners=4pt, inner sep=6pt, text=nvgray,
+            font=\small] {
+        \color{nvgreen}\rule[0.3ex]{0.6em}{0.6em}\ Supervised\quad
+        \color{nvlightgreen}\rule[0.3ex]{0.6em}{0.6em}\ Unsupervised\quad
+        \color{yellow!80!orange}\rule[0.3ex]{0.6em}{0.6em}\ Forecasting\quad
+        \color{orange}\rule[0.3ex]{0.6em}{0.6em}\ GPU Acceleration
+      };
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% ----------------------------------------------------------
+% SLIDE 6 — Tools
+% ----------------------------------------------------------
+\begin{frame}{Tools yang Kita Gunakan}
+  \vspace{0.6em}
+  \begin{columns}[T]
+    \begin{column}{0.47\textwidth}
+      % Python
+      \begin{tikzpicture}
+        \node[fill=nvcard, rounded corners=5pt, inner sep=10pt,
+              text width=\linewidth-20pt, minimum height=1.8cm] {
+          \textbf{\color{nvgreen}\large Python}\\[4pt]
+          \color{nvwhite}\small Bahasa pemrograman utama
+        };
+      \end{tikzpicture}
+
+      \vspace{0.5em}
+
+      % Google Colab
+      \begin{tikzpicture}
+        \node[fill=nvcard, rounded corners=5pt, inner sep=10pt,
+              text width=\linewidth-20pt, minimum height=1.8cm] {
+          \textbf{\color{nvgreen}\large Google Colab}\\[4pt]
+          \color{nvwhite}\small Notebook di cloud dengan GPU gratis
+        };
+      \end{tikzpicture}
+    \end{column}
+    \hfill
+    \begin{column}{0.47\textwidth}
+      % scikit-learn
+      \begin{tikzpicture}
+        \node[fill=nvcard, rounded corners=5pt, inner sep=10pt,
+              text width=\linewidth-20pt, minimum height=1.8cm] {
+          \textbf{\color{nvgreen}\large scikit-learn}\\[4pt]
+          \color{nvwhite}\small Library ML \#1
+        };
+      \end{tikzpicture}
+
+      \vspace{0.5em}
+
+      % NVIDIA GPU
+      \begin{tikzpicture}
+        \node[fill=nvgreen!20!nvcard, rounded corners=5pt, inner sep=10pt,
+              text width=\linewidth-20pt, minimum height=1.8cm,
+              draw=nvgreen, line width=1pt] {
+          \textbf{\color{nvgreen}\large NVIDIA GPU}\\[4pt]
+          \color{nvwhite}\small Akselerasi 10--50x lebih cepat
+        };
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+% ============================================================
+% ACT 2: MENEBAK ANGKA
+% ============================================================
+
+% Slide 1 — Act 2 Transition
+\acttitle{Act 2}{Menebak Angka}{Bagaimana memprediksi sebuah nilai?}
+
+% Slide 2 — Linear Regression
+\begin{frame}{Linear Regression --- Garis Terbaik}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \includegraphics[width=\linewidth]{figures/regression_line.pdf}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item Mencari garis yang paling pas
+        \item[$\Rightarrow$] Formula: $y = w \cdot x + b$
+        \item \textbf{w} = kemiringan (seberapa besar pengaruh)
+        \item \textbf{b} = titik awal
+      \end{itemize}
+      \vspace{0.6em}
+      \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{nvcard}
+        \small Seperti menebak harga es krim berdasarkan suhu hari ini
+      \end{beamercolorbox}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 3 — Evaluasi Model
+\begin{frame}{Seberapa Bagus Prediksi Kita?}
+  \begin{center}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{@{}lll@{}}
+      \toprule
+      \textbf{Metrik} & \textbf{Arti} & \textbf{Nilai Ideal} \\
+      \midrule
+      MAE  & Rata-rata kesalahan          & $\rightarrow 0$   \\
+      RMSE & Kesalahan (penalti besar)    & $\rightarrow 0$   \\
+      R$^2$   & \% data yang dijelaskan  & $\rightarrow 1.0$ \\
+      MAPE & Kesalahan dalam persen       & $< 10\%$          \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+% Slide 4 — Time Series Intro
+\begin{frame}{Time Series --- Memprediksi Masa Depan}
+  \begin{itemize}
+    \item Data yang berurutan berdasarkan waktu
+  \end{itemize}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.85]
+    % axes
+    \draw[->,thick,white] (0,0) -- (8.5,0) node[right,white,font=\small] {Waktu};
+    \draw[->,thick,white] (0,-1.5) -- (0,2.8) node[above,white,font=\small] {Nilai};
+    % sine wave with upward trend
+    \draw[color=nvgreen,thick,domain=0.2:8,samples=120,smooth]
+      plot (\x, {0.28*\x + 0.9*sin(3.2*\x r)});
+    % callout labels
+    \node[color=nvgreen,font=\small\bfseries] at (7.0,2.4) {Trend $\nearrow$};
+    \draw[->,color=nvgreen,thin] (6.8,2.2) -- (6.2,1.7);
+    \node[color=nvorange,font=\small\bfseries] at (2.5,2.3) {Seasonality $\updownarrow$};
+    \draw[->,color=nvorange,thin] (2.5,2.1) -- (2.2,1.2);
+    \node[color=nvlightgreen,font=\small\bfseries] at (4.8,-1.2) {Noise $\sim$};
+    \draw[->,color=nvlightgreen,thin] (4.8,-1.0) -- (4.6,-0.3);
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% Slide 5 — SARIMA Forecast
+\begin{frame}{SARIMA --- Menangkap Pola Musiman}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.85]
+    % axes
+    \draw[->,thick,white] (0,0) -- (9,0) node[right,white,font=\small] {Waktu};
+    \draw[->,thick,white] (0,-0.5) -- (0,3.2) node[above,white,font=\small] {Nilai};
+    % vertical separator
+    \draw[dashed,color=nvred,thick] (5.5,-0.5) -- (5.5,3.2);
+    \node[color=nvred,font=\tiny,above] at (5.5,3.2) {};
+    \node[white,font=\tiny] at (2.8,-0.35) {Data Historis};
+    \node[white,font=\tiny] at (7.2,-0.35) {Prediksi};
+    % historical solid line (wavy + trend)
+    \draw[color=nvgreen,thick,domain=0.2:5.5,samples=80,smooth]
+      plot (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 0.8});
+    % forecast dashed line
+    \draw[color=nvgreen,dashed,thick,domain=5.5:8.5,samples=50,smooth]
+      plot (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 0.8});
+    % confidence interval shading (filled polygon approximation)
+    \fill[nvgreen,opacity=0.15,domain=5.5:8.5,samples=50]
+      plot (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 0.8 + 0.15*(\x-5.5)})
+      -- plot[domain=8.5:5.5,samples=50] (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 0.8 - 0.15*(\x-5.5)})
+      -- cycle;
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% Slide 6 — Summary Act 2
+\begin{frame}{Ringkasan: Menebak Angka}
+  \begin{itemize}
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Linear Regression} $\rightarrow$ mencari garis terbaik untuk data
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{R$^2$ Score} $\rightarrow$ seberapa bagus model (mendekati 1.0 = bagus)
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Time Series} $\rightarrow$ data berurutan waktu, ada trend + musiman
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{SARIMA} $\rightarrow$ model yang menangkap pola musiman otomatis
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+% ACT 3 — MENEBAK KATEGORI
+% ============================================================
+
+% Slide 1 — Transition
+\acttitle{Act 3}{Menebak Kategori}{Ya atau Tidak? Spam atau Bukan?}
+
+% Slide 2 — Klasifikasi vs Regresi
+\begin{frame}{Klasifikasi vs Regresi}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \textbf{\textcolor{nvorange}{Regresi}}\\[0.4em]
+      \begin{tikzpicture}[scale=0.85]
+        \draw[nvcard,thick,->] (0,0) -- (4,0) node[right,white,font=\tiny] {x};
+        \draw[nvcard,thick,->] (0,0) -- (0,3) node[above,white,font=\tiny] {y};
+        \draw[nvgreen,thick] (0.3,0.4) -- (3.7,2.7);
+        \foreach \x/\y in {0.5/0.7, 1.0/1.1, 1.5/1.3, 2.0/1.8, 2.5/2.0, 3.0/2.3, 3.5/2.6}
+          \fill[white] (\x,\y) circle (2pt);
+      \end{tikzpicture}\\[0.3em]
+      {\small Prediksi \textbf{angka} (kontinu)}\\[0.2em]
+      {\footnotesize\textcolor{nvlightgreen}{Contoh: harga rumah, suhu}}
+    \end{column}
+    \begin{column}{0.04\textwidth}\end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \textbf{\textcolor{nvgreen}{Klasifikasi}}\\[0.4em]
+      \begin{tikzpicture}[scale=0.85]
+        \draw[nvcard,thick,->] (0,0) -- (4,0) node[right,white,font=\tiny] {x};
+        \draw[nvcard,thick,->] (0,0) -- (0,3) node[above,white,font=\tiny] {y};
+        \foreach \x/\y in {0.5/0.5, 0.8/0.9, 1.2/0.6, 1.5/1.1, 0.9/1.4}
+          \fill[nvred] (\x,\y) circle (3pt);
+        \foreach \x/\y in {2.5/1.8, 2.8/2.4, 3.2/1.6, 3.5/2.2, 3.0/2.7}
+          \fill[nvgreen] (\x,\y) circle (3pt);
+        \draw[white,dashed] (2.0,0) -- (2.0,3);
+      \end{tikzpicture}\\[0.3em]
+      {\small Prediksi \textbf{kategori} (diskrit)}\\[0.2em]
+      {\footnotesize\textcolor{nvlightgreen}{Contoh: spam/bukan, lulus/tidak}}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 3 — Logistic Regression
+\begin{frame}{Logistic Regression — Probabilitas Ya/Tidak}
+  \begin{center}
+  \begin{tikzpicture}[scale=1.1]
+    % axes
+    \draw[white,->] (-3.2,0) -- (3.5,0) node[right,white,font=\small] {Skor};
+    \draw[white,->] (0,-0.15) -- (0,1.35) node[above,white,font=\small] {Probabilitas};
+    % y-axis ticks
+    \draw[white] (-0.06,0) node[left,white,font=\tiny] {0} -- (0.06,0);
+    \draw[white] (-0.06,1) node[left,white,font=\tiny] {1} -- (0.06,1);
+    % sigmoid curve
+    \draw[nvgreen,very thick,domain=-3:3,samples=80]
+      plot (\x, {1/(1+exp(-2*\x))});
+    % threshold line
+    \draw[nvorange,dashed,thick] (-3.2,0.5) -- (3.5,0.5)
+      node[right,nvorange,font=\small] {Threshold};
+    \draw[nvorange] (0,0.5) circle (2.5pt);
+    % region labels
+    \node[nvred,font=\small\bfseries] at (-2,0.2) {Tidak (0)};
+    \node[nvgreen,font=\small\bfseries] at (2,0.8) {Ya (1)};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.3em}
+  {\small\centering Output sigmoid selalu antara 0 dan 1 — mudah diinterpretasi sebagai probabilitas.}
+\end{frame}
+
+% Slide 4 — Confusion Matrix
+\begin{frame}{Confusion Matrix — Detail Kesalahan}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.9,font=\small]
+    % column headers
+    \node[white,font=\footnotesize\bfseries] at (1.5,3.5) {Prediksi: Tidak};
+    \node[white,font=\footnotesize\bfseries] at (3.5,3.5) {Prediksi: Ya};
+    % row headers
+    \node[white,font=\footnotesize\bfseries,rotate=90] at (-0.3,2.5) {Asli: Tidak};
+    \node[white,font=\footnotesize\bfseries,rotate=90] at (-0.3,0.5) {Asli: Ya};
+    % cells
+    \fill[nvgreen!60!black] (0,2) rectangle (3,3);
+    \node[white,font=\small\bfseries] at (1.5,2.5) {True Negative \checkmark};
+    \fill[nvorange!70!black] (3,2) rectangle (6,3);
+    \node[white,font=\small\bfseries] at (4.5,2.5) {False Positive (!)};
+    \fill[nvred!70!black] (0,0) rectangle (3,2);
+    \node[white,font=\small\bfseries] at (1.5,1.0) {False Negative (x)};
+    \fill[nvgreen!60!black] (3,0) rectangle (6,2);
+    \node[white,font=\small\bfseries] at (4.5,1.0) {True Positive \checkmark};
+    % grid
+    \draw[white,thick] (0,0) rectangle (6,3);
+    \draw[white] (3,0) -- (3,3);
+    \draw[white] (0,2) -- (6,2);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.4em}
+  {\footnotesize\centering\textcolor{nvlightgreen}{Seperti tes COVID: FP = alarm palsu, FN = terlewat (bahaya!)}}
+\end{frame}
+
+% Slide 5 — Decision Tree
+\begin{frame}{Decision Tree — Diagram Alur Keputusan}
+  \begin{center}
+  \begin{tikzpicture}[
+    decision/.style={rounded corners=4pt,fill=nvcard,draw=nvgreen,text=white,font=\footnotesize,
+                     minimum width=2.2cm,minimum height=0.7cm,align=center},
+    leafred/.style={rounded corners=4pt,fill=nvred,text=white,font=\footnotesize\bfseries,
+                 minimum width=1.6cm,minimum height=0.6cm,align=center},
+    leafgreen/.style={rounded corners=4pt,fill=nvgreen,text=white,font=\footnotesize\bfseries,
+                 minimum width=1.6cm,minimum height=0.6cm,align=center},
+    edge/.style={draw=white,thick,-latex},
+    lbl/.style={font=\tiny,white},
+    scale=0.9
+  ]
+    % root
+    \node[decision] (root) at (0,0) {Umur > 30?};
+    % level 1
+    \node[decision] (L1) at (-2.5,-1.5) {Gaji > 50K?};
+    \node[decision] (R1) at (2.5,-1.5) {Gaji > 80K?};
+    % level 2
+    \node[leafred] (LL) at (-3.5,-3.0) {Tidak Beli};
+    \node[leafgreen] (LR) at (-1.5,-3.0) {Beli};
+    \node[leafred] (RL) at (1.5,-3.0) {Tidak Beli};
+    \node[leafgreen] (RR) at (3.5,-3.0) {Beli};
+    % edges
+    \draw[edge] (root) -- node[lbl,left] {Tidak} (L1);
+    \draw[edge] (root) -- node[lbl,right] {Ya} (R1);
+    \draw[edge] (L1) -- node[lbl,left] {Tidak} (LL);
+    \draw[edge] (L1) -- node[lbl,right] {Ya} (LR);
+    \draw[edge] (R1) -- node[lbl,left] {Tidak} (RL);
+    \draw[edge] (R1) -- node[lbl,right] {Ya} (RR);
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% Slide 6 — KNN
+\begin{frame}{KNN — Siapa Tetanggamu?}
+  \begin{center}
+  \begin{tikzpicture}[scale=1.0]
+    % scattered red dots
+    \foreach \x/\y in {0.3/1.2, 0.8/0.4, 1.5/0.8, 0.5/2.0, 1.8/1.6, 0.2/2.8}
+      \fill[nvred] (\x,\y) circle (4pt);
+    % scattered green dots
+    \foreach \x/\y in {3.2/1.0, 3.8/1.8, 4.2/0.6, 2.8/2.4, 3.5/2.8, 4.5/2.0}
+      \fill[nvgreen] (\x,\y) circle (4pt);
+    % query point
+    \fill[blue!70!white] (2.4,1.6) circle (5pt);
+    \node[white,font=\small\bfseries] at (2.4,1.2) {?};
+    % circle K=5
+    \draw[nvorange,thick,dashed] (2.4,1.6) circle (1.3);
+    \node[nvorange,font=\tiny] at (3.5,0.2) {K=5 tetangga};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.3em}
+  {\small\centering\textcolor{nvlightgreen}{Lihat 5 tetangga terdekat $\rightarrow$ mayoritas hijau $\rightarrow$ prediksi: \textbf{Hijau}}}
+\end{frame}
+
+% Slide 7 — SVM
+\begin{frame}{SVM — Margin Terlebar}
+  \begin{center}
+  \begin{tikzpicture}[scale=1.0]
+    % green dots (class +1)
+    \foreach \x/\y in {3.0/2.0, 3.5/2.8, 4.0/1.5, 4.5/2.5, 3.8/3.2}
+      \fill[nvgreen] (\x,\y) circle (4pt);
+    % red dots (class -1)
+    \foreach \x/\y in {0.5/0.8, 1.0/1.5, 1.5/0.5, 0.8/2.2, 1.8/1.2}
+      \fill[nvred] (\x,\y) circle (4pt);
+    % decision boundary
+    \draw[nvgreen,very thick] (2.0,0) -- (2.5,3.5);
+    % margin lines
+    \draw[white,dashed,thick] (1.3,0) -- (1.8,3.5);
+    \draw[white,dashed,thick] (2.7,0) -- (3.2,3.5);
+    % margin arrow
+    \draw[nvorange,<->,thick] (1.55,1.8) -- (2.95,1.8);
+    \node[nvorange,font=\small\bfseries] at (2.25,2.1) {Margin};
+    % support vectors circles
+    \draw[nvorange,thick] (1.8,1.2) circle (7pt);
+    \draw[nvorange,thick] (3.0,2.0) circle (7pt);
+    \node[white,font=\tiny] at (4.9,3.5) {Support};
+    \node[white,font=\tiny] at (4.9,3.2) {Vectors};
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% Slide 8 — Model Comparison
+\begin{frame}{Perbandingan 4 Model Klasifikasi}
+  \begin{center}
+    \includegraphics[width=\textwidth]{figures/decision_boundaries.pdf}
+  \end{center}
+  \vspace{0.3em}
+  {\small\centering\textcolor{nvlightgreen}{Dataset yang sama, hasil yang berbeda — setiap model punya `cara berpikir' sendiri}}
+\end{frame}
+
+% Slide 9 — Overfitting
+\begin{frame}{Overfitting vs Underfitting}
+  \begin{center}
+    \includegraphics[width=\textwidth]{figures/overfitting_panels.pdf}
+  \end{center}
+  \vspace{0.4em}
+  \begin{columns}[T]
+    \begin{column}{0.33\textwidth}
+      \centering
+      \textcolor{nvred}{\textbf{Terlalu sederhana}}\\
+      {\footnotesize (Underfitting)}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \centering
+      \textcolor{nvgreen}{\textbf{Pas!}}\\
+      {\footnotesize (Good fit)}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \centering
+      \textcolor{nvred}{\textbf{Terlalu rumit}}\\
+      {\footnotesize (Overfitting)}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 10 — Summary Table
+\begin{frame}{Kapan Pakai Model yang Mana?}
+  \begin{center}
+  {\small
+  \begin{tabular}{@{}lllll@{}}
+    \toprule
+    \textbf{Model} & \textbf{Batas Keputusan} & \textbf{Scaling?} & \textbf{Kecepatan} & \textbf{Interpretasi} \\
+    \midrule
+    Decision Tree  & Kotak-kotak  & Tidak & Cepat  & Mudah  \\
+    KNN            & Berliku      & Ya    & Lambat & Sulit  \\
+    SVM Linear     & Garis lurus  & Ya    & Sedang & Sedang \\
+    SVM RBF        & Melengkung   & Ya    & Lambat & Sulit  \\
+    \bottomrule
+  \end{tabular}
+  }
+  \end{center}
+\end{frame}
+
+% ============================================================
+% ACT 4 — KEKUATAN TIM
+% ============================================================
+
+% Slide 1 — Act 4 Transition
+\acttitle{Act 4}{Kekuatan Tim}{Bagaimana jika model bekerja sama?}
+
+% Slide 2 — Voting
+\begin{frame}{Voting --- Ambil Suara Terbanyak}
+\begin{center}
+\begin{tikzpicture}[
+  node distance=0.6cm and 1.2cm,
+  box/.style={rectangle, rounded corners=4pt, fill=nvcard, text=white,
+              minimum width=3.2cm, minimum height=0.7cm, font=\small},
+  votebox/.style={rectangle, rounded corners=4pt, fill=nvgreen, text=white,
+                  minimum width=2.2cm, minimum height=0.7cm, font=\small\bfseries},
+  resultbox/.style={rectangle, rounded corners=4pt, fill=nvorange, text=white,
+                    minimum width=3.4cm, minimum height=0.7cm, font=\small\bfseries},
+  arrow/.style={->, thick, color=nvlightgreen}
+]
+  \node[box] (lr)  at (0, 2.0) {Logistic Reg $\to$ \textbf{Kelas A}};
+  \node[box] (dt)  at (0, 1.0) {Decision Tree $\to$ \textbf{Kelas B}};
+  \node[box] (svm) at (0, 0.0) {SVM $\to$ \textbf{Kelas A}};
+
+  \node[votebox]   (vote)   at (4.2, 1.0) {Vote};
+  \node[resultbox] (result) at (7.2, 1.0) {Kelas A (2 vs 1)};
+
+  \draw[arrow] (lr.east)  -- ++(0.5,0) |- (vote.west);
+  \draw[arrow] (dt.east)  -- (vote.west);
+  \draw[arrow] (svm.east) -- ++(0.5,0) |- (vote.west);
+  \draw[arrow] (vote.east) -- (result.west);
+\end{tikzpicture}
+\end{center}
+\vspace{0.3cm}
+\begin{center}
+  \small\color{nvlightgreen} Gabungkan prediksi beberapa model berbeda — ambil suara terbanyak!
+\end{center}
+\end{frame}
+
+% Slide 3 — Bagging & Random Forest
+\begin{frame}{Random Forest --- Banyak Pohon, Satu Hutan}
+\begin{columns}[T]
+  \begin{column}{0.45\textwidth}
+    \begin{center}
+    \begin{tikzpicture}[scale=0.85]
+      % Draw 6 small tree triangles
+      \foreach \x/\y in {0/2.8, 1.0/2.8, 2.0/2.8, 0.5/1.6, 1.5/1.6, 1.0/0.6} {
+        \fill[nvgreen!70] (\x, \y) -- (\x+0.5, \y+0.7) -- (\x+1.0, \y) -- cycle;
+        \fill[nvcard]     (\x+0.35, \y-0.35) rectangle (\x+0.65, \y);
+      }
+      % Arrow from trees to answer
+      \draw[->, thick, color=nvlightgreen] (1.5, 0.1) -- (1.5, -0.5);
+      \node[rectangle, rounded corners=4pt, fill=nvorange, text=white,
+            minimum width=2.8cm, minimum height=0.6cm, font=\small\bfseries]
+            at (1.5, -0.9) {Satu Jawaban};
+    \end{tikzpicture}\\[0.3em]
+    \scriptsize\color{gray} 500 pohon, masing-masing belajar dari data berbeda
+    \end{center}
+  \end{column}
+  \begin{column}{0.52\textwidth}
+    \begin{itemize}
+      \item[\textcolor{nvgreen}{\textbullet}] Setiap pohon lihat data yang berbeda (\textit{bootstrap})
+      \item[\textcolor{nvgreen}{\textbullet}] Setiap pohon hanya boleh tanya sebagian fitur
+      \item[\textcolor{nvgreen}{\textbullet}] Hasil akhir = voting dari semua pohon
+      \item[\textcolor{nvgreen}{\textbullet}] Lebih stabil, tahan \textit{noise}
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% Slide 4 — Boosting
+\begin{frame}{Boosting --- Belajar dari Kesalahan}
+\begin{center}
+  \includegraphics[width=0.95\textwidth]{figures/boosting.pdf}
+\end{center}
+\vspace{0.2cm}
+\begin{center}
+  \small\color{nvlightgreen}
+  Setiap model baru fokus memperbaiki kesalahan model sebelumnya
+\end{center}
+\end{frame}
+
+% Slide 5 — XGBoost
+\begin{frame}{XGBoost --- Juara Kompetisi ML}
+\begin{center}
+\begin{beamercolorbox}[rounded=true, shadow=true, sep=0.8em, wd=0.9\textwidth]{block body}
+  \centering
+  \textbf{\large\color{nvgreen} eXtreme Gradient Boosting}\\[0.5em]
+  \begin{itemize}
+    \item[\textcolor{nvgreen}{\textbullet}] \textit{Gradient Boosting} versi super cepat
+    \item[\textcolor{nvgreen}{\textbullet}] Built-in regularisasi (anti overfitting)
+    \item[\textcolor{nvgreen}{\textbullet}] Bisa tangani data kosong otomatis
+    \item[\textcolor{nvgreen}{\textbullet}] Pemenang mayoritas kompetisi Kaggle 2015--2020
+  \end{itemize}
+  \vspace{0.4em}
+  \colorbox{nvgreen!20}{\parbox{0.82\textwidth}{%
+    \centering\small\color{white}
+    \textbf{NVIDIA berkontribusi langsung pada GPU support XGBoost!}
+  }}
+\end{beamercolorbox}
+\end{center}
+\end{frame}
+
+% Slide 6 — Feature Importance
+\begin{frame}{Feature Importance --- Fitur Mana yang Penting?}
+\begin{center}
+\begin{tikzpicture}[scale=0.95]
+  \def\maxwidth{6.0}
+  % Bar 1: capital-gain 0.35
+  \fill[nvgreen]  (0, 0.00) rectangle (6.00, 0.55);
+  \node[anchor=east, text=white, font=\scriptsize] at (-0.1, 0.275) {capital-gain};
+  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (6.10, 0.275) {0.35};
+  % Bar 2: education-num 0.18
+  \fill[nvcard]   (0,-0.75) rectangle (3.09,-0.20);
+  \node[anchor=east, text=white, font=\scriptsize] at (-0.1,-0.475) {education-num};
+  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (3.19,-0.475) {0.18};
+  % Bar 3: age 0.15
+  \fill[nvcard]   (0,-1.50) rectangle (2.57,-0.95);
+  \node[anchor=east, text=white, font=\scriptsize] at (-0.1,-1.225) {age};
+  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (2.67,-1.225) {0.15};
+  % Bar 4: hours-per-week 0.12
+  \fill[nvcard]   (0,-2.25) rectangle (2.06,-1.70);
+  \node[anchor=east, text=white, font=\scriptsize] at (-0.1,-1.975) {hours-per-week};
+  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (2.16,-1.975) {0.12};
+  % Bar 5: marital-status 0.10
+  \fill[nvcard]   (0,-3.00) rectangle (1.71,-2.45);
+  \node[anchor=east, text=white, font=\scriptsize] at (-0.1,-2.725) {marital-status};
+  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (1.81,-2.725) {0.10};
+  % Axes
+  \draw[gray, thin] (0, 0.6) -- (0, -3.15);
+  \draw[gray, thin] (0,-3.15) -- (\maxwidth,-3.15);
+  \node[text=gray, font=\scriptsize] at (3.0,-3.55) {Skor Importance};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+% Slide 7 — No Free Lunch
+\begin{frame}{Tidak Ada Model Terbaik untuk Semua!}
+\begin{center}
+\begin{tikzpicture}[
+  row/.style={rectangle, rounded corners=3pt, fill=nvcard, text=white,
+              minimum width=8.5cm, minimum height=0.65cm, font=\small,
+              text centered},
+  highlight/.style={rectangle, rounded corners=4pt, fill=nvred!80, text=white,
+                    minimum width=8.5cm, minimum height=0.75cm, font=\small\bfseries,
+                    text centered}
+]
+  \node[row]       at (0, 2.1)  {Dataset \textit{noisy} \quad$\Rightarrow$\quad \textbf{Random Forest} menang};
+  \node[row]       at (0, 1.2)  {Dataset bersih \quad$\Rightarrow$\quad \textbf{Gradient Boosting} menang};
+  \node[row]       at (0, 0.3)  {Dataset kecil \quad$\Rightarrow$\quad \textbf{Decision Tree} cukup};
+  \node[row, fill=nvgreen!80] at (0, -0.6) {Selalu coba beberapa model dan bandingkan!};
+  \node[highlight] at (0, -1.7) {No Free Lunch Theorem --- setiap model punya kelebihan dan kekurangan};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+% Slide 8 — Summary Act 4
+\begin{frame}{Ringkasan: Kekuatan Tim}
+\begin{itemize}
+  \item[\textcolor{nvgreen}{\checkmark}] \textbf{Voting} $\to$ beberapa model berbeda, ambil suara terbanyak
+  \item[\textcolor{nvgreen}{\checkmark}] \textbf{Bagging (RF)} $\to$ banyak pohon, masing-masing data berbeda
+  \item[\textcolor{nvgreen}{\checkmark}] \textbf{Boosting} $\to$ model berurutan, perbaiki kesalahan
+  \item[\textcolor{nvgreen}{\checkmark}] \textbf{XGBoost} $\to$ juara Kaggle, didukung NVIDIA GPU
+  \item[\textcolor{nvgreen}{\checkmark}] Selalu bandingkan beberapa model!
+\end{itemize}
+\end{frame}
+
+% ============================================================
+% ACT 5: MENEMUKAN POLA TERSEMBUNYI
+% ============================================================
+
+% Slide 1 — Transition
+\acttitle{Act 5}{Menemukan Pola Tersembunyi}{Bagaimana jika tidak ada jawaban benar?}
+
+% Slide 2 — K-Means Clustering
+\begin{frame}{K-Means Clustering}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{figure}
+      \includegraphics[width=\linewidth]{figures/clusters.pdf}
+    \end{figure}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \textbf{Mengelompokkan data TANPA label}
+    \begin{enumerate}
+      \item Pilih K titik pusat acak
+      \item Assign data ke pusat terdekat
+      \item Pindahkan pusat ke rata-rata
+      \item Ulangi sampai stabil
+    \end{enumerate}
+    \vspace{0.5em}
+    \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+      \setbeamercolor{block body}{bg=nvcard}
+      \colorbox{nvcard}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
+        \small\color{white}
+        Seperti menaruh magnet di meja penuh paku --- paku menempel ke magnet terdekat
+      }}
+    \end{beamercolorbox}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% Slide 3 — Berapa K?
+\begin{frame}{Berapa Jumlah Cluster yang Tepat?}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \centering
+    \textbf{Elbow Method}\\[0.4em]
+    \begin{tikzpicture}[scale=0.85]
+      % Axes
+      \draw[->,thick,color=nvgray] (0,0) -- (4.5,0) node[right,font=\small] {K};
+      \draw[->,thick,color=nvgray] (0,0) -- (0,3.5) node[above,font=\small] {Inertia};
+      % Elbow curve
+      \draw[thick,color=nvgreen,line width=1.5pt]
+        (0.5,3.0) .. controls (1.0,2.6) and (1.4,2.1) ..
+        (2.0,1.3) .. controls (2.6,0.9) and (3.0,0.7) ..
+        (4.0,0.5);
+      % Knee point
+      \filldraw[color=nvred] (2.0,1.3) circle (3pt);
+      \draw[->,color=nvred,thick] (3.0,2.2) -- (2.1,1.4);
+      \node[color=nvred,font=\small] at (3.2,2.4) {Titik siku};
+      % X ticks
+      \foreach \x/\l in {0.5/1,1.0/2,1.5/3,2.0/4,2.5/5,3.0/6,3.5/7,4.0/8}{
+        \draw (\x,0) -- (\x,-0.1);
+        \node[below,font=\tiny] at (\x,-0.1) {\l};
+      }
+    \end{tikzpicture}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \centering
+    \textbf{Silhouette Score}\\[0.4em]
+    \begin{tikzpicture}[scale=0.85]
+      % Axes
+      \draw[->,thick,color=nvgray] (0,0) -- (4.5,0) node[right,font=\small] {K};
+      \draw[->,thick,color=nvgray] (0,0) -- (0,3.5) node[above,font=\small] {Score};
+      % Bars
+      \fill[color=nvlightgreen!60] (0.4,0) rectangle (0.9,1.4);
+      \fill[color=nvlightgreen!60] (1.1,0) rectangle (1.6,2.0);
+      \fill[color=nvgreen]         (1.8,0) rectangle (2.3,2.9);  % highest
+      \fill[color=nvlightgreen!60] (2.5,0) rectangle (3.0,2.2);
+      \fill[color=nvlightgreen!60] (3.2,0) rectangle (3.7,1.6);
+      % X ticks
+      \foreach \x/\l in {0.65/2,1.35/3,2.05/4,2.75/5,3.45/6}{
+        \node[below,font=\tiny] at (\x,-0.1) {\l};
+      }
+      % Arrow
+      \draw[->,color=nvred,thick] (3.2,3.2) -- (2.3,3.0);
+      \node[color=nvred,font=\small] at (3.4,3.4) {Skor tertinggi};
+    \end{tikzpicture}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% Slide 4 — Hierarchical & DBSCAN
+\begin{frame}{Metode Clustering Lain}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \centering
+    \textbf{Hierarchical Clustering}\\[0.4em]
+    \begin{tikzpicture}[scale=0.7,
+      every node/.style={circle,draw,fill=nvlightgreen!60,inner sep=2pt,font=\tiny,text=white}]
+      % Leaf nodes
+      \node (a) at (0,0)   {A};
+      \node (b) at (1,0)   {B};
+      \node (c) at (2,0)   {C};
+      \node (d) at (3,0)   {D};
+      \node (e) at (4,0)   {E};
+      \node (f) at (5,0)   {F};
+      % Level 1 merges
+      \node (ab) at (0.5,1.2) {};
+      \node (cd) at (2.5,1.2) {};
+      \node (ef) at (4.5,1.2) {};
+      \draw (a)--(ab); \draw (b)--(ab);
+      \draw (c)--(cd); \draw (d)--(cd);
+      \draw (e)--(ef); \draw (f)--(ef);
+      % Level 2 merges
+      \node (abcd) at (1.5,2.4) {};
+      \node (efr)  at (4.0,2.4) {};
+      \draw (ab)--(abcd); \draw (cd)--(abcd);
+      \draw (ef)--(efr);
+      % Level 3 root
+      \node[fill=nvgreen!80] (root) at (2.8,3.6) {};
+      \draw (abcd)--(root); \draw (efr)--(root);
+    \end{tikzpicture}
+    \begin{itemize}
+      \item[\textcolor{nvgreen}{$\bullet$}] Gabungkan cluster terdekat satu per satu
+      \item[\textcolor{nvgreen}{$\bullet$}] Tidak perlu tentukan K di awal
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \centering
+    \textbf{DBSCAN}\\[0.4em]
+    \begin{tikzpicture}[scale=0.7]
+      % Cluster 1 (blue dots)
+      \foreach \x/\y in {0.3/2.5,0.6/2.8,0.5/2.2,0.9/2.6,0.7/3.0,1.0/2.9}{
+        \filldraw[nvgreen] (\x,\y) circle (3pt);
+      }
+      % Cluster 2 (green dots)
+      \foreach \x/\y in {3.0/2.0,3.3/2.4,3.1/2.8,3.6/2.2,3.4/2.7,3.7/3.0}{
+        \filldraw[nvlightgreen] (\x,\y) circle (3pt);
+      }
+      % Outliers (red X)
+      \foreach \x/\y in {1.8/0.5,2.2/3.8,4.5/1.2}{
+        \draw[color=nvred,thick,line width=1.5pt]
+          (\x-0.15,\y-0.15)--(\x+0.15,\y+0.15)
+          (\x-0.15,\y+0.15)--(\x+0.15,\y-0.15);
+      }
+      \node[font=\tiny,color=nvred] at (2.5,0.2) {outlier};
+    \end{tikzpicture}
+    \begin{itemize}
+      \item[\textcolor{nvgreen}{$\bullet$}] Berdasarkan kepadatan (density)
+      \item[\textcolor{nvgreen}{$\bullet$}] Bisa deteksi outlier (data aneh)
+      \item[\textcolor{nvgreen}{$\bullet$}] Tidak perlu tentukan K
+    \end{itemize}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% Slide 5 — Summary Act 5
+\begin{frame}{Ringkasan: Pola Tersembunyi}
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+  \hline
+  \rowcolor{nvdark}
+  \textcolor{white}{\textbf{Metode}} &
+  \textcolor{white}{\textbf{Perlu K?}} &
+  \textcolor{white}{\textbf{Bentuk Cluster}} &
+  \textcolor{white}{\textbf{Deteksi Outlier?}} \\
+  \hline
+  \rowcolor{nvcard!30}
+  K-Means      & Ya       & Bulat      & Tidak \\
+  \hline
+  \rowcolor{nvcard!15}
+  Hierarchical & Opsional & Fleksibel  & Tidak \\
+  \hline
+  \rowcolor{nvcard!30}
+  DBSCAN       & Tidak    & Bebas      & \textcolor{nvgreen}{\textbf{Ya}} \\
+  \hline
+\end{tabular}
+\end{center}
+\vspace{0.8em}
+\begin{center}
+  \textcolor{nvgreen}{\textbf{Aplikasi:}} segmentasi pelanggan, pengelompokan berita, rekomendasi musik
+\end{center}
+\end{frame}
+
+
+% ============================================================
+% ACT 6 — TURBO MODE: NVIDIA GPU
+% ============================================================
+
+% Slide 1 — Act 6 Transition
+\acttitle{Act 6}{Turbo Mode: NVIDIA GPU}{Bagaimana jika bisa 50x lebih cepat?}
+
+% Slide 2 — CPU vs GPU
+\begin{frame}{CPU vs GPU — Apa Bedanya?}
+\begin{columns}[T]
+  \begin{column}{0.45\textwidth}
+    \begin{center}
+    \begin{tikzpicture}
+      \draw[fill=nvcard, draw=nvgreen, line width=1.5pt] (0,0) rectangle (2.8,2.8);
+      \node[font=\bfseries\large, color=nvgreen] at (1.4,2.2) {CPU};
+      \node[font=\small, color=white, align=center] at (1.4,1.4) {4--16 core\\sangat kuat\\per core};
+    \end{tikzpicture}\\[0.4em]
+    \textcolor{nvlightgreen}{\textbf{1 koki master}}
+    \end{center}
+  \end{column}
+  \begin{column}{0.45\textwidth}
+    \begin{center}
+    \begin{tikzpicture}
+      \foreach \x in {0,...,5} {
+        \foreach \y in {0,...,4} {
+          \draw[fill=nvdark, draw=nvgreen, line width=0.4pt]
+            (\x*0.46+0.02, \y*0.46+0.02) rectangle (\x*0.46+0.40, \y*0.46+0.40);
+        }
+      }
+      \node[font=\bfseries\large, color=nvgreen] at (1.4,2.6) {GPU};
+    \end{tikzpicture}\\[0.4em]
+    \textcolor{nvlightgreen}{\textbf{1.000 koki sederhana}}
+    \end{center}
+  \end{column}
+\end{columns}
+\vspace{0.8em}
+\begin{center}
+  \colorbox{nvcard}{\parbox{0.88\textwidth}{\centering
+    \textcolor{nvorange}{\textbf{ML = ribuan operasi matematika yang SAMA}}\\
+    \textcolor{white}{$\rightarrow$ cocok untuk GPU!}
+  }}
+\end{center}
+\end{frame}
+
+% Slide 3 — RAPIDS cuML
+\begin{frame}{NVIDIA RAPIDS cuML}
+\begin{itemize}
+  \item[\textcolor{nvgreen}{\textbullet}] Library ML di GPU dengan \textbf{API identik scikit-learn}
+  \item[\textcolor{nvgreen}{\textbullet}] Rata-rata \textcolor{nvlightgreen}{\textbf{10--50x lebih cepat}}
+  \item[\textcolor{nvgreen}{\textbullet}] 50+ algoritma: regresi, klasifikasi, clustering, PCA, \ldots
+\end{itemize}
+\vspace{1em}
+\begin{center}
+  \begin{tikzpicture}
+    \draw[fill=nvgreen!20, draw=nvgreen, line width=2pt, rounded corners=6pt]
+      (0,0) rectangle (8,1.2);
+    \node[font=\bfseries\large, color=nvdark] at (4,0.6) {Ganti import, sisanya SAMA!};
+  \end{tikzpicture}
+\end{center}
+\end{frame}
+
+% Slide 4 — Code Comparison (KEY SLIDE)
+\begin{frame}[fragile]{Perbandingan Kode: sklearn vs cuML}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{center}\textcolor{nvlightgreen}{\textbf{scikit-learn (CPU)}}\end{center}
+    \begin{lstlisting}[basicstyle=\ttfamily\small,
+      backgroundcolor=\color{nvcard},
+      keywordstyle=\color{nvlightgreen},
+      stringstyle=\color{nvorange},
+      commentstyle=\color{gray},
+      frame=single, rulecolor=\color{nvgreen},
+      breaklines=true]
+from sklearn.ensemble import \
+  RandomForestClassifier
+
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
+pred = model.predict(X_test)
+    \end{lstlisting}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \begin{center}\textcolor{nvlightgreen}{\textbf{cuML (GPU NVIDIA)}}\end{center}
+    \begin{lstlisting}[basicstyle=\ttfamily\small,
+      backgroundcolor=\color{nvcard},
+      keywordstyle=\color{nvlightgreen},
+      stringstyle=\color{nvorange},
+      commentstyle=\color{gray},
+      frame=single, rulecolor=\color{nvgreen},
+      breaklines=true]
+from cuml.ensemble import \
+  RandomForestClassifier
+
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
+pred = model.predict(X_test)
+    \end{lstlisting}
+  \end{column}
+\end{columns}
+\vspace{0.6em}
+\begin{center}
+  \textcolor{nvgreen}{\textbf{Hanya ganti 1 baris import $\rightarrow$ 10--50x lebih cepat!}}
+\end{center}
+\end{frame}
+
+% Slide 5 — XGBoost GPU
+\begin{frame}[fragile]{XGBoost GPU — Satu Baris Perubahan}
+\begin{lstlisting}[basicstyle=\ttfamily\normalsize,
+  backgroundcolor=\color{nvcard},
+  keywordstyle=\color{nvlightgreen},
+  stringstyle=\color{nvorange},
+  commentstyle=\color{gray!70},
+  frame=single, rulecolor=\color{nvgreen},
+  language=Python]
+# CPU
+XGBClassifier(device="cpu")
+
+# GPU NVIDIA
+XGBClassifier(device="cuda")  # Hanya ini yang berubah!
+\end{lstlisting}
+\vspace{0.8em}
+\begin{center}
+  \textcolor{white}{NVIDIA berkontribusi langsung pada pengembangan XGBoost GPU}
+\end{center}
+\end{frame}
+
+% Slide 6 — Benchmark
+\begin{frame}{Benchmark: CPU vs GPU}
+\begin{center}
+  \includegraphics[width=0.9\textwidth]{figures/gpu_speedup.pdf}
+\end{center}
+\vspace{0.3em}
+\begin{center}
+  \textcolor{nvlightgreen}{\small Dataset: Forest Covertype (581.012 baris)}
+\end{center}
+\end{frame}
+
+% Slide 7 — ONNX Deployment
+\begin{frame}{Dari Training ke Deployment}
+\begin{center}
+\begin{tikzpicture}[node distance=0.6cm, >=stealth]
+  \tikzset{
+    box/.style={draw=nvgreen, fill=nvcard, rounded corners=5pt,
+      text=white, font=\small\bfseries, align=center,
+      minimum width=2.2cm, minimum height=1.1cm, inner sep=4pt}
+  }
+  \node[box] (train) {Train Model\\(sklearn/\\XGBoost)};
+  \node[box, right=0.5cm of train] (onnx) {Export\\ke ONNX};
+  \node[box, right=0.5cm of onnx] (rt) {ONNX Runtime\\+ GPU};
+  \node[box, right=0.5cm of rt] (app) {Aplikasi/\\Server};
+
+  \draw[->, line width=1.5pt, color=nvgreen] (train) -- (onnx);
+  \draw[->, line width=1.5pt, color=nvgreen] (onnx) -- (rt);
+  \draw[->, line width=1.5pt, color=nvgreen] (rt) -- (app);
+\end{tikzpicture}
+\end{center}
+\vspace{0.6em}
+\begin{center}
+  \textcolor{nvlightgreen}{\textbf{ONNX = format standar (seperti PDF untuk dokumen)}}
+\end{center}
+\vspace{0.3em}
+\begin{center}
+  \textcolor{gray!80}{\small Di server produksi: \textbf{NVIDIA Triton Inference Server}}
+\end{center}
+\end{frame}
+
+% Slide 8 — NVIDIA Ecosystem
+\begin{frame}{Ekosistem NVIDIA untuk AI}
+\begin{center}
+\begin{tabular}{ll}
+  \hline
+  \rowcolor{nvgreen!80}
+  \textbf{\textcolor{nvdark}{Produk}} & \textbf{\textcolor{nvdark}{Fungsi}} \\
+  \hline
+  \rowcolor{nvcard!50}
+  RAPIDS cuML  & ML klasik di GPU \\
+  \rowcolor{nvcard!30}
+  cuDF         & Pandas di GPU \\
+  \rowcolor{nvcard!50}
+  XGBoost GPU  & Gradient Boosting di GPU \\
+  \rowcolor{nvcard!30}
+  TensorRT     & Optimasi inferensi DL \\
+  \rowcolor{nvcard!50}
+  NeMo         & Framework NLP/AI \\
+  \rowcolor{nvcard!30}
+  Triton Server & Deploy model di produksi \\
+  \hline
+\end{tabular}
+\end{center}
+\vspace{0.8em}
+\begin{center}
+  \textcolor{nvlightgreen}{\textbf{Kita akan pelajari lebih dalam di Modul 6!}}
+\end{center}
+\end{frame}
+
+% ============================================================
+% CLOSING
+% ============================================================
+
+% Slide 9 — Full Summary
+\begin{frame}{Modul 1 — Selesai!}
+\begin{center}
+{\small
+\begin{tabular}{clll}
+  \hline
+  \rowcolor{nvgreen!80}
+  \textbf{\textcolor{nvdark}{\#}} &
+  \textbf{\textcolor{nvdark}{Topik}} &
+  \textbf{\textcolor{nvdark}{Jenis}} \\
+  \hline
+  \rowcolor{nvcard!50} 1 & Linear Regression      & Supervised -- Regresi \\
+  \rowcolor{nvcard!30} 2 & Logistic Regression    & Supervised -- Klasifikasi \\
+  \rowcolor{nvcard!50} 3 & Decision Tree          & Supervised -- Klasifikasi \\
+  \rowcolor{nvcard!30} 4 & KNN                    & Supervised -- Klasifikasi \\
+  \rowcolor{nvcard!50} 5 & SVM                    & Supervised -- Klasifikasi \\
+  \rowcolor{nvcard!30} 6 & Ensemble Methods       & Supervised -- Ensemble \\
+  \rowcolor{nvcard!50} 7 & XGBoost                & Supervised -- Ensemble \\
+  \rowcolor{nvcard!30} 8 & Clustering             & Unsupervised \\
+  \rowcolor{nvcard!50} 9 & Time Series            & Forecasting \\
+  \rowcolor{nvcard!30} 10 & NVIDIA GPU            & Akselerasi \\
+  \hline
+\end{tabular}
+}
+\end{center}
+\end{frame}
+
+% Slide 10 — What's Next
+\begin{frame}{Apa Selanjutnya?}
+\begin{center}
+\begin{tikzpicture}[node distance=0.3cm, >=stealth]
+  \tikzset{
+    mod/.style={draw=nvgreen, fill=nvcard, rounded corners=4pt,
+      text=white, font=\scriptsize\bfseries, align=center,
+      minimum width=1.7cm, minimum height=1.0cm},
+    modhl/.style={draw=nvgreen, fill=nvgreen, rounded corners=4pt,
+      text=nvdark, font=\scriptsize\bfseries, align=center,
+      minimum width=1.7cm, minimum height=1.0cm}
+  }
+  \node[modhl] (m1) {[1]\\ML\\Fundamentals\\{\tiny Selesai!}};
+  \node[mod, right=0.3cm of m1] (m2) {[2]\\Deep\\Learning};
+  \node[mod, right=0.3cm of m2] (m3) {[3]\\NLP};
+  \node[mod, right=0.3cm of m3] (m4) {[4]\\LLM};
+  \node[mod, right=0.3cm of m4] (m5) {[5]\\RAG};
+  \node[mod, right=0.3cm of m5] (m6) {[6]\\NVIDIA\\Ecosystem};
+
+  \draw[->, line width=1pt, color=nvgreen!60] (m1) -- (m2);
+  \draw[->, line width=1pt, color=nvgreen!60] (m2) -- (m3);
+  \draw[->, line width=1pt, color=nvgreen!60] (m3) -- (m4);
+  \draw[->, line width=1pt, color=nvgreen!60] (m4) -- (m5);
+  \draw[->, line width=1pt, color=nvgreen!60] (m5) -- (m6);
+
+  \draw[->, line width=2pt, color=nvorange]
+    (m1.south) -- ++(0,-0.5) -| (m2.south)
+    node[midway, below, font=\scriptsize\bfseries, color=nvorange] {Next!};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+% Slide 11 — Thank You
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[nvbg] (current page.south west) rectangle (current page.north east);
+  \draw[nvgreen, line width=3pt]
+    ([yshift=0.5cm]current page.south west) --
+    ([yshift=0.5cm]current page.south east);
+\end{tikzpicture}
+\begin{center}
+  \vspace{2.5cm}
+  {\Huge\bfseries\textcolor{nvgreen}{Terima Kasih!}}\\[1em]
+  {\large\textcolor{white}{NCA-GENL --- Navasena Gen-ML Course}}\\[0.5em]
+  {\normalsize\textcolor{nvlightgreen}{Powered by NVIDIA}}
+\end{center}
+\end{frame}
+
+\end{document}
