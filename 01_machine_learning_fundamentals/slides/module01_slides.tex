@@ -1,5 +1,5 @@
 % ============================================================
-% NCA-GENL Module 01: Machine Learning Fundamentals
+% Module 01: Machine Learning Fundamentals
 % Custom NVIDIA Dark Beamer Theme
 % Compiler: xelatex
 % ============================================================
@@ -101,7 +101,7 @@
 \setbeamertemplate{footline}{%
   \begin{beamercolorbox}[wd=\paperwidth, ht=2.2ex, dp=1.2ex]{footline}%
     \hspace{0.6cm}%
-    {\footnotesize\color{nvgray}NCA-GENL | Machine Learning Fundamentals}%
+    {\footnotesize\color{nvgray}Machine Learning Fundamentals}%
     \hfill%
     {\footnotesize\color{nvgray}\insertframenumber\,/\,\inserttotalframenumber}%
     \hspace{0.6cm}%
@@ -160,8 +160,8 @@
 % TITLE INFO
 % ============================================================
 \title{\color{nvgreen}Machine Learning Fundamentals}
-\subtitle{NCA-GENL --- Navasena Gen-ML Course}
-\author{Navasena Academy}
+\subtitle{Navasena Gen-ML Course}
+\author{Navasena}
 \date{}
 
 % ============================================================
@@ -189,7 +189,7 @@
     % Subtitle
     \node[anchor=center, yshift=0.5cm,
           font=\large, text=nvwhite]
-          at (current page.center) {NCA-GENL --- Navasena Gen-ML Course};
+          at (current page.center) {Navasena Gen-ML Course};
     % Divider
     \draw[nvgreen, line width=1pt]
       ([xshift=-5cm]current page.center)
@@ -197,11 +197,7 @@
     % Author
     \node[anchor=center, yshift=-0.5cm,
           font=\normalsize, text=nvgray]
-          at (current page.center) {Navasena Academy};
-    % Powered by NVIDIA
-    \node[anchor=south, yshift=1.0cm,
-          font=\small\bfseries, text=nvgreen]
-          at (current page.south) {\rule[0.3ex]{1em}{1.5pt}\quad Powered by NVIDIA\quad\rule[0.3ex]{1em}{1.5pt}};
+          at (current page.center) {Navasena};
   \end{tikzpicture}
 \end{frame}
 
@@ -865,10 +861,11 @@
     \item[\textcolor{nvgreen}{\textbullet}] Salah satu model paling dominan di kompetisi Kaggle
   \end{itemize}
   \vspace{0.4em}
-  \colorbox{nvgreen!20}{\parbox{0.82\textwidth}{%
-    \centering\small\color{white}
-    \textbf{NVIDIA berkontribusi langsung pada GPU support XGBoost!}
-  }}
+  \begin{tikzpicture}
+    \node[fill=nvgreen, rounded corners=4pt, inner sep=8pt, text width=0.82\textwidth, align=center] {
+      \color{white}\small\textbf{NVIDIA berkontribusi langsung pada GPU support XGBoost!}
+    };
+  \end{tikzpicture}
 \end{beamercolorbox}
 \end{center}
 \end{frame}
@@ -1386,8 +1383,7 @@ XGBClassifier(device="cuda")  # Hanya ini yang berubah!
 \begin{center}
   \vspace{2.5cm}
   {\Huge\bfseries\textcolor{nvgreen}{Terima Kasih!}}\\[1em]
-  {\large\textcolor{white}{NCA-GENL --- Navasena Gen-ML Course}}\\[0.5em]
-  {\normalsize\textcolor{nvlightgreen}{Powered by NVIDIA}}
+  {\large\textcolor{white}{Navasena Gen-ML Course}}
 \end{center}
 \end{frame}
 
