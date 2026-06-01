@@ -76,8 +76,8 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
   - M01 tabel {clll}→{cll}; R² wording; RandomForest 500→ratusan.
   - M03 Sastrawi(stemmer)→nlp-id Lemmatizer; nlp-id sentiment→IndoBERT/lexicon.
   - M04 distilbert SST-2; float16 framing; grammar. M05 contoh embed EN; k=1 note; temperature nuance. M06 nmt full name.
-- Defer (cosmetic/subjektif, dicatat tidak di-fix): M01 konsistensi em-dash judul; M01 catatan taksonomi Reinforcement/Forecasting.
-- Final: 6 deck (48/33/23/23/20/21 hal) semua 0 error, 0 overfull.
+- ~~Defer~~ DIPERBAIKI juga (commit `ac21850`): M01 judul em-dash diseragamkan ke `---`; M01 catatan taksonomi (Reinforcement context-only) + roadmap (Forecasting = kasus khusus Supervised).
+- Final: 6 deck (48/33/23/23/20/21 hal) semua 0 error, 0 overfull. Tidak ada item QC tersisa.
 
 ## Pola Kerja yang Sudah Terbentuk
 
