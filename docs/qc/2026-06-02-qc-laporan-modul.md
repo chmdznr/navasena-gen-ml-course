@@ -63,3 +63,11 @@
 - Distribusi: M01=2, M02=2, M03=3, M04=1, M05=1, M06=2.
 - Kategori paling sering: **consistency** (5) & **factual-nuance** (4); narasi (2), redundancy (1). Flow & completeness bersih di semua modul.
 - Catatan: deck adalah referensi yang sudah di-QC; sebagian besar fix diarahkan ke cheatsheet/quiz agar selaras deck. Beberapa item menyentuh deck (M03 stopword, M04 few-shot label) — opsional.
+
+## Resolusi (commit `1fb1aa8`)
+
+**Semua 11 temuan info SUDAH diperbaiki** (atas keputusan user "perbaiki semua"):
+- Cheat sheet (5 file: M01/02/03/05/06): scaling phrasing, cuML import (tanpa wildcard), tambah `Dense(64)` agar konsisten deck + Embedding `input_length`, longgarkan tagset nlp-id + Lemmatizer I/O string + sinkron stopword, heading RAG (akronim vs langkah), TensorRT wording + node Aplikasi.
+- Deck (2 file): M03 slide-9 stopword diseragamkan ke "yang, di, dari, dan"; M04 few-shot label `Q:`/`A:` → `Question:`/`Answer:` (selaras notebook + cheatsheet).
+- Verifikasi: deck 03/04 recompile 0 overfull/error (23 hal); 5 cheatsheet tetap 1 halaman (M02 density di-nudge sedikit agar muat setelah tambah layer).
+- **Status akhir: 0 block, 0 info tersisa. Semua materi konsisten lintas-artefak.**

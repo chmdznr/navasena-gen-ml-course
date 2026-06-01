@@ -88,8 +88,15 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - File baru: `ml-fundamentals-cheatsheet.{html,pdf}`, `dl-fundamentals-cheatsheet.{html,pdf}`. PDF lama (`machine-learning-fundamentals.pdf`, `NVIDIA Certification - DL Fundamentals.pdf`) DIHAPUS (atas konfirmasi user).
 - Sekarang SEMUA 6 modul punya cheat sheet seragam (naming `<topic>-cheatsheet`, gaya identik, source ada).
 
+### Update Jun 2 — QC qc-laporan 6 modul selesai + fix
+- Pakai skill `qc-laporan` (6-check: factual/consistency/flow/narasi/redundancy/completeness) + deterministic LaTeX checks. Report: `docs/qc/2026-06-02-qc-laporan-modul.md` (commit `f214fc7`).
+- Hasil: 0 block, 11 info. Deterministic bersih (0 `??`, 0 overfull, 0 placeholder).
+- SEMUA 11 info diperbaiki (commit `1fb1aa8`): konsistensi lintas-artefak (cheatsheet↔deck) + kejelasan narasi/pedagogis. Cheatsheet M01/02/03/05/06 + deck M03/04 di-edit & re-render/recompile, semua verified (deck 0 overfull, cheatsheet 1 halaman).
+- Catch menarik: M05 "RAG = Retrieve+Augment+Generate" salah-ekspansi akronim (A=Augmented, bukan verb Augment) → diperbaiki jadi "Pipeline RAG: Retrieve→Augment→Generate".
+- Env note: context-mode MCP sempat disconnect; pakai Bash/Read untuk processing. Cheatsheet HTML escaped (`'`→`&#x27;`, `>`→`&gt;`) — fix via python str.replace pakai bentuk escaped.
+
 ## STATUS AKHIR sesi (Jun 2): Materi lengkap untuk 6 modul
-- Per modul: notebook (+ theory cells), slide deck, cheat sheet (seragam), quiz interaktif. Semua di origin kecuali commit terakhir (cek push).
+- Per modul: notebook (+ theory cells), slide deck, cheat sheet (seragam), quiz interaktif. Semua sudah di-QC (qc-laporan, 0 issue tersisa). Cek push untuk commit terakhir.
 
 ### Update Jun 2 — QC menyeluruh 6 deck selesai
 - QC mechanical (semua deck): compile bersih, 0 overfull, theme/footer konsisten, 0 NCA-GENL, 0 placeholder.
