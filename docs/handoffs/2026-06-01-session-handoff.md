@@ -20,7 +20,7 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Module 01 (ML) — slide deck 48 halaman, notebook OK
 - Module 02 (Deep Learning) — 5 notebook OK, slide deck belum ada
 - Module 03 (NLP) — notebook + theory cells + slide deck 20 hal OK
-- Module 04 (LLM) — 1 notebook **+ theory cells (8 md)** ✅, slide deck belum ada
+- Module 04 (LLM) — 1 notebook **+ theory cells (8 md)** ✅ **+ slide deck 23 frame** ✅
 - Module 05 (RAG) — 1 notebook **+ intro & theory cells (8 md)** ✅, slide deck belum ada
 - Module 06 (NVIDIA Ecosystem) — 3 notebook **+ theory cells (4/14/7 md)** ✅, slide deck belum ada
 
@@ -29,7 +29,15 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Design spec: `docs/superpowers/specs/2026-06-01-module04-05-06-theory-cells-design.md` (commit `4fc502e`).
 - Theory cells dibuat via workflow (draft → review akurasi ∥ gaya → sintesis), lalu di-apply dengan guard hash code-cell (semua code cell BYTE-IDENTICAL, markdown-only). Commit: `9c6a0ab` (m04), `44d0ebe` (m05), `2ae19e2` (m06).
 - Catatan branding: penutup Module 06 RAG di-netralkan dari "course NCA-GENL" → "rangkaian course ini" (selaras de-branding slide). Kalau ternyata NCA-GENL memang dipertahankan di notebook, ini bisa di-revert.
-- **Belum di-push** — commit theory cells masih lokal.
+- Theory cells sudah di-push ke origin.
+
+### Update Jun 1 (lanjutan) — Module 04 SLIDE DECK selesai
+- Design spec: `docs/superpowers/specs/2026-06-01-module04-llm-slide-deck-design.md`.
+- `04_llm/slides/module04_slides.tex` — 23 frame, 5 act, theme Navasena dark (template Module 03), footer "LLM Fundamentals". Commit `b34248d`.
+- Figures: `llm_architecture.mmd` (mermaid), `gen_sampling.py` + `gen_model_scale.py` (matplotlib dark). Build via `PYTHON=<docling> bash build.sh`. **0 overfull box**.
+- Konten di-draft + diverifikasi (akurasi ∥ gaya) via workflow; akurasi reviewer menangkap mis. caveat bert-tiny head belum terlatih.
+- **Catatan LaTeX baru**: frame dengan `lstlisting` WAJIB `\begin{frame}[fragile]` (kalau tidak: "Runaway argument / Paragraph ended"). Tabel di kolom sempit: set `\setlength{\tabcolsep}{3pt}` untuk hindari overfull hbox. TikZ vertikal: pakai `scale=` + `every node/.style={transform shape}`, JANGAN `\resizebox{\linewidth}{!}` (height ikut membengkak → overfull vbox).
+- **Belum di-push** — commit slide deck (`b34248d`) masih lokal.
 
 ## Pola Kerja yang Sudah Terbentuk
 
