@@ -22,7 +22,7 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Module 03 (NLP) — notebook + theory cells + slide deck 20 hal OK
 - Module 04 (LLM) — 1 notebook **+ theory cells (8 md)** ✅ **+ slide deck 23 frame** ✅
 - Module 05 (RAG) — 1 notebook **+ intro & theory cells (8 md)** ✅ **+ slide deck 20 frame** ✅
-- Module 06 (NVIDIA Ecosystem) — 3 notebook **+ theory cells (4/14/7 md)** ✅, slide deck belum ada
+- Module 06 (NVIDIA Ecosystem) — 3 notebook **+ theory cells (4/14/7 md)** ✅ **+ slide deck 21 frame** ✅
 
 ### Update Jun 1 (sesi lanjutan) — theory cells Module 04/05/06 SELESAI
 - Pushed 5 commit sebelumnya ke origin.
@@ -53,7 +53,20 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Figures: `rag_pipeline.mmd` (mermaid), `gen_embedding_space.py` (matplotlib, 3 cluster semantik); inline TikZ untuk solusi-RAG & augment.
 - **Build clean di percobaan pertama** (0 overfull) — semua gotcha LaTeX diterapkan di depan ([fragile] listing, tabcolsep, scale+transform shape, integer node names).
 - Status slide deck: 01 ✅ 02 ✅ 03 ✅ 04 ✅ 05 ✅. **Sisa: Module 06 (NVIDIA)** — deck terakhir.
-- **Belum di-push** — Module 05 deck (`f5bbb1d`) masih lokal.
+- Module 05 deck sudah di-push.
+
+### Update Jun 2 — Module 06 SLIDE DECK selesai → SEMUA MODUL PUNYA DECK 🎉
+- Design spec: `docs/superpowers/specs/2026-06-02-module06-nvidia-slide-deck-design.md`.
+- `06_nvidia_ecosystem/slides/module06_slides.tex` — 21 frame, 3 act (GPU/CUDA, NeMo inti, NVIDIA RAG), footer "NVIDIA Ecosystem". Commit `a68e7cf`.
+- Figures: `nvidia_stack.mmd`, `nemo_tasks.mmd` (mermaid, KEDUANYA tall/portrait → size by HEIGHT bukan width); inline TikZ untuk TensorRT flow & RAG GPU flow.
+- Reviewer akurasi mengoreksi overclaim: benchmark tanpa baseline CPU, FP16-penuh bukan mixed-precision, TensorRT install-only (PyTorch bukan TF-TRT), gpt2 bukan Megatron, FAISS di CPU.
+- Gotcha figure: mermaid `flowchart LR/BT` dengan banyak cabang → render PORTRAIT (tall); `\includegraphics` HARUS size by `height=` (bukan `width=`) agar tak overfull vbox.
+
+## STATUS AKHIR (Jun 2): Semua 6 modul punya slide deck ✅
+- Slide deck: 01 (48 hal), 02 (33), 03 (20), 04 (23), 05 (20), 06 (21).
+- Theory cells: 03, 04, 05, 06 ✅ (01/02 notebook sudah lengkap dari awal).
+- Semua di-push ke origin (kecuali Module 06 deck `a68e7cf` + handoff ini bila belum).
+- Sisa pekerjaan opsional (defer): cheat sheet PDF Modul 03-06; quiz/assignment; tutorial video script.
 
 ## Pola Kerja yang Sudah Terbentuk
 
