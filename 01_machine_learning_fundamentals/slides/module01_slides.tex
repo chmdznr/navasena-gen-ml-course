@@ -392,7 +392,7 @@
       % NVIDIA GPU
       \begin{tikzpicture}
         \node[fill=nvgreen!20!nvcard, rounded corners=5pt, inner sep=10pt,
-              text width=\linewidth-20pt, minimum height=1.8cm,
+              text width=\linewidth-28pt, minimum height=1.8cm,
               draw=nvgreen, line width=1pt] {
           \textbf{\color{nvgreen}\large NVIDIA GPU}\\[4pt]
           \color{nvwhite}\small Akselerasi 10--50x lebih cepat
@@ -446,6 +446,40 @@
       \bottomrule
     \end{tabular}
   \end{center}
+\end{frame}
+
+% Slide 3b — Time Series Transition (explains why this lives in Act 2)
+\begin{frame}{Time Series = Regression + Waktu}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item Kita sudah menebak \textbf{angka} (regression)
+        \item Bagaimana kalau \textbf{input-nya} adalah \textbf{waktu}?
+        \item[\textcolor{nvgreen}{\checkmark}] \textbf{Sama}: cari pola $\to$ prediksi
+        \item[\textcolor{nvgreen}{\checkmark}] \textbf{Beda}: urutan waktu \emph{penting}
+        \item[\textcolor{nvorange}{\textasteriskcentered}] Tambahan: \textbf{seasonality} (pola musiman)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[scale=0.55]
+        \draw[->,thick,white] (0,0) -- (5,0) node[right,font=\small\color{white}]{Linear};
+        \draw[->,thick,white] (0,0) -- (0,3) node[above,font=\small\color{white}]{$y$};
+        \draw[color=nvgreen,thick,domain=0.2:4.8,samples=60,smooth]
+          plot (\x, {0.45*\x + 0.4});
+        \node[font=\footnotesize\color{white}] at (2.5,-0.5) {$y = wx + b$};
+        \draw[->,thick,color=nvorange] (6.5,1.5) -- (7.3,1.5);
+        \draw[->,thick,white] (7.5,0) -- (12.5,0) node[right,font=\small\color{white}]{Waktu};
+        \draw[->,thick,white] (7.5,0) -- (7.5,3) node[above,font=\small\color{white}]{Nilai};
+        \draw[color=nvgreen,thick,domain=7.7:12.3,samples=80,smooth]
+          plot (\x, {0.28*(\x-7.5) + 0.9*sin(3.2*(\x-7.5) r)});
+        \node[font=\footnotesize\color{white}] at (10,3.3) {Time Series};
+      \end{tikzpicture}%
+      }
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 % Slide 4 — Time Series Intro
@@ -960,10 +994,9 @@
     \vspace{0.5em}
     \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
       \setbeamercolor{block body}{bg=nvcard}
-      \colorbox{nvcard}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
-        \small\color{white}
+      \parbox{\dimexpr\linewidth-8pt}{\small\color{white}
         Seperti menaruh magnet di meja penuh paku --- paku menempel ke magnet terdekat
-      }}
+      \par}
     \end{beamercolorbox}
   \end{column}
 \end{columns}
@@ -1243,7 +1276,7 @@ XGBClassifier(device="cuda")  # Hanya ini yang berubah!
 % Slide 6 — Benchmark
 \begin{frame}{Benchmark: CPU vs GPU}
 \begin{center}
-  \includegraphics[width=0.9\textwidth]{figures/gpu_speedup.pdf}
+  \includegraphics[width=0.75\textwidth]{figures/gpu_speedup.pdf}
 \end{center}
 \vspace{0.3em}
 \begin{center}

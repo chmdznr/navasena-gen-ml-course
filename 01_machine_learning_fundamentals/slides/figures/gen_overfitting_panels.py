@@ -26,7 +26,8 @@ RED_TITLE = "#EF5350"
 GREEN_TITLE = "#76B900"
 
 # ── Data ─────────────────────────────────────────────────────────────────────
-X, y = make_moons(n_samples=300, noise=0.25, random_state=42)
+# Reduced from n=300 to n=180 to improve readability (less visual density)
+X, y = make_moons(n_samples=180, noise=0.25, random_state=42)
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
@@ -46,7 +47,8 @@ xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
                      np.arange(y_min, y_max, h))
 
 # ── Figure ────────────────────────────────────────────────────────────────────
-fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+# Larger figure size improves readability in slide projection
+fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
 fig.patch.set_facecolor(BG_COLOR)
 
 # Colormap for decision regions (two-class: 0=cool, 1=warm)

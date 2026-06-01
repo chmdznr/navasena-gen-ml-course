@@ -17,7 +17,8 @@ from sklearn.metrics import accuracy_score
 import os
 
 # ── Data ────────────────────────────────────────────────────────────────────
-X, y = make_moons(n_samples=300, noise=0.25, random_state=42)
+# Reduced from n=300 to n=180 to improve readability (less visual density)
+X, y = make_moons(n_samples=180, noise=0.25, random_state=42)
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
@@ -36,7 +37,8 @@ RDYLGN     = plt.cm.get_cmap("RdYlGn")
 CLASS_COLS = [RDYLGN(0.15), RDYLGN(0.85)]   # red-ish / green-ish for points
 
 # ── Figure ───────────────────────────────────────────────────────────────────
-fig, axes = plt.subplots(1, 4, figsize=(14, 3.5))
+# Larger figure size improves readability in slide projection
+fig, axes = plt.subplots(1, 4, figsize=(15, 4.2))
 fig.patch.set_facecolor(BG_COLOR)
 
 x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
