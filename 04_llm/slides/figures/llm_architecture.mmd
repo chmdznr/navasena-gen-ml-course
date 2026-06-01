@@ -1,0 +1,14 @@
+%%{init: {'theme':'dark', 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 45}}}%%
+flowchart LR
+    A["Teks"] --> B["Tokenizer"]
+    B --> C["Token IDs"]
+    C --> D["Embedding"]
+    D --> E["Transformer Block (xN)"]
+    E --> F["Logits"]
+    F --> G["Token Berikutnya"]
+
+    classDef key fill:#76B900,stroke:#5a8c00,stroke-width:2px,color:#0d0d0d;
+    classDef plain fill:#2b2b2b,stroke:#76B900,stroke-width:1px,color:#f0f0f0;
+
+    class A,C,F plain;
+    class B,D,E,G key;
