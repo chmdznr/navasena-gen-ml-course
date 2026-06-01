@@ -75,6 +75,17 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Struktur tiap cheat sheet: header + pipeline strip + grid kartu konsep (3 kolom) + tabel quick-ref library/model + glossary istilah. Semua verified 1 halaman.
 - CATATAN: M01/02 cheat sheet lama = infografik raster tema terang (700K-1.3M, tanpa source); M03-06 baru = vector HTML/PDF (~340K, ada source). Gaya selaras tapi M03-06 lebih ringkas (1 hal vs tall-flowing).
 
+### Update Jun 2 — Quiz interaktif 6 modul selesai
+- Format: HTML self-grading interaktif (vanilla JS, no deps, offline), tema Navasena GELAP (match deck). 12 soal PG gaya sertifikasi/modul. Commit `2524585`.
+- File: `<module>/<topic>-quiz.html` x6 (01-06). Klik jawaban → instant grading (hijau/merah) + penjelasan + skor live + summary + tombol Ulangi.
+- Konten via workflow (6 agent draft + accuracy reviewer ketat verifikasi answer key & distractor & ambiguitas); M04 ada 3 issue diperbaiki. Sumber = deck .tex yg sudah di-QC. 72 soal total.
+- Assembler: `/tmp/quiz_assemble.py` (template + /tmp/quiz_content.json → HTML). DOM dibangun via textContent (aman).
+- Logika grading DIUJI FUNGSIONAL via puppeteer (node, chromium dari mermaid-cli; file:// OK). Skenario 11/12 PASS: correct→hijau+skor, re-click→locked, wrong→merah+correct di-highlight, summary muncul.
+- CATATAN env: Playwright MCP block file:// & tak bisa reach localhost server dari Bash (network sandbox terpisah). Untuk uji browser HTML lokal, pakai puppeteer node + Chrome executablePath + file:// (BUKAN Playwright MCP / http.server).
+
+## STATUS AKHIR sesi (Jun 2): Materi lengkap untuk 6 modul
+- Per modul: notebook (+ theory cells), slide deck, cheat sheet, quiz interaktif. Semua di origin kecuali commit quiz terakhir (cek push).
+
 ### Update Jun 2 — QC menyeluruh 6 deck selesai
 - QC mechanical (semua deck): compile bersih, 0 overfull, theme/footer konsisten, 0 NCA-GENL, 0 placeholder.
 - QC content via workflow (6 reviewer paralel) → 23 temuan; diperbaiki yang nyata (commit `09a85bf`):
