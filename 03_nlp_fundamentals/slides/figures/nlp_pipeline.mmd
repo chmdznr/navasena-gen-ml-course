@@ -1,0 +1,15 @@
+flowchart LR
+    A["📄<br/>Raw Text"] --> B["🔤<br/>Tokenization"]
+    B --> C["🏷️<br/>POS Tagging"]
+    C --> D["📚<br/>Lemmatization"]
+    D --> E["🗑️<br/>Stopword<br/>Removal"]
+    E --> F["🔢<br/>Vectorization"]
+    F --> G["🤖<br/>ML Model"]
+
+    classDef input fill:#2D2D44,stroke:#76B900,color:#FFFFFF
+    classDef process fill:#2D2D44,stroke:#42A5F5,color:#FFFFFF
+    classDef output fill:#2D2D44,stroke:#FF6F00,color:#FFFFFF
+
+    class A input
+    class B,C,D,E process
+    class F,G output

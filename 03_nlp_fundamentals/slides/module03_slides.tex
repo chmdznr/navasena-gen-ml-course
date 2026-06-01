@@ -1,0 +1,680 @@
+% ============================================================
+% Module 03: NLP Fundamentals
+% Custom Navasena Dark Beamer Theme
+% Compiler: xelatex
+% ============================================================
+\documentclass[aspectratio=169,t]{beamer}
+
+% ---- Fonts (xelatex) ----------------------------------------
+\usepackage{fontspec}
+\usepackage[sfdefault]{FiraSans}
+
+% ---- Core packages ------------------------------------------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% ============================================================
+% COLOR PALETTE (Navasena dark theme)
+% ============================================================
+\definecolor{nvbg}{HTML}{1A1A2E}        % dark navy background
+\definecolor{nvdark}{HTML}{1A1A2E}     % alias for nvbg
+\definecolor{nvcard}{HTML}{2D2D44}      % card / box background
+\definecolor{nvgreen}{HTML}{76B900}     % primary accent
+\definecolor{nvlightgreen}{HTML}{A3D944}% secondary accent
+\definecolor{nvwhite}{HTML}{FFFFFF}
+\definecolor{nvgray}{HTML}{AAAACC}      % muted text
+\definecolor{nvdarkcard}{HTML}{23233A}  % slightly darker card
+\definecolor{nvred}{HTML}{EF5350}       % accent red
+\definecolor{nvorange}{HTML}{FF6F00}    % accent orange
+\definecolor{nvblue}{HTML}{42A5F5}      % accent blue (for ID/EN distinction)
+
+% ============================================================
+% LISTINGS STYLE
+% ============================================================
+\lstset{
+  backgroundcolor=\color{nvcard},
+  basicstyle=\ttfamily\small\color{nvwhite},
+  keywordstyle=\color{nvgreen}\bfseries,
+  stringstyle=\color{nvlightgreen},
+  commentstyle=\color{nvgray}\itshape,
+  numberstyle=\tiny\color{nvgray},
+  numbers=left,
+  numbersep=6pt,
+  frame=none,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2,
+  xleftmargin=8pt,
+  xrightmargin=4pt,
+}
+
+% ============================================================
+% BEAMER THEME — NAVASENA DARK
+% ============================================================
+\usetheme{default}
+\usecolortheme{default}
+
+% Background
+\setbeamercolor{background canvas}{bg=nvbg}
+\setbeamercolor{normal text}{fg=nvwhite}
+
+% Frames
+\setbeamercolor{frametitle}{fg=nvwhite, bg=nvbg}
+\setbeamercolor{framesubtitle}{fg=nvgray, bg=nvbg}
+\setbeamercolor{title}{fg=nvgreen}
+\setbeamercolor{author}{fg=nvgray}
+\setbeamercolor{date}{fg=nvgray}
+\setbeamercolor{item}{fg=nvgreen}
+\setbeamercolor{subitem}{fg=nvlightgreen}
+\setbeamercolor{subsubitem}{fg=nvgray}
+\setbeamercolor{block title}{fg=nvwhite, bg=nvcard}
+\setbeamercolor{block body}{fg=nvwhite, bg=nvcard}
+
+% Footline
+\setbeamertemplate{footline}{%
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1ex,leftskip=2em]{author in head/foot}%
+      \color{nvgray}\small\textbf{NLP Fundamentals} \hfill \insertframenumber\,/\,\inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+}
+
+% Remove nav symbols
+\setbeamertemplate{navigation symbols}{}
+
+% ============================================================
+% CUSTOM COMMANDS
+% ============================================================
+% \acttitle{Act N}{Title}{Subtitle/question}
+\newcommand{\acttitle}[3]{%
+  \begin{frame}[plain]
+    \vspace{1.5cm}
+    \begin{center}
+      {\color{nvgreen}\Huge\bfseries Act #1}\\[1.2em]
+      {\color{nvwhite}\Huge #2}\\[0.8em]
+      {\color{nvgray}\Large #3}
+    \end{center}
+  \end{frame}%
+}
+
+% Section divider
+\newcommand{\sectiontitle}[2]{%
+  \begin{frame}[plain]
+    \vspace{2cm}
+    \begin{center}
+      {\color{nvgreen}\Huge\bfseries #1}\\[1em]
+      {\color{nvgray}\Large #2}
+    \end{center}
+  \end{frame}%
+}
+
+% Title page
+\title{NLP Fundamentals}
+\subtitle{Navasena Gen-ML Course}
+\author{Navasena}
+\date{}
+
+% ============================================================
+% DOCUMENT START
+% ============================================================
+\begin{document}
+
+% ── Title slide ────────────────────────────────────────────
+\begin{frame}[plain]
+  \vspace{1.2cm}
+  \begin{center}
+    {\color{nvgreen}\Huge\bfseries Module 03}\\[1.2em]
+    {\color{nvwhite}\Huge\bfseries NLP Fundamentals}\\[0.6em]
+    {\color{nvgray}\Large Natural Language Processing dengan Python}\\[2.5em]
+
+    \begin{tikzpicture}[scale=0.85]
+      % Central brain icon
+      \node[circle, fill=nvcard, draw=nvgreen, line width=2pt,
+            minimum size=1.8cm, align=center] (brain) at (0,0)
+            {\color{nvwhite}\Large\bfseries NLP};
+      % Surrounding language labels
+      \node[color=nvgray, font=\small] at (-2.5,1.0) {EN};
+      \node[color=nvgray, font=\small] at (2.5,1.0) {中文};
+      \node[color=nvgray, font=\small] at (-2.5,-1.0) {ID};
+      \node[color=nvgray, font=\small] at (2.5,-1.0) {ES};
+      \draw[->,color=nvgreen,thin] (-2.2,0.85) to[bend left=15] (-0.9,0.25);
+      \draw[->,color=nvgreen,thin] (2.2,0.85) to[bend right=15] (0.9,0.25);
+      \draw[->,color=nvgreen,thin] (-2.2,-0.85) to[bend right=15] (-0.9,-0.25);
+      \draw[->,color=nvgreen,thin] (2.2,-0.85) to[bend left=15] (0.9,-0.25);
+    \end{tikzpicture}
+
+    \vspace{0.8em}
+    {\color{nvgray}\small Achmad Zaenuri \quad $\cdot$ \quad \today}
+  \end{center}
+\end{frame}
+
+% ── Act 1: Intro to NLP ───────────────────────────────────
+\acttitle{1}{Apa itu NLP?}{Bagaimana komputer memahami bahasa manusia?}
+
+% Slide 2 — Definisi NLP
+\begin{frame}{Definisi NLP}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item \textbf{Natural Language Processing}
+        \item Cabang AI yang membuat komputer \textbf{memahami} \& \textbf{memproses} bahasa manusia
+        \item Bukan sekadar string manipulation
+        \item[\textcolor{nvgreen}{\checkmark}] Bahasa: Inggris, Indonesia, Mandarin, dll
+        \item[\textcolor{nvgreen}{\checkmark}] Bentuk: teks, suara (speech)
+      \end{itemize}
+      \vspace{0.5em}
+      \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+        \small\color{white}
+        Contoh: Google Translate, Siri, ChatGPT, search engine
+      \end{beamercolorbox}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{center}
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        \node[draw=nvgreen, fill=nvcard, rounded corners=8pt,
+              minimum width=4cm, minimum height=1cm, align=center,
+              text=white] (hum) at (0,3) {Manusia};
+        \node[draw=nvorange, fill=nvcard, rounded corners=8pt,
+              minimum width=4cm, minimum height=1cm, align=center,
+              text=white] (com) at (0,0) {Komputer};
+        \draw[->,thick,color=nvgreen] (hum) -- (com)
+          node[midway, right, color=nvgray, font=\small] {NLP};
+      \end{tikzpicture}%
+      }
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 3 — Aplikasi NLP
+\begin{frame}{Aplikasi NLP di Dunia Nyata}
+  \begin{itemize}
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Search engines} (Google, Bing) $\to$ memahami query
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Machine translation} (Google Translate) $\to$ lintas bahasa
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Sentiment analysis} $\to$ review produk, monitoring brand
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Chatbots \& assistants} (Siri, Alexa) $\to$ percakapan
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Text classification} $\to$ spam filter, kategorisasi berita
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Summarization} $\to$ ringkasan otomatis dokumen
+  \end{itemize}
+  \vspace{0.5em}
+  \begin{center}
+    \begin{tikzpicture}
+      \node[draw=nvgreen, fill=nvcard, rounded corners=4pt,
+            text=white, font=\small\bfseries, minimum width=2cm, minimum height=0.6cm] (a) at (0,0) {Text};
+      \node[draw=nvorange, fill=nvcard, rounded corners=4pt,
+            text=white, font=\small\bfseries, minimum width=2cm, minimum height=0.6cm] (b) at (3.2,0) {Insight};
+      \draw[->,thick,color=nvgreen] (a) -- (b);
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% Slide 4 — Tantangan Bahasa
+\begin{frame}{Tantangan Bahasa Manusia}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textcolor{nvblue}{\textbf{Bahasa Inggris:}}\\
+      \begin{itemize}
+        \footnotesize
+        \item Morphology sederhana\\
+              \texttt{run $\to$ runs $\to$ running}
+        \item Word order tetap (SVO)
+        \item Stem-based
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textcolor{nvorange}{\textbf{Bahasa Indonesia:}}\\
+      \begin{itemize}
+        \footnotesize
+        \item Imbuhan kaya\\
+              \texttt{jalan $\to$ menjalani $\to$ menjalankan $\to$ dijalankan}
+        \item Affixes: \texttt{me-, -kan, -i, pe-, -an, ber-}
+        \item Loanwords (serapan)
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{1em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
+    \centering
+    \small\color{nvlightgreen}
+    Library berbeda dibutuhkan untuk bahasa berbeda: \texttt{nltk + spacy} untuk Inggris,
+    \texttt{nlp-id + Sastrawi} untuk Indonesia
+  \end{beamercolorbox}
+\end{frame}
+
+% ── Act 2: Text Preprocessing ─────────────────────────────
+\acttitle{2}{Text Preprocessing}{Membersihkan teks sebelum diproses ML}
+
+% Slide 5 — Pipeline NLP
+\begin{frame}{Pipeline NLP: Dari Teks ke Model}
+  \begin{center}
+    \includegraphics[width=0.85\textwidth]{figures/nlp_pipeline.png}
+  \end{center}
+  \vspace{0.3em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Tahapan utama: dari teks mentah sampai siap masuk model ML}
+  \end{center}
+\end{frame}
+
+% Slide 6 — Tokenisasi
+\begin{frame}{Tokenization: Memecah Teks}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        \node[draw=nvcard, fill=nvcard, rounded corners=4pt,
+              text=white, font=\small, align=center,
+              minimum width=5cm, minimum height=0.8cm] (raw) at (0,0)
+              {"Saya belajar NLP di Navasena."};
+        \draw[->,thick,color=nvgreen] (raw) -- (0,-1.2);
+        \node[draw=nvcard, fill=nvdarkcard, text=nvwhite, font=\tiny,
+              minimum width=0.6cm, minimum height=0.5cm] (t1) at (-2.5,-2.0) {Saya};
+        \node[draw=nvcard, fill=nvdarkcard, text=nvwhite, font=\tiny,
+              minimum width=0.8cm, minimum height=0.5cm] (t2) at (-1.4,-2.0) {belajar};
+        \node[draw=nvcard, fill=nvdarkcard, text=nvwhite, font=\tiny,
+              minimum width=0.6cm, minimum height=0.5cm] (t3) at (-0.2,-2.0) {NLP};
+        \node[draw=nvcard, fill=nvdarkcard, text=nvwhite, font=\tiny,
+              minimum width=0.5cm, minimum height=0.5cm] (t4) at (0.8,-2.0) {di};
+        \node[draw=nvcard, fill=nvdarkcard, text=nvwhite, font=\tiny,
+              minimum width=1.4cm, minimum height=0.5cm] (t5) at (2.3,-2.0) {Navasena};
+        \node[draw=nvcard, fill=nvdarkcard, text=nvwhite, font=\tiny,
+              minimum width=0.3cm, minimum height=0.5cm] (t6) at (3.4,-2.0) {.};
+      \end{tikzpicture}%
+      }
+      \end{center}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{Token} = unit terkecil (kata, sub-kata, atau karakter)
+        \item Contoh: \texttt{"Saya belajar NLP"} $\to$ 3 token
+        \item Bahasa Indonesia: lebih challenging karena imbuhan
+        \item[\textcolor{nvgreen}{\checkmark}] NLTK: \texttt{word\_tokenize()}
+        \item[\textcolor{nvgreen}{\checkmark}] spaCy: \texttt{nlp(text)}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 7 — Stopword & Lemmatization
+\begin{frame}{Stopword \& Lemmatization}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textcolor{nvblue}{\textbf{Stopword Removal}}\\
+      \begin{itemize}
+        \footnotesize
+        \item Hapus kata-kata umum (yang, di, dari, dan)
+        \item Fokus pada kata \textbf{bermakna}
+        \item[\textcolor{nvgreen}{\checkmark}] NLTK: \texttt{stopwords.words('indonesian')}
+        \item[\textcolor{nvgreen}{\checkmark}] nlp-id: punya list bawaan
+      \end{itemize}
+      \vspace{0.3em}
+      \texttt{\footnotesize["saya", "belajar", "NLP", \\
+      "di", "Navasena"]}\\
+      \texttt{\footnotesize $\downarrow$}\\
+      \texttt{\footnotesize["belajar", "NLP", "Navasena"]}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textcolor{nvorange}{\textbf{Lemmatization}}\\
+      \begin{itemize}
+        \footnotesize
+        \item Kata $\to$ bentuk dasar
+        \item \texttt{menjalankan} $\to$ \texttt{jalan}
+        \item \texttt{kebersihan} $\to$ \texttt{bersih}
+        \item[\textcolor{nvgreen}{\checkmark}] Lebih akurat dari \emph{stemming}
+        \item[\textcolor{nvgreen}{\checkmark}] Sastrawi: \texttt{Stemmer.stem()}
+      \end{itemize}
+      \vspace{0.3em}
+      \texttt{\footnotesize["menjalankan", "membaca", "kebersihan"]}\\
+      \texttt{\footnotesize $\downarrow$}\\
+      \texttt{\footnotesize["jalan", "baca", "bersih"]}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ── Act 3: Analisis & Visualisasi ────────────────────────
+\acttitle{3}{Analisis \& Visualisasi}{Melihat pola dalam teks}
+
+% Slide 8 — POS Tagging
+\begin{frame}{POS Tagging: Menandai Kelas Kata}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[scale=0.7]
+        \node[text=nvwhite, font=\small\bfseries] at (0,3) {"Saya membaca buku di perpustakaan."};
+        \node[draw=nvgreen, fill=nvcard, rounded corners=3pt,
+              text=nvgreen, font=\small, minimum width=1.2cm] (w1) at (-3,1.5) {Saya};
+        \node[draw=nvblue, fill=nvcard, rounded corners=3pt,
+              text=nvblue, font=\small, minimum width=1.5cm] (w2) at (-1.2,1.5) {membaca};
+        \node[draw=nvorange, fill=nvcard, rounded corners=3pt,
+              text=nvorange, font=\small, minimum width=1.2cm] (w3) at (0.7,1.5) {buku};
+        \node[draw=nvred, fill=nvcard, rounded corners=3pt,
+              text=nvred, font=\small, minimum width=0.6cm] (w4) at (2.4,1.5) {di};
+        \node[draw=nvorange, fill=nvcard, rounded corners=3pt,
+              text=nvorange, font=\small, minimum width=2cm] (w5) at (4,1.5) {perpustakaan};
+        \node[text=nvgray, font=\tiny, below=0.2cm of w1] {PRON};
+        \node[text=nvgray, font=\tiny, below=0.2cm of w2] {VERB};
+        \node[text=nvgray, font=\tiny, below=0.2cm of w3] {NOUN};
+        \node[text=nvgray, font=\tiny, below=0.2cm of w4] {ADP};
+        \node[text=nvgray, font=\tiny, below=0.2cm of w5] {NOUN};
+      \end{tikzpicture}%
+      }
+      \end{center}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{POS} = Part of Speech
+        \item Kelas kata: \textbf{PRON} (ganti), \textbf{VERB} (kerja), \textbf{NOUN} (benda), \textbf{ADP} (preposisi)
+        \item Penting untuk:
+        \begin{itemize}
+          \footnotesize
+          \item Machine translation
+          \item Question answering
+          \item Information extraction
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 9 — Word Frequency (Figure)
+\begin{frame}{Word Frequency: EN vs ID}
+  \begin{center}
+    \includegraphics[width=0.95\textwidth]{figures/word_frequency.pdf}
+  \end{center}
+  \vspace{0.3em}
+  {\small\centering\textcolor{nvlightgreen}{Stopword bahasa Inggris: \texttt{the, is, are} \quad$\cdot$\quad Stopword Indonesia: \texttt{yang, ini, untuk}}}
+\end{frame}
+
+% Slide 10 — NER
+\begin{frame}{Named Entity Recognition (NER)}
+  \begin{center}
+  \resizebox{\linewidth}{!}{%
+  \begin{tikzpicture}
+    \node[text=nvwhite, font=\small] at (0,2.5) {"Achmad Zaenuri bekerja di Navasena di Jakarta sejak 2024."};
+    \node[draw=nvgreen, fill=nvcard, rounded corners=3pt,
+          text=nvwhite, font=\small, minimum width=2.5cm] (p) at (-3,0.5) {Achmad Zaenuri};
+    \node[draw=nvblue, fill=nvcard, rounded corners=3pt,
+          text=nvwhite, font=\small, minimum width=1.4cm] (v) at (-0.2,0.5) {bekerja};
+    \node[draw=nvblue, fill=nvcard, rounded corners=3pt,
+          text=nvwhite, font=\small, minimum width=0.6cm] (v2) at (1.2,0.5) {di};
+    \node[draw=nvorange, fill=nvcard, rounded corners=3pt,
+          text=nvwhite, font=\small, minimum width=1.4cm] (o) at (2.5,0.5) {Navasena};
+    \node[draw=nvblue, fill=nvcard, rounded corners=3pt,
+          text=nvwhite, font=\small, minimum width=0.6cm] (v3) at (4.1,0.5) {di};
+    \node[draw=nvred, fill=nvcard, rounded corners=3pt,
+          text=nvwhite, font=\small, minimum width=1.2cm] (l) at (5.3,0.5) {Jakarta};
+    \node[text=nvgray, font=\tiny, below=0.2cm of p] {PERSON};
+    \node[text=nvgray, font=\tiny, below=0.2cm of v] {VERB};
+    \node[text=nvgray, font=\tiny, below=0.2cm of o] {ORG};
+    \node[text=nvgray, font=\tiny, below=0.2cm of l] {LOC};
+  \end{tikzpicture}%
+  }
+  \end{center}
+  \vspace{0.3em}
+  \begin{itemize}
+    \footnotesize
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{PERSON} (nama orang) \quad $\cdot$ \quad
+          \textbf{ORG} (organisasi) \quad $\cdot$ \quad
+          \textbf{LOC} (lokasi)
+  \end{itemize}
+\end{frame}
+
+% ── Act 4: Sentiment & Classification ───────────────────
+\acttitle{4}{Sentiment \& Classification}{Mengenali opini dalam teks}
+
+% Slide 11 — Sentiment Analysis
+\begin{frame}{Sentiment Analysis}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Mendeteksi \textbf{emosi} / \textbf{opini} dalam teks
+        \item Skala: \textbf{negatif} $\leftrightarrow$ \textbf{positif}
+        \item Library Python:
+        \begin{itemize}
+          \footnotesize
+          \item \texttt{TextBlob} (Inggris)
+          \item \texttt{nlp-id} (Indonesia)
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        \draw[->,thick,color=nvwhite] (-3,0) -- (3,0);
+        \node[color=nvred, font=\small\bfseries, above] at (-2.7,0.1) {Negatif};
+        \node[color=nvwhite, font=\small] at (-1.8,0.4) {-1.0};
+        \node[color=nvgray, font=\small] at (0,0.4) {0.0};
+        \node[color=nvwhite, font=\small] at (1.8,0.4) {+1.0};
+        \node[color=nvgreen, font=\small\bfseries, above] at (2.7,0.1) {Positif};
+        \fill[color=nvred, opacity=0.6] (-2.5,-0.1) circle (0.18);
+        \fill[color=nvorange, opacity=0.6] (-0.5,-0.1) circle (0.18);
+        \fill[color=nvgreen, opacity=0.6] (2.0,-0.1) circle (0.18);
+        \node[color=nvred, font=\tiny, below=0.1cm] at (-2.5,-0.3) {"jelek"};
+        \node[color=nvorange, font=\tiny, below=0.1cm] at (-0.5,-0.3) {"biasa"};
+        \node[color=nvgreen, font=\tiny, below=0.1cm] at (2.0,-0.3) {"hebat"};
+      \end{tikzpicture}%
+      }
+      \end{center}
+    \end{column}
+  \end{columns}
+  \vspace{0.5em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \small\color{white}
+    \textbf{TextBlob}: \texttt{polarity} $\in [-1.0, 1.0]$ \quad $\cdot$ \quad \texttt{subjectivity} $\in [0.0, 1.0]$
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide 12 — Text Classification
+\begin{frame}{Text Classification: Spam vs Ham}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Contoh: email spam filter}
+      \vspace{0.3em}
+      \begin{itemize}
+        \footnotesize
+        \item Input: email baru
+        \item Output: \textbf{spam} atau \textbf{ham (bukan spam)}
+        \item Algoritma umum: \textbf{Naive Bayes}
+        \item Butuh: data training (email yang sudah dilabeli)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[scale=0.85]
+        \node[draw=nvcard, fill=nvcard, rounded corners=4pt,
+              text=white, font=\footnotesize, minimum width=4cm, align=center] (in) at (0,3)
+              {Email baru: "GRATIS!! Klik sekarang!"};
+        \draw[->,thick,color=nvgreen] (in) -- (0,1.5);
+        \node[draw=nvcard, fill=nvdarkcard, rounded corners=4pt,
+              text=white, font=\small, minimum width=3cm, align=center] (nb) at (0,0.8)
+              {Naive\\Bayes};
+        \draw[->,thick,color=nvred] (-1.5,0.8) -- (-2.2,-0.3);
+        \draw[->,thick,color=nvgreen] (1.5,0.8) -- (2.2,-0.3);
+        \node[draw=nvred, fill=nvcard, rounded corners=4pt,
+              text=nvred, font=\small\bfseries, minimum width=2cm] (spam) at (-2.2,-1.2) {SPAM};
+        \node[draw=nvgreen, fill=nvcard, rounded corners=4pt,
+              text=nvgreen, font=\small\bfseries, minimum width=2cm] (ham) at (2.2,-1.2) {HAM};
+      \end{tikzpicture}%
+      }
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 13 — Notebook Overview (English)
+\begin{frame}{Notebook 01: NLP Fundamentals (EN)}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textcolor{nvgreen}{\textbf{Topik:}}
+      \begin{itemize}
+        \footnotesize
+        \item Basic text processing
+        \item Named Entity Recognition
+        \item Sentiment analysis
+        \item Word frequency
+        \item Text classification (Naive Bayes)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textcolor{nvlightgreen}{\textbf{Library:}}
+      \begin{itemize}
+        \footnotesize
+        \item \texttt{nltk} — text processing dasar
+        \item \texttt{spacy} — NER, POS, dependency
+        \item \texttt{textblob} — sentiment
+        \item \texttt{wordcloud} — visualisasi
+        \item \texttt{nltk.NaiveBayesClassifier} — klasifikasi
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.5em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \small\color{white}
+    \textbf{Dataset}: \texttt{movie\_reviews} (NLTK corpus) — review film positif/negatif
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide 14 — Notebook Overview (Indonesia)
+\begin{frame}{Notebook 01: NLP Fundamentals (ID)}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textcolor{nvorange}{\textbf{Topik:}}
+      \begin{itemize}
+        \footnotesize
+        \item Text preprocessing pipeline
+        \item POS Tagging Indonesia
+        \item Phrase tokenization
+        \item Word frequency
+        \item Stopword analysis
+        \item Lemmatization
+        \item Complete text analysis
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textcolor{nvlightgreen}{\textbf{Library:}}
+      \begin{itemize}
+        \footnotesize
+        \item \texttt{nltk} — text processing dasar
+        \item \texttt{Sastrawi} — stemming Indonesia
+        \item \texttt{nlp-id} — tokenizer \& POS
+        \item \texttt{pandas} — tabular data
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.5em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \small\color{white}
+    \textbf{Fokus}: tantangan morfologi Indonesia (imbuhan \texttt{me-, -kan, -i, pe-, -an})
+  \end{beamercolorbox}
+\end{frame}
+
+% ── Act 5: Summary & Next ────────────────────────────────
+\acttitle{5}{Ringkasan \& Lanjutan}{Apa selanjutnya?}
+
+% Slide 15 — Ringkasan
+\begin{frame}{Ringkasan Modul 03}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.05}
+  {\tiny
+  \begin{tabular}{@{}p{0.05\linewidth}p{0.30\linewidth}p{0.55\linewidth}@{}}
+    \toprule
+    \rowcolor{nvcard!50}
+    \textbf{\#} & \textbf{Topik} & \textbf{Tujuan} \\
+    \midrule
+    1 & Definisi NLP & Memahami ruang lingkup \\
+    2 & Aplikasi & Melihat penggunaan nyata \\
+    3 & Tantangan bahasa & ID vs EN comparison \\
+    4 & Pipeline & Tokenize $\to$ clean $\to$ vectorize \\
+    5 & Tokenization & Memecah teks \\
+    6 & Stopword \& Lemma & Normalisasi kata \\
+    7 & POS Tagging & Menandai kelas kata \\
+    8 & Word frequency & Analisis kata populer \\
+    9 & NER & Ekstrak entitas \\
+   10 & Sentiment & Deteksi opini \\
+   11 & Classification & Spam vs ham \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \end{center}
+\end{frame}
+
+% Slide 16 — Tools & Setup
+\begin{frame}{Setup \& Tools}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textcolor{nvgreen}{\textbf{Install library:}}
+      \begin{lstlisting}[language=bash, basicstyle=\ttfamily\footnotesize\color{nvwhite}]
+!pip install nltk spacy textblob
+!pip install Sastrawi nlp-id
+!python -m spacy download en_core_web_sm
+      \end{lstlisting}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textcolor{nvorange}{\textbf{Untuk Colab:}}
+      \begin{itemize}
+        \footnotesize
+        \item Runtime $\to$ Change runtime type $\to$ CPU cukup
+        \item Tidak perlu GPU untuk NLP dasar
+        \item Library di-install per-notebook
+        \item Data dari \texttt{nltk.download()} atau upload sendiri
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 17 — Next Steps
+\begin{frame}{Lanjutan: Modul 04 -- LLM}
+  \begin{itemize}
+    \item[\textcolor{nvgreen}{\checkmark}] Module 04: \textbf{Large Language Models} dengan Transformers
+    \item[\textcolor{nvgreen}{\checkmark}] Module 05: \textbf{RAG} (Retrieval-Augmented Generation)
+    \item[\textcolor{nvgreen}{\checkmark}] Module 06: NVIDIA ecosystem (TensorRT, NeMo, RAG)
+  \end{itemize}
+  \vspace{0.8em}
+  \begin{center}
+  \resizebox{0.7\linewidth}{!}{%
+  \begin{tikzpicture}
+    \node[draw=nvcard, fill=nvcard, rounded corners=6pt,
+          text=white, font=\small, minimum width=2.2cm, minimum height=0.8cm,
+          align=center] (nlp) at (0,0) {NLP\\(kita di sini)};
+    \node[draw=nvcard, fill=nvcard, rounded corners=6pt,
+          text=white, font=\small, minimum width=2.2cm, minimum height=0.8cm,
+          align=center] (llm) at (3,0) {LLM\\(selanjutnya)};
+    \node[draw=nvcard, fill=nvcard, rounded corners=6pt,
+          text=white, font=\small, minimum width=2.2cm, minimum height=0.8cm,
+          align=center] (rag) at (6,0) {RAG};
+    \draw[->,thick,color=nvgreen] (nlp) -- (llm);
+    \draw[->,thick,color=nvgreen] (llm) -- (rag);
+  \end{tikzpicture}%
+  }
+  \end{center}
+\end{frame}
+
+% Slide 18 — Thank You
+\begin{frame}[plain]
+  \vspace{2cm}
+  \begin{center}
+    {\color{nvgreen}\Huge\bfseries Terima Kasih!}\\[1.5em]
+    {\color{nvgray}\Large Pertanyaan? Diskusi?}\\[2em]
+    \begin{beamercolorbox}[rounded=true,shadow=false,sep=8pt,wd=10cm]{block body}
+      \centering\color{white}
+      \textbf{NLP Fundamentals} \quad $\cdot$ \quad Modul 03 \\
+      Navasena Gen-ML Course
+    \end{beamercolorbox}
+  \end{center}
+\end{frame}
+
+\end{document}
