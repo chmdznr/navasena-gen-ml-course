@@ -3,7 +3,7 @@
 @page { size: A4; margin: 7mm; }
 * { box-sizing: border-box; }
 body { font-family: -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  margin:0; color:#1a1a2e; font-size:8.4px; line-height:1.32; background:#fff; }
+  margin:0; color:#1a1a2e; font-size:7.9px; line-height:1.26; background:#fff; }
 .header { background: linear-gradient(135deg,#76B900,#5a8c00); color:#fff;
   padding:7px 12px; border-radius:8px; display:flex; justify-content:space-between;
   align-items:center; margin-bottom:6px; }
@@ -44,6 +44,7 @@ tr:nth-child(even) td { background:#f6f8ef; }
 <div class="grid"><div class="card"><h3>Neural Network: blok dasar</h3><ul><li>Neuron = unit pemrosesan terkecil; Layer = kumpulan neuron</li><li>Weights (bobot) = kekuatan koneksi yang DIPELAJARI saat training</li><li>Alur: input -&gt; hidden layers -&gt; output (prediksi)</li><li>NN belajar pola dengan menyetel ribuan weights, bukan aturan manual</li></ul><div class="when">▸ Fondasi semua arsitektur deep learning</div></div><div class="card"><h3>Model Sequential (Dense)</h3><ul><li>Sequential = tumpukan layer berurutan input -&gt; output</li><li>Flatten ratakan 28x28 jadi 784 angka</li><li>Dense = fully-connected; hidden pakai activation=&#x27;relu&#x27;</li><li>Output Dense(10, softmax) -&gt; probabilitas 10 kelas (Fashion MNIST)</li></ul><div class="codeblock">model = tf.keras.Sequential([
   layers.Flatten(input_shape=(28,28)),
   layers.Dense(128, activation=&#x27;relu&#x27;),
+  layers.Dense(64, activation=&#x27;relu&#x27;),
   layers.Dense(10, activation=&#x27;softmax&#x27;)])</div><div class="when">▸ Klasifikasi/regresi data tabular atau gambar yang sudah diratakan</div></div><div class="card"><h3>Training: compile + fit</h3><ul><li>compile butuh: loss, optimizer, metrics</li><li>Loss (crossentropy) = ukur seberapa salah; optimizer perbaiki weights</li><li>Epoch = 1 putaran lihat SEMUA data, diproses per batch</li><li>Target: loss turun, kurva train &amp; val rapat (hindari overfitting)</li></ul><div class="codeblock">model.compile(loss=&#x27;sparse_categorical_crossentropy&#x27;,
   optimizer=&#x27;adam&#x27;, metrics=[&#x27;accuracy&#x27;])
 model.fit(X_train, y_train, epochs=20,
@@ -51,7 +52,7 @@ model.fit(X_train, y_train, epochs=20,
   padding=&#x27;same&#x27;, input_shape=(32,32,3))
 MaxPooling2D()   # 32-&gt;16</div><div class="when">▸ Klasifikasi/deteksi citra</div></div><div class="card"><h3>Transfer Learning (ResNet50)</h3><ul><li>Pakai model pretrained ImageNet (14 juta gambar) yang sudah pintar</li><li>Freeze layer bawah: base.trainable = False</li><li>Ganti head: pooling -&gt; Dense -&gt; Dense(10)</li><li>Unggul saat data berlabel terbatas; latih cepat (layer di-freeze)</li></ul><div class="codeblock">base = ResNet50(weights=&#x27;imagenet&#x27;,
   include_top=False, input_shape=(32,32,3))
-base.trainable = False   # freeze</div><div class="when">▸ Data terbatas / gambar resolusi tinggi -&gt; jalan pintas standar industri</div></div><div class="card"><h3>RNN / LSTM / GRU (data berurutan)</h3><ul><li>Sequential data: urutan PENTING (teks, saham, cuaca)</li><li>RNN ingat langkah sebelumnya via hidden state (h)</li><li>Masalah RNN: vanishing gradient -&gt; lupa konteks panjang</li><li>LSTM punya cell state + 3 gates (forget/input/output) = memori panjang</li><li>GRU: 2 gates (update/reset), seimbang cepat &amp; akurat</li></ul><div class="codeblock">Embedding(vocab_size, 64)  # panjang dari input (batch,200)
+base.trainable = False   # freeze</div><div class="when">▸ Data terbatas / gambar resolusi tinggi -&gt; jalan pintas standar industri</div></div><div class="card"><h3>RNN / LSTM / GRU (data berurutan)</h3><ul><li>Sequential data: urutan PENTING (teks, saham, cuaca)</li><li>RNN ingat langkah sebelumnya via hidden state (h)</li><li>Masalah RNN: vanishing gradient -&gt; lupa konteks panjang</li><li>LSTM punya cell state + 3 gates (forget/input/output) = memori panjang</li><li>GRU: 2 gates (update/reset), seimbang cepat &amp; akurat</li></ul><div class="codeblock">Embedding(vocab_size, 64, input_length=200)  # kata-&gt;vektor 64-dim; panjang sequence 200 (padding)
 LSTM(64)
 Dense(1, activation=&#x27;sigmoid&#x27;)  # sentimen IMDB</div><div class="when">▸ Teks, deret waktu, sinyal; urutan punya makna</div></div><div class="card"><h3>Akselerasi GPU NVIDIA</h3><ul><li>CPU serial (sedikit core kuat) vs GPU paralel (ribuan core)</li><li>Inti NN = matrix multiplication -&gt; sangat paralel, GPU ~10--100x lebih cepat (ilustratif, tergantung ukuran/operasi)</li><li>Mixed precision: float16 untuk forward/backward (Tensor Cores), float32 untuk master weights -&gt; hemat memori ~50%</li><li>TensorRT optimasi model terlatih: layer fusion + precision calibration -&gt; inference 2--5x lebih cepat (TF-TRT, FP16)</li></ul><div class="codeblock">from tensorflow.keras import mixed_precision
 mixed_precision.set_global_policy(&#x27;mixed_float16&#x27;)
