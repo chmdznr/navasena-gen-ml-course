@@ -18,7 +18,7 @@ Recent commits (Jun 1, 2026):
 
 Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat update di bawah. Status modul:
 - Module 01 (ML) — slide deck 48 halaman, notebook OK
-- Module 02 (Deep Learning) — 5 notebook OK, slide deck belum ada
+- Module 02 (Deep Learning) — 5 notebook OK **+ slide deck 33 frame** ✅
 - Module 03 (NLP) — notebook + theory cells + slide deck 20 hal OK
 - Module 04 (LLM) — 1 notebook **+ theory cells (8 md)** ✅ **+ slide deck 23 frame** ✅
 - Module 05 (RAG) — 1 notebook **+ intro & theory cells (8 md)** ✅, slide deck belum ada
@@ -37,7 +37,15 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Figures: `llm_architecture.mmd` (mermaid), `gen_sampling.py` + `gen_model_scale.py` (matplotlib dark). Build via `PYTHON=<docling> bash build.sh`. **0 overfull box**.
 - Konten di-draft + diverifikasi (akurasi ∥ gaya) via workflow; akurasi reviewer menangkap mis. caveat bert-tiny head belum terlatih.
 - **Catatan LaTeX baru**: frame dengan `lstlisting` WAJIB `\begin{frame}[fragile]` (kalau tidak: "Runaway argument / Paragraph ended"). Tabel di kolom sempit: set `\setlength{\tabcolsep}{3pt}` untuk hindari overfull hbox. TikZ vertikal: pakai `scale=` + `every node/.style={transform shape}`, JANGAN `\resizebox{\linewidth}{!}` (height ikut membengkak → overfull vbox).
-- **Belum di-push** — commit slide deck (`b34248d`) masih lokal.
+- Module 04 deck sudah di-push.
+
+### Update Jun 1 (lanjutan) — Module 02 SLIDE DECK selesai
+- Design spec: `docs/superpowers/specs/2026-06-01-module02-deep-learning-slide-deck-design.md`.
+- `02_deep_learning_fundamentals/slides/module02_slides.tex` — 33 frame, 5 act (1 act/notebook), footer "Deep Learning Fundamentals". Commit `c3ed8d1`.
+- Figures: `gen_activations.py`, `gen_gpu_benchmark.py` (dari workflow), `gen_confusion.py`, `gen_rnn_sine.py` (ditulis manual, ilustratif); mermaid `nn_layers.mmd`, `cnn_flow.mmd`; inline TikZ untuk softmax/RNN-unroll/LSTM-gates/IMDB-pipeline.
+- Gotcha LaTeX baru: nama node TikZ TIDAK boleh ada titik desimal (`(h0.5)` → error "No shape named h0"); pakai index integer + posisi `y` terpisah (`\foreach \i/\y in {1/0.5,...} \node (h\i) at (2,\y)`).
+- Status modul slide deck: 01 ✅, 02 ✅, 03 ✅, 04 ✅. Sisa: **05 (RAG)**, **06 (NVIDIA)**.
+- **Belum di-push** — Module 02 deck (`c3ed8d1`) masih lokal.
 
 ## Pola Kerja yang Sudah Terbentuk
 
