@@ -16,12 +16,20 @@ Recent commits (Jun 1, 2026):
 2cf48ca  chore: ignore macOS .DS_Store and ensure LaTeX build artifacts are ignored
 ```
 
-Module terakhir yang disentuh: **Module 03 (NLP)**. Modul lain yang masih original/versi lama:
-- Module 01 (ML) — sudah ada slide deck 48 halaman, revisi terakhir di `64b1026`
-- Module 02 (Deep Learning) — 5 notebook, slide deck belum ada
-- Module 04 (LLM) — 1 notebook, slide deck belum ada
-- Module 05 (RAG) — 1 notebook, slide deck belum ada
-- Module 06 (NVIDIA Ecosystem) — 3 notebook, slide deck belum ada
+Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat update di bawah. Status modul:
+- Module 01 (ML) — slide deck 48 halaman, notebook OK
+- Module 02 (Deep Learning) — 5 notebook OK, slide deck belum ada
+- Module 03 (NLP) — notebook + theory cells + slide deck 20 hal OK
+- Module 04 (LLM) — 1 notebook **+ theory cells (8 md)** ✅, slide deck belum ada
+- Module 05 (RAG) — 1 notebook **+ intro & theory cells (8 md)** ✅, slide deck belum ada
+- Module 06 (NVIDIA Ecosystem) — 3 notebook **+ theory cells (4/14/7 md)** ✅, slide deck belum ada
+
+### Update Jun 1 (sesi lanjutan) — theory cells Module 04/05/06 SELESAI
+- Pushed 5 commit sebelumnya ke origin.
+- Design spec: `docs/superpowers/specs/2026-06-01-module04-05-06-theory-cells-design.md` (commit `4fc502e`).
+- Theory cells dibuat via workflow (draft → review akurasi ∥ gaya → sintesis), lalu di-apply dengan guard hash code-cell (semua code cell BYTE-IDENTICAL, markdown-only). Commit: `9c6a0ab` (m04), `44d0ebe` (m05), `2ae19e2` (m06).
+- Catatan branding: penutup Module 06 RAG di-netralkan dari "course NCA-GENL" → "rangkaian course ini" (selaras de-branding slide). Kalau ternyata NCA-GENL memang dipertahankan di notebook, ini bisa di-revert.
+- **Belum di-push** — commit theory cells masih lokal.
 
 ## Pola Kerja yang Sudah Terbentuk
 
@@ -84,7 +92,7 @@ Module terakhir yang disentuh: **Module 03 (NLP)**. Modul lain yang masih origin
 
 ### Prioritas sedang
 5. **Module 02 (Deep Learning) slide deck** — 5 notebook, sangat besar
-6. **Notebook theory cells untuk Module 04/05/06** — semuanya punya 0-3 markdown cells, perlu theory ditambahkan
+6. ~~**Notebook theory cells untuk Module 04/05/06**~~ ✅ SELESAI (Jun 1, lihat update di atas)
 7. **Rebrand lama**: cek apakah `04_llm/`, `05_rag/`, `06_nvidia_ecosystem/` masih punya NCA-GENL / NVIDIA branding di notebook atau file PDF pendukung
 
 ### Bisa di-defer
