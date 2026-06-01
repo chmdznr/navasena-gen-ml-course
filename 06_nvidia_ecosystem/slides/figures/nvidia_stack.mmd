@@ -1,0 +1,15 @@
+%%{init: {'theme':'dark', 'themeVariables': {'fontSize':'16px'}}}%%
+flowchart BT
+    HW["Hardware<br/>(T4 / A100 / H100)"]
+    CUDA["CUDA<br/>(Runtime)"]
+    LIB["Library<br/>(cuDNN, cuBLAS, TensorRT)"]
+    FW["Framework<br/>(TensorFlow, PyTorch)"]
+    TOOLS["Tools<br/>(NeMo, Triton)"]
+
+    HW --> CUDA
+    CUDA --> LIB
+    LIB --> FW
+    FW --> TOOLS
+
+    classDef hijau fill:#76B900,stroke:#5a8f00,stroke-width:2px,color:#000000;
+    class CUDA,TOOLS hijau;
