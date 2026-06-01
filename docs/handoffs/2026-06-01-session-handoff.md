@@ -83,8 +83,13 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Logika grading DIUJI FUNGSIONAL via puppeteer (node, chromium dari mermaid-cli; file:// OK). Skenario 11/12 PASS: correct→hijau+skor, re-click→locked, wrong→merah+correct di-highlight, summary muncul.
 - CATATAN env: Playwright MCP block file:// & tak bisa reach localhost server dari Bash (network sandbox terpisah). Untuk uji browser HTML lokal, pakai puppeteer node + Chrome executablePath + file:// (BUKAN Playwright MCP / http.server).
 
+### Update Jun 2 — Cheat sheet M01/M02 diseragamkan
+- M01/M02 cheat sheet lama (raster infografik, tanpa source) DIGANTI dgn versi 1-halaman HTML→PDF konsisten dgn M03-06 (tema terang + hijau Navasena, pipeline+cards+tabel+glossary, ada HTML source). Commit `c855e9f`.
+- File baru: `ml-fundamentals-cheatsheet.{html,pdf}`, `dl-fundamentals-cheatsheet.{html,pdf}`. PDF lama (`machine-learning-fundamentals.pdf`, `NVIDIA Certification - DL Fundamentals.pdf`) DIHAPUS (atas konfirmasi user).
+- Sekarang SEMUA 6 modul punya cheat sheet seragam (naming `<topic>-cheatsheet`, gaya identik, source ada).
+
 ## STATUS AKHIR sesi (Jun 2): Materi lengkap untuk 6 modul
-- Per modul: notebook (+ theory cells), slide deck, cheat sheet, quiz interaktif. Semua di origin kecuali commit quiz terakhir (cek push).
+- Per modul: notebook (+ theory cells), slide deck, cheat sheet (seragam), quiz interaktif. Semua di origin kecuali commit terakhir (cek push).
 
 ### Update Jun 2 — QC menyeluruh 6 deck selesai
 - QC mechanical (semua deck): compile bersih, 0 overfull, theme/footer konsisten, 0 NCA-GENL, 0 placeholder.
