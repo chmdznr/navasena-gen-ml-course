@@ -2,6 +2,9 @@
 CLAUDE.md
 .claude/
 
+# macOS Finder artifacts
+.DS_Store
+
 # LaTeX build artifacts
 *.aux
 *.log
