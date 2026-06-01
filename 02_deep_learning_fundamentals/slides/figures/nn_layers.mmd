@@ -1,0 +1,8 @@
+%%{init: {'theme':'dark'}}%%
+flowchart LR
+    I["Input<br/>(gambar)"] --> H1["Hidden<br/>Layer 1"]
+    H1 --> H2["Hidden<br/>Layer 2"]
+    H2 --> O["Output<br/>(10 kelas)"]
+
+    classDef penting fill:#76B900,stroke:#fff,stroke-width:2px,color:#000;
+    class I,O penting;

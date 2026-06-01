@@ -1,0 +1,12 @@
+%%{init: {'theme':'dark'}}%%
+flowchart LR
+    G["Gambar"] --> C1["Conv2D"]
+    C1 --> P1["Pooling"]
+    P1 --> C2["Conv2D"]
+    C2 --> P2["Pooling"]
+    P2 --> F["Flatten"]
+    F --> D["Dense"]
+    D --> K["Kelas"]
+
+    classDef penting fill:#76B900,stroke:#fff,stroke-width:2px,color:#000;
+    class G,K penting;
