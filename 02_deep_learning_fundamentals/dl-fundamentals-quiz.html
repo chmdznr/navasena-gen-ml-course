@@ -1,0 +1,110 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Learning Fundamentals — Quiz</title>
+<style>
+:root{--bg:#1A1A2E;--card:#2D2D44;--green:#76B900;--lgreen:#A3D944;--white:#fff;
+--gray:#AAAACC;--red:#EF5350;--dark:#23233A;}
+*{box-sizing:border-box;}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+margin:0;background:var(--bg);color:var(--white);line-height:1.45;}
+.wrap{max-width:820px;margin:0 auto;padding:18px 16px 60px;}
+header{background:linear-gradient(135deg,var(--green),#5a8c00);border-radius:12px;
+padding:16px 20px;margin-bottom:14px;}
+header .mod{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.9;}
+header h1{margin:2px 0 0;font-size:24px;}
+header p{margin:4px 0 0;font-size:13px;opacity:.95;}
+.scorebar{position:sticky;top:0;z-index:5;background:var(--dark);border:1px solid var(--card);
+border-radius:10px;padding:8px 14px;margin-bottom:14px;display:flex;justify-content:space-between;
+align-items:center;font-size:13px;}
+.scorebar b{color:var(--lgreen);}
+.q{background:var(--card);border-radius:10px;padding:14px 16px;margin-bottom:12px;
+border-left:4px solid var(--green);}
+.q .num{color:var(--green);font-weight:700;font-size:12px;}
+.q .text{font-size:15px;font-weight:600;margin:4px 0 8px;}
+.q pre{background:var(--bg);color:var(--lgreen);font-family:"SF Mono",Menlo,Consolas,monospace;
+font-size:12.5px;padding:9px 11px;border-radius:6px;overflow-x:auto;margin:0 0 9px;}
+.opt{display:block;width:100%;text-align:left;background:var(--dark);color:var(--white);
+border:1.5px solid #3a3a55;border-radius:8px;padding:9px 12px;margin:6px 0;font-size:14px;
+cursor:pointer;transition:.12s;}
+.opt:hover:not(.locked){border-color:var(--green);}
+.opt .lab{display:inline-block;width:20px;font-weight:700;color:var(--gray);}
+.opt.correct{background:rgba(118,185,0,.18);border-color:var(--green);}
+.opt.correct .lab{color:var(--green);}
+.opt.wrong{background:rgba(239,83,80,.16);border-color:var(--red);}
+.opt.wrong .lab{color:var(--red);}
+.opt.locked{cursor:default;}
+.expl{display:none;font-size:13px;color:var(--gray);background:var(--bg);
+border-radius:6px;padding:8px 11px;margin-top:8px;border-left:3px solid var(--lgreen);}
+.expl.show{display:block;}
+.expl b{color:var(--lgreen);}
+.summary{display:none;background:var(--card);border-radius:12px;padding:20px;text-align:center;
+margin-top:8px;border:2px solid var(--green);}
+.summary.show{display:block;}
+.summary .big{font-size:34px;font-weight:800;color:var(--green);}
+.summary .msg{font-size:15px;color:var(--gray);margin:6px 0 14px;}
+.btn{background:var(--green);color:#0d0d0d;border:none;border-radius:8px;padding:10px 22px;
+font-size:14px;font-weight:700;cursor:pointer;}
+.btn:hover{background:var(--lgreen);}
+footer{text-align:center;color:var(--gray);font-size:11px;margin-top:18px;opacity:.7;}
+</style></head>
+<body><div class="wrap">
+<header><div class="mod">Module 02 · Quiz Latihan</div><h1>Deep Learning Fundamentals</h1>
+<p>12 soal pilihan ganda · gaya sertifikasi · pilih satu jawaban</p></header>
+<div class="scorebar"><span>Terjawab: <b id="answered">0</b> / 12</span>
+<span>Benar: <b id="correct">0</b></span></div>
+<div id="quiz"></div>
+<div class="summary" id="summary"><div class="big" id="finalscore"></div>
+<div class="msg" id="finalmsg"></div><button class="btn" onclick="location.reload()">Ulangi Quiz</button></div>
+<footer>Navasena Gen-ML Course · Module 02 Deep Learning Fundamentals — Quiz</footer>
+</div>
+<script>
+const QUIZ = {"module": "02", "title": "Deep Learning Fundamentals", "questions": [{"q": "Pada Fashion MNIST, pixel asli bernilai 0-255. Apa tujuan utama membaginya dengan 255 sebelum training?", "code": "X_train = X_train / 255.0\nX_test  = X_test  / 255.0", "options": ["Mengubah gambar grayscale menjadi gambar berwarna (RGB)", "Menskala pixel ke rentang 0.0-1.0 agar training stabil dan cepat dengan gradient terkendali", "Mengurangi jumlah kelas dari 10 menjadi 1 untuk klasifikasi biner", "Menambah jumlah data train dari 60.000 menjadi 70.000 gambar"], "answer": 1, "explanation": "Slide Dataset & Normalisasi menyebut normalisasi (bagi 255) mengubah pixel 0-255 menjadi 0.0-1.0 sehingga training stabil dan cepat serta gradient terkendali. Normalisasi tidak mengubah warna, jumlah kelas, maupun jumlah data."}, {"q": "Dalam model Sequential Fashion MNIST, apa fungsi layer Flatten di awal jaringan?", "code": "model = tf.keras.Sequential([\n  layers.Flatten(input_shape=(28,28)),\n  layers.Dense(128, activation='relu'),\n  ...\n])", "options": ["Mengubah gambar 28x28 menjadi 784 angka dalam satu baris", "Menormalisasi nilai pixel ke rentang 0-1", "Menerapkan fungsi aktivasi Softmax pada input", "Menyusutkan ukuran gambar seperti pooling pada CNN"], "answer": 0, "explanation": "Slide Membangun Model menyatakan Flatten mengubah 28x28 menjadi 784 angka, yaitu meratakan matriks gambar jadi satu vektor untuk masuk ke Dense. Normalisasi, Softmax, dan pooling adalah operasi yang berbeda."}, {"q": "Kenapa neural network memerlukan fungsi aktivasi (non-linearity) di antara layer-layernya?", "code": "layer2     = W2 @ (W1 @ x)\nW_gabungan = W2 @ W1\nsatu_layer = W_gabungan @ x\n# layer2 == satu_layer (sama!)", "options": ["Tanpa aktivasi, training menjadi lebih cepat tetapi kurang akurat", "Aktivasi diperlukan hanya untuk mengurangi jumlah parameter model", "Tanpa non-linearity, menumpuk banyak layer linear tetap setara satu fungsi linear", "Aktivasi mengubah data berurutan menjadi data independen"], "answer": 2, "explanation": "Slide Kenapa Perlu Aktivasi menunjukkan W2 @ (W1 @ x) sama dengan (W2 @ W1) @ x, jadi banyak layer linear ditumpuk tetap satu fungsi linear; aktivasi menambah non-linearity agar bisa mengenali pola berkelok."}, {"q": "Pada output layer untuk klasifikasi multi-kelas (10 kelas), aktivasi apa yang tepat dan apa karakteristik utamanya?", "code": null, "options": ["Sigmoid: setiap kelas dinilai independen antara 0 dan 1", "ReLU: max(0, x) untuk semua kelas output", "Linear (None): memprediksi angka bebas tanpa batas", "Softmax: mengubah logits menjadi probabilitas yang berjumlah 100%"], "answer": 3, "explanation": "Slide Softmax dan Panduan Memilih Aktivasi menyatakan Softmax dipakai di output multi-kelas, mengubah logits jadi probabilitas yang selalu berjumlah 100%. Sigmoid untuk output biner, ReLU untuk hidden layer, Linear untuk regresi."}, {"q": "Menurut panduan memilih aktivasi di slide, aktivasi default yang paling aman untuk hidden layer adalah:", "code": null, "options": ["ReLU karena cepat, efektif, dan menjadi standar industri", "Softmax karena menghasilkan probabilitas", "Sigmoid karena rentangnya 0-1 dan zero-centered", "Linear (None) karena tidak membatasi nilai keluaran"], "answer": 0, "explanation": "Slide Fungsi Aktivasi Utama dan Panduan Memilih menegaskan ReLU adalah default untuk hidden layer: max(0,x), cepat, efektif, dan standar. Softmax/Sigmoid dipakai di output, Linear untuk regresi."}, {"q": "Dari tiga optimizer yang dibahas, mana yang disebut paling populer dan disarankan dipakai sebagai pilihan awal?", "code": "model.compile(\n  loss='sparse_categorical_crossentropy',\n  optimizer='adam',\n  metrics=['accuracy'])", "options": ["SGD+Momentum, karena langkahnya kecil dan inersia stabil", "Adam, karena adaptif pada arah dan kecepatan serta paling populer", "RMSprop, karena khusus dirancang untuk klasifikasi gambar", "Softmax, karena mempercepat konvergensi loss"], "answer": 1, "explanation": "Slide Optimizer menyatakan Adam adaptif pada arah dan kecepatan, paling populer, dan menyarankan 'mulai selalu dengan Adam'. RMSprop diarahkan untuk RNN/LSTM, dan Softmax bukan optimizer melainkan fungsi aktivasi."}, {"q": "Mengapa CNN memiliki parameter yang jauh lebih sedikit dibanding jaringan Dense penuh untuk gambar?", "code": null, "options": ["Karena CNN tidak menggunakan fungsi aktivasi ReLU sama sekali", "Karena pooling menghapus seluruh weights setelah training", "Karena weights dari filter/kernel di-share saat memindai seluruh gambar", "Karena CNN hanya memproses gambar grayscale 1 channel"], "answer": 2, "explanation": "Slide Apa itu CNN menyebut weights di-share sehingga parameter jauh lebih sedikit; satu filter kecil dipakai berulang memindai seluruh gambar. CNN tetap memakai ReLU dan dapat memproses gambar berwarna."}, {"q": "Pada arsitektur CNN CIFAR-10 di slide, apa efek setiap MaxPooling2D terhadap dimensi spasial gambar?", "code": "Conv2D(32,(3,3),activation='relu',padding='same')\nMaxPooling2D()   # 32->16\nConv2D(64,(3,3),activation='relu',padding='same')\nMaxPooling2D()   # 16->8", "options": ["Menyusutkan dimensi (32->16->8->4) sambil menyimpan fitur penting", "Memperbesar dimensi agar resolusi gambar bertambah", "Mengubah gambar berwarna menjadi grayscale", "Menambah jumlah channel warna dari 3 menjadi 10"], "answer": 0, "explanation": "Slide Membangun CNN menyatakan tiap pooling menyusutkan dimensi 32->16->8->4 sambil filter bertambah, dan slide CNN menyebut pooling menyimpan fitur penting. Pooling mengecilkan, bukan memperbesar dimensi."}, {"q": "Dalam transfer learning dengan ResNet50, apa makna baris base.trainable = False?", "code": "base = ResNet50(weights='imagenet', include_top=False, input_shape=(32,32,3))\nbase.trainable = False   # freeze", "options": ["Menghapus seluruh layer ResNet50 dari model", "Membekukan (freeze) layer pretrained sehingga bobotnya tidak ikut dilatih", "Membuat model melatih ulang ResNet50 dari nol tanpa bobot ImageNet", "Mengaktifkan mixed precision FP16 pada model"], "answer": 1, "explanation": "Slide Transfer Learning menjelaskan trainable=False mem-freeze layer bawah ResNet50 (yang sudah pretrained di ImageNet) agar bobotnya tetap, lalu hanya head baru yang dilatih. Ini bukan melatih ulang dari nol atau setting mixed precision."}, {"q": "Menurut tabel perbandingan, kapan transfer learning (ResNet50) lebih unggul dibanding melatih CNN dari nol?", "code": null, "options": ["Saat data berlabel sangat banyak dan waktu latih tidak menjadi masalah", "Saat gambar berukuran sangat kecil 32x32 sehingga selalu menang telak", "Saat data berlabel terbatas karena fiturnya sudah jadi dan latih lebih cepat", "Saat ingin sengaja membuat model lebih mudah overfit"], "answer": 2, "explanation": "Slide CNN dari Nol vs Transfer Learning menyatakan transfer learning unggul saat data berlabel terbatas (fitur sudah jadi) dan latih cepat karena layer di-freeze. Pada gambar 32x32 transfer learning tidak selalu unggul."}, {"q": "Apa yang membedakan RNN dari layer Dense/CNN biasa dalam memproses data?", "code": null, "options": ["RNN mengingat langkah sebelumnya lewat hidden state, cocok untuk data berurutan", "RNN memproses setiap input secara independen tanpa memori", "RNN hanya bisa dipakai untuk gambar, bukan teks", "RNN menghapus urutan input agar semua data diperlakukan sama"], "answer": 0, "explanation": "Slide Data Berurutan & RNN menyatakan Dense/CNN memproses tiap input independen (tanpa memori), sedangkan RNN mengingat langkah sebelumnya via hidden state, sehingga cocok untuk data berurutan seperti teks atau saham."}, {"q": "Apa keunggulan utama LSTM dibanding SimpleRNN untuk urutan panjang, dan mekanismenya?", "code": null, "options": ["LSTM tidak punya gates sehingga lebih sederhana dan selalu lebih cepat", "LSTM mengganti hidden state dengan operasi konvolusi 3x3", "LSTM punya cell state dan 3 gates (forget/input/output) untuk menjaga info penting melawan vanishing gradient", "LSTM hanya bekerja untuk regresi sinus, bukan klasifikasi teks"], "answer": 2, "explanation": "Slide Masalah RNN -> LSTM menyatakan LSTM punya cell state (memori jangka panjang) dan gates forget/input/output, yang mengatasi vanishing gradient pada urutan panjang. LSTM justru lebih lambat dan punya lebih banyak parameter daripada SimpleRNN."}]};
+window.QUIZ = QUIZ;
+const LAB = ["A","B","C","D"];
+let answered = 0, correct = 0;
+const total = QUIZ.questions.length;
+const quizEl = document.getElementById("quiz");
+
+QUIZ.questions.forEach((item, qi) => {
+  const card = document.createElement("div"); card.className = "q";
+  const num = document.createElement("div"); num.className = "num"; num.textContent = "Soal " + (qi+1);
+  card.appendChild(num);
+  const text = document.createElement("div"); text.className = "text"; text.textContent = item.q;
+  card.appendChild(text);
+  if (item.code) { const pre = document.createElement("pre"); pre.textContent = item.code; card.appendChild(pre); }
+  const expl = document.createElement("div"); expl.className = "expl";
+  item.options.forEach((opt, oi) => {
+    const b = document.createElement("button"); b.className = "opt";
+    const lab = document.createElement("span"); lab.className = "lab"; lab.textContent = LAB[oi] + ".";
+    b.appendChild(lab); b.appendChild(document.createTextNode(" " + opt));
+    b.onclick = () => {
+      if (card.dataset.locked) return;
+      card.dataset.locked = "1";
+      const opts = card.querySelectorAll(".opt");
+      opts.forEach(o => o.classList.add("locked"));
+      opts[item.answer].classList.add("correct");
+      if (oi === item.answer) { correct++; }
+      else { b.classList.add("wrong"); }
+      answered++;
+      document.getElementById("answered").textContent = answered;
+      document.getElementById("correct").textContent = correct;
+      expl.classList.add("show");
+      if (answered === total) showSummary();
+    };
+    card.appendChild(b);
+  });
+  const eb = document.createElement("b"); eb.textContent = "Penjelasan: ";
+  expl.appendChild(eb); expl.appendChild(document.createTextNode(item.explanation));
+  card.appendChild(expl);
+  quizEl.appendChild(card);
+});
+
+function showSummary(){
+  const pct = Math.round(correct/total*100);
+  const s = document.getElementById("summary"); s.classList.add("show");
+  document.getElementById("finalscore").textContent = "Skor: " + correct + " / " + total + " (" + pct + "%)";
+  let msg = pct>=80 ? "Hebat! Pemahaman kamu solid." : pct>=60 ? "Lumayan — ulas lagi materi yang masih salah." : "Ayo pelajari lagi modulnya, lalu coba ulangi.";
+  document.getElementById("finalmsg").textContent = msg;
+  s.scrollIntoView({behavior:"smooth"});
+}
+</script></body></html>

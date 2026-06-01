@@ -1,0 +1,110 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG Fundamentals — Quiz</title>
+<style>
+:root{--bg:#1A1A2E;--card:#2D2D44;--green:#76B900;--lgreen:#A3D944;--white:#fff;
+--gray:#AAAACC;--red:#EF5350;--dark:#23233A;}
+*{box-sizing:border-box;}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+margin:0;background:var(--bg);color:var(--white);line-height:1.45;}
+.wrap{max-width:820px;margin:0 auto;padding:18px 16px 60px;}
+header{background:linear-gradient(135deg,var(--green),#5a8c00);border-radius:12px;
+padding:16px 20px;margin-bottom:14px;}
+header .mod{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.9;}
+header h1{margin:2px 0 0;font-size:24px;}
+header p{margin:4px 0 0;font-size:13px;opacity:.95;}
+.scorebar{position:sticky;top:0;z-index:5;background:var(--dark);border:1px solid var(--card);
+border-radius:10px;padding:8px 14px;margin-bottom:14px;display:flex;justify-content:space-between;
+align-items:center;font-size:13px;}
+.scorebar b{color:var(--lgreen);}
+.q{background:var(--card);border-radius:10px;padding:14px 16px;margin-bottom:12px;
+border-left:4px solid var(--green);}
+.q .num{color:var(--green);font-weight:700;font-size:12px;}
+.q .text{font-size:15px;font-weight:600;margin:4px 0 8px;}
+.q pre{background:var(--bg);color:var(--lgreen);font-family:"SF Mono",Menlo,Consolas,monospace;
+font-size:12.5px;padding:9px 11px;border-radius:6px;overflow-x:auto;margin:0 0 9px;}
+.opt{display:block;width:100%;text-align:left;background:var(--dark);color:var(--white);
+border:1.5px solid #3a3a55;border-radius:8px;padding:9px 12px;margin:6px 0;font-size:14px;
+cursor:pointer;transition:.12s;}
+.opt:hover:not(.locked){border-color:var(--green);}
+.opt .lab{display:inline-block;width:20px;font-weight:700;color:var(--gray);}
+.opt.correct{background:rgba(118,185,0,.18);border-color:var(--green);}
+.opt.correct .lab{color:var(--green);}
+.opt.wrong{background:rgba(239,83,80,.16);border-color:var(--red);}
+.opt.wrong .lab{color:var(--red);}
+.opt.locked{cursor:default;}
+.expl{display:none;font-size:13px;color:var(--gray);background:var(--bg);
+border-radius:6px;padding:8px 11px;margin-top:8px;border-left:3px solid var(--lgreen);}
+.expl.show{display:block;}
+.expl b{color:var(--lgreen);}
+.summary{display:none;background:var(--card);border-radius:12px;padding:20px;text-align:center;
+margin-top:8px;border:2px solid var(--green);}
+.summary.show{display:block;}
+.summary .big{font-size:34px;font-weight:800;color:var(--green);}
+.summary .msg{font-size:15px;color:var(--gray);margin:6px 0 14px;}
+.btn{background:var(--green);color:#0d0d0d;border:none;border-radius:8px;padding:10px 22px;
+font-size:14px;font-weight:700;cursor:pointer;}
+.btn:hover{background:var(--lgreen);}
+footer{text-align:center;color:var(--gray);font-size:11px;margin-top:18px;opacity:.7;}
+</style></head>
+<body><div class="wrap">
+<header><div class="mod">Module 05 · Quiz Latihan</div><h1>RAG Fundamentals</h1>
+<p>12 soal pilihan ganda · gaya sertifikasi · pilih satu jawaban</p></header>
+<div class="scorebar"><span>Terjawab: <b id="answered">0</b> / 12</span>
+<span>Benar: <b id="correct">0</b></span></div>
+<div id="quiz"></div>
+<div class="summary" id="summary"><div class="big" id="finalscore"></div>
+<div class="msg" id="finalmsg"></div><button class="btn" onclick="location.reload()">Ulangi Quiz</button></div>
+<footer>Navasena Gen-ML Course · Module 05 RAG Fundamentals — Quiz</footer>
+</div>
+<script>
+const QUIZ = {"module": "05", "title": "RAG Fundamentals", "questions": [{"q": "Apa kepanjangan dari RAG dan komponen utamanya?", "code": null, "options": ["Retrieval-Augmented Generation: Retrieval + Generation", "Random Access Generation: pencarian acak + generasi", "Recurrent Augmented Gradient: optimasi training LLM", "Retrieval-Aware Gradient: fine-tuning bobot LLM"], "answer": 0, "explanation": "Deck menyatakan RAG = Retrieval-Augmented Generation, yaitu Retrieval (cari konteks relevan) + Generation (LLM menyusun jawaban dari konteks)."}, {"q": "Menurut deck, dua masalah utama LLM yang ingin diatasi RAG adalah?", "code": null, "options": ["Lambat dan boros memori", "Halusinasi dan knowledge cutoff", "Tidak bisa berbahasa Indonesia dan terlalu kecil", "Tidak punya tokenizer dan tidak bisa di-GPU"], "answer": 1, "explanation": "Deck menyebut Masalah 1: halusinasi (mengarang jawaban) dan Masalah 2: knowledge cutoff (tak tahu kejadian setelah training)."}, {"q": "Analogi yang dipakai deck untuk menjelaskan RAG adalah?", "code": null, "options": ["Ujian buka buku (open book)", "Lomba lari estafet", "Perpustakaan tanpa katalog", "Kalkulator vs sempoa"], "answer": 0, "explanation": "Deck memakai analogi ujian buka buku: tanpa RAG = tutup buku (jawab dari ingatan), dengan RAG = boleh lihat buku contekan (knowledge base) dulu."}, {"q": "Library/model mana yang dipakai untuk mengubah teks menjadi vektor (embedding) di deck ini?", "code": null, "options": ["TinyLlama-1.1B-Chat", "FAISS IndexFlatL2", "SentenceTransformer (all-MiniLM-L6-v2)", "torch.float32 pipeline"], "answer": 2, "explanation": "Deck menggunakan model all-MiniLM-L6-v2 via SentenceTransformer untuk mengubah teks menjadi vektor; TinyLlama adalah generator dan FAISS adalah index pencarian."}, {"q": "Kode berikut melakukan apa?", "code": "v = embedder.encode([\"capital of France\"])", "options": ["Melatih ulang model embedding dengan kalimat tersebut", "Mengubah teks menjadi vektor (deretan angka)", "Menjawab pertanyaan 'capital of France'", "Menyimpan teks ke dalam FAISS index"], "answer": 1, "explanation": "Method encode() pada SentenceTransformer mengubah teks menjadi embedding (vektor), bukan melatih model, menjawab, atau menyimpan ke index."}, {"q": "Apa kepanjangan FAISS dan fungsinya menurut deck?", "code": null, "options": ["Fast AI Sampling System: mengatur sampling LLM", "Facebook AI Similarity Search: pencari vektor mirip super cepat", "Functional Array Indexing Search System: indeks database SQL", "Federated AI Storage Service: penyimpanan model terdistribusi"], "answer": 1, "explanation": "Deck menyebut FAISS = Facebook AI Similarity Search, pencari vektor mirip yang super cepat bahkan untuk knowledge base ribuan dokumen."}, {"q": "IndexFlatL2 pada FAISS mengukur kemiripan dengan cara apa?", "code": null, "options": ["Cosine similarity antar sudut vektor", "Jarak Euclidean (L2) antar vektor", "Jumlah kata yang sama persis", "Korelasi Pearson antar fitur"], "answer": 1, "explanation": "Deck menyatakan IndexFlatL2 mengukur jarak Euclidean (L2); makin kecil jaraknya, makin mirip maknanya."}, {"q": "Pada notebook, knowledge base disiapkan dengan langkah apa sebelum bisa dicari?", "code": "embeddings = embedder.encode(knowledge_base)\nindex.add(embeddings.astype('float32'))", "options": ["Setiap dokumen di-encode jadi vektor lalu ditambahkan ke FAISS dengan index.add()", "Dokumen dilatih ulang ke dalam bobot LLM", "Dokumen disimpan apa adanya sebagai teks tanpa diubah", "Dokumen di-tokenize dan langsung dikirim ke generator"], "answer": 0, "explanation": "Deck menjelaskan tiap dokumen di-encode() jadi vektor, lalu semua vektor masuk FAISS via index.add() - menambah dokumen cukup encode lalu masukkan, tanpa latih ulang."}, {"q": "Mengapa deck menggunakan torch.float32 (bukan float16) untuk generator TinyLlama?", "code": null, "options": ["Agar model muat di VRAM GPU kecil", "Agar stabil dijalankan di CPU (presisi penuh)", "Agar jawaban lebih acak dan kreatif", "Agar proses encoding embedding lebih cepat"], "answer": 1, "explanation": "Deck menyebut float32 (presisi penuh) dipakai agar stabil di CPU; float16 baru dipakai di Module 06 saat dipercepat GPU NVIDIA."}, {"q": "Parameter temperature=0.3 dan top_p=0.9 pada pipeline generator menghasilkan efek apa?", "code": "generator = pipeline(\"text-generation\", model=model,\n  temperature=0.3, top_p=0.9)", "options": ["temperature=0.3 membuat jawaban fokus/konsisten; top_p=0.9 adalah nucleus sampling", "temperature=0.3 mempercepat inferensi; top_p=0.9 mengatur panjang output", "temperature=0.3 menambah keacakan; top_p=0.9 mematikan sampling", "Keduanya mengatur jumlah dokumen (k) yang diambil dari FAISS"], "answer": 0, "explanation": "Deck menyatakan temperature=0.3 membuat jawaban fokus (makin tinggi makin acak) dan top_p=0.9 adalah nucleus sampling; keduanya parameter generasi, bukan retrieval."}, {"q": "Urutan tiga langkah pipeline RAG dalam fungsi ask_question() menurut deck adalah?", "code": null, "options": ["Generate -> Augment -> Retrieve", "Augment -> Retrieve -> Generate", "Retrieve -> Augment -> Generate", "Retrieve -> Generate -> Augment"], "answer": 2, "explanation": "Deck menegaskan pola pipeline RAG adalah Retrieve (cari konteks) -> Augment (sisipkan konteks ke prompt) -> Generate (LLM menjawab)."}, {"q": "Pernyataan mana yang PALING tepat tentang batasan RAG menurut deck?", "code": null, "options": ["RAG menjamin jawaban 100% benar karena memakai dokumen sumber", "RAG mengurangi halusinasi, bukan menghapusnya; jawaban hanya sebaik konteks yang berhasil diambil", "RAG menghapus seluruh halusinasi LLM secara permanen", "RAG melatih ulang LLM setiap kali dokumen baru ditambahkan"], "answer": 1, "explanation": "Deck menegaskan RAG bukan jaminan 100% benar: ia mengurangi (bukan menghapus) halusinasi, dan kualitas jawaban bergantung pada relevansi konteks yang diambil."}]};
+window.QUIZ = QUIZ;
+const LAB = ["A","B","C","D"];
+let answered = 0, correct = 0;
+const total = QUIZ.questions.length;
+const quizEl = document.getElementById("quiz");
+
+QUIZ.questions.forEach((item, qi) => {
+  const card = document.createElement("div"); card.className = "q";
+  const num = document.createElement("div"); num.className = "num"; num.textContent = "Soal " + (qi+1);
+  card.appendChild(num);
+  const text = document.createElement("div"); text.className = "text"; text.textContent = item.q;
+  card.appendChild(text);
+  if (item.code) { const pre = document.createElement("pre"); pre.textContent = item.code; card.appendChild(pre); }
+  const expl = document.createElement("div"); expl.className = "expl";
+  item.options.forEach((opt, oi) => {
+    const b = document.createElement("button"); b.className = "opt";
+    const lab = document.createElement("span"); lab.className = "lab"; lab.textContent = LAB[oi] + ".";
+    b.appendChild(lab); b.appendChild(document.createTextNode(" " + opt));
+    b.onclick = () => {
+      if (card.dataset.locked) return;
+      card.dataset.locked = "1";
+      const opts = card.querySelectorAll(".opt");
+      opts.forEach(o => o.classList.add("locked"));
+      opts[item.answer].classList.add("correct");
+      if (oi === item.answer) { correct++; }
+      else { b.classList.add("wrong"); }
+      answered++;
+      document.getElementById("answered").textContent = answered;
+      document.getElementById("correct").textContent = correct;
+      expl.classList.add("show");
+      if (answered === total) showSummary();
+    };
+    card.appendChild(b);
+  });
+  const eb = document.createElement("b"); eb.textContent = "Penjelasan: ";
+  expl.appendChild(eb); expl.appendChild(document.createTextNode(item.explanation));
+  card.appendChild(expl);
+  quizEl.appendChild(card);
+});
+
+function showSummary(){
+  const pct = Math.round(correct/total*100);
+  const s = document.getElementById("summary"); s.classList.add("show");
+  document.getElementById("finalscore").textContent = "Skor: " + correct + " / " + total + " (" + pct + "%)";
+  let msg = pct>=80 ? "Hebat! Pemahaman kamu solid." : pct>=60 ? "Lumayan — ulas lagi materi yang masih salah." : "Ayo pelajari lagi modulnya, lalu coba ulangi.";
+  document.getElementById("finalmsg").textContent = msg;
+  s.scrollIntoView({behavior:"smooth"});
+}
+</script></body></html>

@@ -1,0 +1,110 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Fundamentals — Quiz</title>
+<style>
+:root{--bg:#1A1A2E;--card:#2D2D44;--green:#76B900;--lgreen:#A3D944;--white:#fff;
+--gray:#AAAACC;--red:#EF5350;--dark:#23233A;}
+*{box-sizing:border-box;}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+margin:0;background:var(--bg);color:var(--white);line-height:1.45;}
+.wrap{max-width:820px;margin:0 auto;padding:18px 16px 60px;}
+header{background:linear-gradient(135deg,var(--green),#5a8c00);border-radius:12px;
+padding:16px 20px;margin-bottom:14px;}
+header .mod{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.9;}
+header h1{margin:2px 0 0;font-size:24px;}
+header p{margin:4px 0 0;font-size:13px;opacity:.95;}
+.scorebar{position:sticky;top:0;z-index:5;background:var(--dark);border:1px solid var(--card);
+border-radius:10px;padding:8px 14px;margin-bottom:14px;display:flex;justify-content:space-between;
+align-items:center;font-size:13px;}
+.scorebar b{color:var(--lgreen);}
+.q{background:var(--card);border-radius:10px;padding:14px 16px;margin-bottom:12px;
+border-left:4px solid var(--green);}
+.q .num{color:var(--green);font-weight:700;font-size:12px;}
+.q .text{font-size:15px;font-weight:600;margin:4px 0 8px;}
+.q pre{background:var(--bg);color:var(--lgreen);font-family:"SF Mono",Menlo,Consolas,monospace;
+font-size:12.5px;padding:9px 11px;border-radius:6px;overflow-x:auto;margin:0 0 9px;}
+.opt{display:block;width:100%;text-align:left;background:var(--dark);color:var(--white);
+border:1.5px solid #3a3a55;border-radius:8px;padding:9px 12px;margin:6px 0;font-size:14px;
+cursor:pointer;transition:.12s;}
+.opt:hover:not(.locked){border-color:var(--green);}
+.opt .lab{display:inline-block;width:20px;font-weight:700;color:var(--gray);}
+.opt.correct{background:rgba(118,185,0,.18);border-color:var(--green);}
+.opt.correct .lab{color:var(--green);}
+.opt.wrong{background:rgba(239,83,80,.16);border-color:var(--red);}
+.opt.wrong .lab{color:var(--red);}
+.opt.locked{cursor:default;}
+.expl{display:none;font-size:13px;color:var(--gray);background:var(--bg);
+border-radius:6px;padding:8px 11px;margin-top:8px;border-left:3px solid var(--lgreen);}
+.expl.show{display:block;}
+.expl b{color:var(--lgreen);}
+.summary{display:none;background:var(--card);border-radius:12px;padding:20px;text-align:center;
+margin-top:8px;border:2px solid var(--green);}
+.summary.show{display:block;}
+.summary .big{font-size:34px;font-weight:800;color:var(--green);}
+.summary .msg{font-size:15px;color:var(--gray);margin:6px 0 14px;}
+.btn{background:var(--green);color:#0d0d0d;border:none;border-radius:8px;padding:10px 22px;
+font-size:14px;font-weight:700;cursor:pointer;}
+.btn:hover{background:var(--lgreen);}
+footer{text-align:center;color:var(--gray);font-size:11px;margin-top:18px;opacity:.7;}
+</style></head>
+<body><div class="wrap">
+<header><div class="mod">Module 04 · Quiz Latihan</div><h1>LLM Fundamentals</h1>
+<p>12 soal pilihan ganda · gaya sertifikasi · pilih satu jawaban</p></header>
+<div class="scorebar"><span>Terjawab: <b id="answered">0</b> / 12</span>
+<span>Benar: <b id="correct">0</b></span></div>
+<div id="quiz"></div>
+<div class="summary" id="summary"><div class="big" id="finalscore"></div>
+<div class="msg" id="finalmsg"></div><button class="btn" onclick="location.reload()">Ulangi Quiz</button></div>
+<footer>Navasena Gen-ML Course · Module 04 LLM Fundamentals — Quiz</footer>
+</div>
+<script>
+const QUIZ = {"module": "04", "title": "LLM Fundamentals", "questions": [{"q": "Bagaimana hubungan antara NLP dan LLM yang benar menurut materi?", "code": null, "options": ["NLP adalah satu jenis model di dalam bidang LLM yang lebih luas", "LLM adalah bidang luas, sedangkan NLP adalah satu jenis model di dalamnya", "NLP adalah bidang luas, sedangkan LLM adalah satu jenis model NLP khusus", "NLP dan LLM adalah dua bidang yang sepenuhnya terpisah dan tidak berkaitan"], "answer": 2, "explanation": "Deck menegaskan NLP adalah bidang yang luas, dan LLM (Large Language Model) adalah satu jenis model NLP khusus yang berbasis transformer dan dilatih pada teks masif."}, {"q": "Apa terobosan utama arsitektur Transformer (2017) dibandingkan RNN/LSTM dalam memproses kata?", "code": null, "options": ["Memproses kata secara paralel lewat attention, bukan satu per satu seperti RNN", "Memproses kata satu per satu secara berurutan agar lebih akurat", "Menghilangkan kebutuhan akan data pelatihan yang besar", "Mengubah kata menjadi gambar sebelum diproses"], "answer": 0, "explanation": "Transformer memproses kata secara paralel melalui mekanisme attention, berbeda dari RNN/LSTM yang memproses kata satu per satu secara berurutan."}, {"q": "Pernyataan mana yang paling tepat tentang skala parameter pada LLM menurut materi?", "code": null, "options": ["Jumlah parameter adalah satu-satunya faktor penentu kemampuan model; data dan arsitektur tidak relevan", "Makin sedikit parameter selalu makin baik kemampuan model karena lebih cepat dilatih", "Umumnya makin banyak parameter makin mampu menangkap pola (sampai titik tertentu), tetapi kualitas data, arsitektur & fine-tuning sama pentingnya", "Parameter tidak berpengaruh sama sekali terhadap kemampuan model karena hanya data yang penting"], "answer": 2, "explanation": "Deck menyatakan umumnya lebih banyak parameter membantu menangkap pola sampai titik tertentu, namun kualitas data, arsitektur, dan fine-tuning sama pentingnya, jadi parameter bukan satu-satunya faktor."}, {"q": "Apa yang dimaksud dengan tokenization sebagai langkah pertama pemrosesan teks pada LLM?", "code": null, "options": ["Mengubah teks menjadi gambar piksel agar bisa dibaca model", "Memecah teks menjadi token (sering berupa subword) lalu memetakan tiap token ke sebuah ID angka", "Menerjemahkan teks ke bahasa Inggris terlebih dahulu", "Menghapus semua kata yang jarang muncul dari teks"], "answer": 1, "explanation": "Model tidak membaca huruf melainkan token; tokenization memecah teks menjadi token (sering subword) dan memetakan tiap token ke ID angka."}, {"q": "Pada slide tokenization, kata umum dan kata jarang ditangani berbeda. Mana yang benar?", "code": null, "options": ["Kata umum dipecah jadi banyak token, kata jarang jadi 1 token", "Semua kata selalu dipecah menjadi satu huruf per token", "Kata umum biasanya 1 token, kata jarang dipecah menjadi beberapa token", "Kata jarang selalu dihapus karena tidak punya ID"], "answer": 2, "explanation": "Deck menjelaskan kata umum biasanya menjadi 1 token, sedangkan kata jarang dipecah menjadi beberapa subword token (misal 'belajar' menjadi 'bel' + 'ajar')."}, {"q": "Apa fungsi embedding setelah token ID dihasilkan?", "code": null, "options": ["Mengubah tiap token ID menjadi vektor angka, di mana kata yang mirip makna menghasilkan vektor yang mirip", "Mengurutkan token ID dari terkecil ke terbesar", "Menghapus token ID yang duplikat agar prompt lebih pendek", "Mengubah token ID kembali menjadi huruf untuk ditampilkan"], "answer": 0, "explanation": "Tiap token ID dipetakan ke embedding (vektor angka); kata dengan makna mirip menghasilkan vektor yang mirip, lalu vektor diproses berlapis oleh transformer block."}, {"q": "Pada contoh kalimat '...menaruh buku di meja karena itu berat', apa peran mekanisme attention?", "code": null, "options": ["Memberi bobot sama rata ke semua kata tanpa membedakan relevansi", "Membuat model belajar bahwa 'itu' merujuk ke 'buku', bukan 'meja'", "Menerjemahkan kalimat ke bahasa lain agar lebih mudah", "Mengurutkan kata berdasarkan abjad sebelum diproses"], "answer": 1, "explanation": "Attention membuat model memperhatikan kata paling relevan; pada contoh ini model belajar bahwa 'itu' merujuk ke 'buku', bukan 'meja', sehingga model fokus pada kata yang benar-benar relevan."}, {"q": "Apa arti LLM bersifat 'autoregressive' dalam generasi teks?", "code": null, "options": ["Model menghasilkan seluruh kalimat sekaligus dalam satu langkah", "Model memprediksi 1 token lalu mengulang, dan tiap token baru menjadi input token selanjutnya", "Model hanya bisa membaca teks tetapi tidak bisa menghasilkan teks", "Model memprediksi token dari belakang ke depan"], "answer": 1, "explanation": "Generasi teks bersifat autoregressive: model memprediksi satu token, lalu token baru itu menjadi bagian input untuk memprediksi token berikutnya, diulang terus."}, {"q": "Apa pengaruh parameter temperature pada generasi teks?", "code": null, "options": ["Temperature rendah membuat output lebih fokus, temperature tinggi membuat output lebih kreatif/acak", "Temperature rendah membuat output lebih acak, temperature tinggi membuat output lebih fokus", "Temperature mengatur jumlah parameter model saat inference", "Temperature menentukan bahasa output yang dihasilkan model"], "answer": 0, "explanation": "Deck menyatakan temperature rendah membuat output fokus, sedangkan temperature tinggi membuatnya lebih kreatif/acak; do_sample=True membuat model memilih token secara acak-terbobot."}, {"q": "Kode berikut menggunakan library transformers dari HuggingFace. Apa yang dilakukan kode ini?", "code": "from transformers import pipeline\npipe = pipeline(\"text-generation\",\n                model=\"facebook/opt-350m\")\npipe(\"My name is\")", "options": ["Melatih model facebook/opt-350m dari nol menggunakan teks 'My name is'", "Membuat pipeline text-generation dengan model opt-350m, lalu menghasilkan lanjutan teks dari prompt 'My name is'", "Mengklasifikasikan sentimen dari teks 'My name is'", "Menerjemahkan teks 'My name is' ke bahasa Indonesia"], "answer": 1, "explanation": "pipeline('text-generation', model='facebook/opt-350m') membuat pipeline generasi teks siap pakai, lalu memanggilnya dengan prompt 'My name is' untuk menghasilkan lanjutan teks; pipeline cocok untuk eksperimen cepat."}, {"q": "Pada slide text classification, model prajjwal1/bert-tiny menghasilkan label LABEL_0/LABEL_1 dengan score sekitar 0.5. Mengapa demikian?", "code": null, "options": ["Karena teks input terlalu pendek untuk diproses", "Karena model baru di-pretrain dan belum punya head klasifikasi yang terlatih, sehingga output mendekati tebakan acak", "Karena GPU tidak tersedia saat inference dijalankan", "Karena temperature disetel terlalu tinggi pada model"], "answer": 1, "explanation": "bert-tiny baru di-pretrain dan belum memiliki head klasifikasi terlatih, sehingga labelnya generik (LABEL_0/LABEL_1) dengan score sekitar 0.5 (tebakan acak); untuk sentimen nyata perlu model fine-tuned seperti distilbert pada SST-2."}, {"q": "Pada slide setup, mengapa torch_dtype=torch.float16 dipakai saat memuat model?", "code": "model = AutoModelForCausalLM.from_pretrained(\n    \"facebook/opt-350m\",\n    device_map=\"auto\",\n    torch_dtype=torch.float16,\n)", "options": ["Agar bobot model memakai sekitar setengah memori dibanding float32", "Agar model menjadi lebih akurat daripada menggunakan float32", "Agar model bisa berjalan tanpa GPU sama sekali", "Agar model otomatis ter-fine-tune saat dimuat"], "answer": 0, "explanation": "Menggunakan float16 membuat bobot model memakai sekitar setengah memori dibandingkan float32, sehingga lebih hemat memori GPU saat menjalankan model."}]};
+window.QUIZ = QUIZ;
+const LAB = ["A","B","C","D"];
+let answered = 0, correct = 0;
+const total = QUIZ.questions.length;
+const quizEl = document.getElementById("quiz");
+
+QUIZ.questions.forEach((item, qi) => {
+  const card = document.createElement("div"); card.className = "q";
+  const num = document.createElement("div"); num.className = "num"; num.textContent = "Soal " + (qi+1);
+  card.appendChild(num);
+  const text = document.createElement("div"); text.className = "text"; text.textContent = item.q;
+  card.appendChild(text);
+  if (item.code) { const pre = document.createElement("pre"); pre.textContent = item.code; card.appendChild(pre); }
+  const expl = document.createElement("div"); expl.className = "expl";
+  item.options.forEach((opt, oi) => {
+    const b = document.createElement("button"); b.className = "opt";
+    const lab = document.createElement("span"); lab.className = "lab"; lab.textContent = LAB[oi] + ".";
+    b.appendChild(lab); b.appendChild(document.createTextNode(" " + opt));
+    b.onclick = () => {
+      if (card.dataset.locked) return;
+      card.dataset.locked = "1";
+      const opts = card.querySelectorAll(".opt");
+      opts.forEach(o => o.classList.add("locked"));
+      opts[item.answer].classList.add("correct");
+      if (oi === item.answer) { correct++; }
+      else { b.classList.add("wrong"); }
+      answered++;
+      document.getElementById("answered").textContent = answered;
+      document.getElementById("correct").textContent = correct;
+      expl.classList.add("show");
+      if (answered === total) showSummary();
+    };
+    card.appendChild(b);
+  });
+  const eb = document.createElement("b"); eb.textContent = "Penjelasan: ";
+  expl.appendChild(eb); expl.appendChild(document.createTextNode(item.explanation));
+  card.appendChild(expl);
+  quizEl.appendChild(card);
+});
+
+function showSummary(){
+  const pct = Math.round(correct/total*100);
+  const s = document.getElementById("summary"); s.classList.add("show");
+  document.getElementById("finalscore").textContent = "Skor: " + correct + " / " + total + " (" + pct + "%)";
+  let msg = pct>=80 ? "Hebat! Pemahaman kamu solid." : pct>=60 ? "Lumayan — ulas lagi materi yang masih salah." : "Ayo pelajari lagi modulnya, lalu coba ulangi.";
+  document.getElementById("finalmsg").textContent = msg;
+  s.scrollIntoView({behavior:"smooth"});
+}
+</script></body></html>

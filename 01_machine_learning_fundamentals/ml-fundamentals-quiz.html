@@ -1,0 +1,110 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Machine Learning Fundamentals — Quiz</title>
+<style>
+:root{--bg:#1A1A2E;--card:#2D2D44;--green:#76B900;--lgreen:#A3D944;--white:#fff;
+--gray:#AAAACC;--red:#EF5350;--dark:#23233A;}
+*{box-sizing:border-box;}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+margin:0;background:var(--bg);color:var(--white);line-height:1.45;}
+.wrap{max-width:820px;margin:0 auto;padding:18px 16px 60px;}
+header{background:linear-gradient(135deg,var(--green),#5a8c00);border-radius:12px;
+padding:16px 20px;margin-bottom:14px;}
+header .mod{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.9;}
+header h1{margin:2px 0 0;font-size:24px;}
+header p{margin:4px 0 0;font-size:13px;opacity:.95;}
+.scorebar{position:sticky;top:0;z-index:5;background:var(--dark);border:1px solid var(--card);
+border-radius:10px;padding:8px 14px;margin-bottom:14px;display:flex;justify-content:space-between;
+align-items:center;font-size:13px;}
+.scorebar b{color:var(--lgreen);}
+.q{background:var(--card);border-radius:10px;padding:14px 16px;margin-bottom:12px;
+border-left:4px solid var(--green);}
+.q .num{color:var(--green);font-weight:700;font-size:12px;}
+.q .text{font-size:15px;font-weight:600;margin:4px 0 8px;}
+.q pre{background:var(--bg);color:var(--lgreen);font-family:"SF Mono",Menlo,Consolas,monospace;
+font-size:12.5px;padding:9px 11px;border-radius:6px;overflow-x:auto;margin:0 0 9px;}
+.opt{display:block;width:100%;text-align:left;background:var(--dark);color:var(--white);
+border:1.5px solid #3a3a55;border-radius:8px;padding:9px 12px;margin:6px 0;font-size:14px;
+cursor:pointer;transition:.12s;}
+.opt:hover:not(.locked){border-color:var(--green);}
+.opt .lab{display:inline-block;width:20px;font-weight:700;color:var(--gray);}
+.opt.correct{background:rgba(118,185,0,.18);border-color:var(--green);}
+.opt.correct .lab{color:var(--green);}
+.opt.wrong{background:rgba(239,83,80,.16);border-color:var(--red);}
+.opt.wrong .lab{color:var(--red);}
+.opt.locked{cursor:default;}
+.expl{display:none;font-size:13px;color:var(--gray);background:var(--bg);
+border-radius:6px;padding:8px 11px;margin-top:8px;border-left:3px solid var(--lgreen);}
+.expl.show{display:block;}
+.expl b{color:var(--lgreen);}
+.summary{display:none;background:var(--card);border-radius:12px;padding:20px;text-align:center;
+margin-top:8px;border:2px solid var(--green);}
+.summary.show{display:block;}
+.summary .big{font-size:34px;font-weight:800;color:var(--green);}
+.summary .msg{font-size:15px;color:var(--gray);margin:6px 0 14px;}
+.btn{background:var(--green);color:#0d0d0d;border:none;border-radius:8px;padding:10px 22px;
+font-size:14px;font-weight:700;cursor:pointer;}
+.btn:hover{background:var(--lgreen);}
+footer{text-align:center;color:var(--gray);font-size:11px;margin-top:18px;opacity:.7;}
+</style></head>
+<body><div class="wrap">
+<header><div class="mod">Module 01 · Quiz Latihan</div><h1>Machine Learning Fundamentals</h1>
+<p>12 soal pilihan ganda · gaya sertifikasi · pilih satu jawaban</p></header>
+<div class="scorebar"><span>Terjawab: <b id="answered">0</b> / 12</span>
+<span>Benar: <b id="correct">0</b></span></div>
+<div id="quiz"></div>
+<div class="summary" id="summary"><div class="big" id="finalscore"></div>
+<div class="msg" id="finalmsg"></div><button class="btn" onclick="location.reload()">Ulangi Quiz</button></div>
+<footer>Navasena Gen-ML Course · Module 01 Machine Learning Fundamentals — Quiz</footer>
+</div>
+<script>
+const QUIZ = {"module": "01", "title": "Machine Learning Fundamentals", "questions": [{"q": "Berdasarkan definisi di modul, apa inti dari Machine Learning?", "code": null, "options": ["Programmer menulis aturan if-else untuk semua kemungkinan input secara manual", "Komputer belajar pola dari data tanpa diprogram secara eksplisit untuk setiap kasus", "Komputer menjalankan instruksi yang sudah ditentukan satu per satu tanpa data", "Sistem yang hanya menyimpan data historis tanpa membuat prediksi apa pun"], "answer": 1, "explanation": "Slide 'Apa itu Machine Learning?' mendefinisikan ML sebagai sistem yang belajar pola dari data tanpa instruksi eksplisit untuk setiap kasus. Opsi lain menggambarkan pemrograman tradisional berbasis aturan, bukan ML."}, {"q": "Pada formula Linear Regression y = w*x + b, apa arti dari w dan b?", "code": "y = w * x + b", "options": ["w adalah titik awal dan b adalah kemiringan garis", "w dan b keduanya adalah label kategori yang diprediksi", "w adalah kemiringan (slope) dan b adalah titik awal (intercept)", "w adalah error rata-rata dan b adalah jumlah data"], "answer": 2, "explanation": "Slide Linear Regression menyatakan w = kemiringan (seberapa besar pengaruh) dan b = titik awal. Membalik keduanya atau menafsirkannya sebagai error/label adalah salah."}, {"q": "Untuk metrik evaluasi regresi, kombinasi nilai ideal mana yang benar menurut tabel di modul?", "code": null, "options": ["R^2 mendekati 1.0 dan MAE mendekati 0", "R^2 mendekati 0 dan MAE mendekati 1.0", "RMSE mendekati 1.0 dan MAPE di atas 50%", "R^2 mendekati 0 dan RMSE mendekati 1.0"], "answer": 0, "explanation": "Tabel metrik menyebut R^2 ideal mendekati 1.0 (persentase variasi yang dijelaskan) sementara MAE/RMSE ideal mendekati 0. Opsi lain membalik arah nilai ideal tersebut."}, {"q": "Mengapa Time Series dijelaskan sebagai kasus khusus dari regresi di modul ini?", "code": null, "options": ["Karena Time Series memprediksi kategori diskrit seperti spam atau bukan spam", "Karena Time Series tidak memerlukan data historis sama sekali", "Karena sama-sama mencari pola untuk prediksi, tetapi inputnya waktu dan urutan waktu penting", "Karena Time Series mengabaikan urutan data dan hanya memakai rata-rata"], "answer": 2, "explanation": "Slide 'Time Series = Regression + Waktu' menekankan kesamaan (cari pola lalu prediksi) dengan perbedaan bahwa input adalah waktu dan urutan waktu penting, ditambah seasonality. Time Series memprediksi angka, bukan kategori."}, {"q": "Kepanjangan dan kegunaan utama SARIMA menurut modul adalah?", "code": null, "options": ["Simple AutoRegressive Independent Moving Average; hanya untuk klasifikasi gambar", "Seasonal AutoRegressive Integrated Moving Average; menangkap pola musiman secara otomatis", "Sequential ARIMA; digunakan untuk mengelompokkan data tanpa label", "Scaled Adaptive Regression In Multiple Axes; untuk mengurangi dimensi fitur"], "answer": 1, "explanation": "Slide SARIMA menuliskan kepanjangan 'Seasonal AutoRegressive Integrated Moving Average' dan fungsinya menangkap pola musiman otomatis. Opsi lain memakai kepanjangan dan fungsi yang keliru."}, {"q": "Pada confusion matrix, apa yang dimaksud False Negative (FN), dan mengapa modul menyebutnya 'bahaya'?", "code": null, "options": ["Kasus negatif yang benar diprediksi negatif, jadi tidak ada masalah", "Kasus negatif yang diprediksi positif, menimbulkan alarm palsu", "Kasus positif yang benar diprediksi positif, hasil yang diinginkan", "Kasus positif yang sebenarnya tetapi diprediksi negatif, sehingga terlewat (seperti tes COVID yang luput)"], "answer": 3, "explanation": "Slide Confusion Matrix menempatkan FN pada baris 'Asli: Ya' kolom 'Prediksi: Tidak' (kasus positif yang terlewat) dan analoginya 'FN = terlewat (bahaya!)'. Alarm palsu adalah False Positive, bukan FN."}, {"q": "Pada algoritma KNN seperti diilustrasikan di modul (K=5), bagaimana sebuah titik baru diklasifikasikan?", "code": null, "options": ["Berdasarkan kelas mayoritas dari 5 tetangga terdekat", "Berdasarkan rata-rata jarak ke semua titik di dataset", "Berdasarkan garis pemisah linear yang dilatih lebih dulu", "Berdasarkan satu titik pusat cluster yang paling jauh"], "answer": 0, "explanation": "Slide KNN menjelaskan: lihat 5 tetangga terdekat, mayoritas hijau, maka prediksi Hijau. KNN tidak melatih garis pemisah dan tidak memakai pusat cluster."}, {"q": "Menurut tabel 'Kapan Pakai Model yang Mana?', pernyataan mana yang BENAR tentang Decision Tree?", "code": null, "options": ["Memerlukan scaling, lambat, dan sulit diinterpretasi", "Memerlukan scaling, cepat, tetapi sulit diinterpretasi", "Tidak memerlukan scaling, cepat, dan mudah diinterpretasi", "Tidak memerlukan scaling tetapi lambat dan sulit diinterpretasi"], "answer": 2, "explanation": "Tabel perbandingan menampilkan Decision Tree dengan kolom Scaling=Tidak, Kecepatan=Cepat, Interpretasi=Mudah. Model yang butuh scaling dan sulit diinterpretasi di tabel itu adalah KNN dan SVM RBF."}, {"q": "Apa perbedaan utama antara Hard Voting dan Soft Voting pada ensemble?", "code": null, "options": ["Hard Voting merata-ratakan probabilitas; Soft Voting mengambil suara terbanyak", "Hard Voting mengambil suara terbanyak (1 model = 1 suara); Soft Voting merata-ratakan probabilitas dan biasanya lebih akurat", "Keduanya hanya memakai satu model tunggal yang dilatih dua kali", "Hard Voting hanya untuk regresi sedangkan Soft Voting hanya untuk clustering"], "answer": 1, "explanation": "Slide Voting menyatakan Hard Voting = setiap model 1 suara, mayoritas menang; Soft Voting = rata-rata probabilitas, biasanya lebih akurat. Opsi yang membalik definisinya salah."}, {"q": "Bagaimana Bagging (Random Forest) berbeda dari Boosting menurut ringkasan modul?", "code": null, "options": ["Bagging melatih model berurutan; Boosting melatih banyak pohon paralel pada data identik", "Keduanya melatih satu pohon yang sama tanpa pengambilan sampel data", "Bagging melatih banyak pohon paralel pada data bootstrap berbeda; Boosting melatih model berurutan yang memperbaiki kesalahan model sebelumnya", "Bagging hanya untuk data bersih sedangkan Boosting hanya untuk clustering"], "answer": 2, "explanation": "Modul menjelaskan Bagging (RF) = banyak pohon, masing-masing dari data bootstrap berbeda, sedangkan Boosting = model berurutan yang fokus memperbaiki kesalahan model sebelumnya. Opsi yang membalik kedua konsep salah."}, {"q": "Menurut tabel ringkasan clustering, metode mana yang TIDAK perlu menentukan K di awal DAN bisa mendeteksi outlier?", "code": null, "options": ["K-Means", "Hierarchical Clustering", "Linear Regression", "DBSCAN"], "answer": 3, "explanation": "Tabel ringkasan Act 5 menunjukkan DBSCAN: Perlu K = Tidak, Deteksi Outlier = Ya (berbasis kepadatan). K-Means perlu K dan tidak deteksi outlier; Hierarchical tidak mendeteksi outlier; Linear Regression bukan metode clustering."}, {"q": "Pada perbandingan kode sklearn vs cuML di modul, perubahan apa yang diperlukan untuk menjalankan Random Forest di GPU NVIDIA?", "code": "from sklearn.ensemble import RandomForestClassifier\n# menjadi\nfrom cuml.ensemble import RandomForestClassifier", "options": ["Harus menulis ulang seluruh kode fit dan predict dengan API yang berbeda", "Cukup ganti baris import dari sklearn ke cuml; kode fit/predict tetap identik", "Harus mengonversi model ke ONNX terlebih dahulu sebelum bisa fit di GPU", "Harus mengganti algoritma dari Random Forest ke K-Means agar bisa di GPU"], "answer": 1, "explanation": "Slide perbandingan kode menekankan cuML punya API identik scikit-learn: hanya ganti 1 baris import dan sisanya (fit/predict) sama persis, memberi percepatan 10-50x. ONNX dipakai untuk deployment, bukan syarat training di GPU."}]};
+window.QUIZ = QUIZ;
+const LAB = ["A","B","C","D"];
+let answered = 0, correct = 0;
+const total = QUIZ.questions.length;
+const quizEl = document.getElementById("quiz");
+
+QUIZ.questions.forEach((item, qi) => {
+  const card = document.createElement("div"); card.className = "q";
+  const num = document.createElement("div"); num.className = "num"; num.textContent = "Soal " + (qi+1);
+  card.appendChild(num);
+  const text = document.createElement("div"); text.className = "text"; text.textContent = item.q;
+  card.appendChild(text);
+  if (item.code) { const pre = document.createElement("pre"); pre.textContent = item.code; card.appendChild(pre); }
+  const expl = document.createElement("div"); expl.className = "expl";
+  item.options.forEach((opt, oi) => {
+    const b = document.createElement("button"); b.className = "opt";
+    const lab = document.createElement("span"); lab.className = "lab"; lab.textContent = LAB[oi] + ".";
+    b.appendChild(lab); b.appendChild(document.createTextNode(" " + opt));
+    b.onclick = () => {
+      if (card.dataset.locked) return;
+      card.dataset.locked = "1";
+      const opts = card.querySelectorAll(".opt");
+      opts.forEach(o => o.classList.add("locked"));
+      opts[item.answer].classList.add("correct");
+      if (oi === item.answer) { correct++; }
+      else { b.classList.add("wrong"); }
+      answered++;
+      document.getElementById("answered").textContent = answered;
+      document.getElementById("correct").textContent = correct;
+      expl.classList.add("show");
+      if (answered === total) showSummary();
+    };
+    card.appendChild(b);
+  });
+  const eb = document.createElement("b"); eb.textContent = "Penjelasan: ";
+  expl.appendChild(eb); expl.appendChild(document.createTextNode(item.explanation));
+  card.appendChild(expl);
+  quizEl.appendChild(card);
+});
+
+function showSummary(){
+  const pct = Math.round(correct/total*100);
+  const s = document.getElementById("summary"); s.classList.add("show");
+  document.getElementById("finalscore").textContent = "Skor: " + correct + " / " + total + " (" + pct + "%)";
+  let msg = pct>=80 ? "Hebat! Pemahaman kamu solid." : pct>=60 ? "Lumayan — ulas lagi materi yang masih salah." : "Ayo pelajari lagi modulnya, lalu coba ulangi.";
+  document.getElementById("finalmsg").textContent = msg;
+  s.scrollIntoView({behavior:"smooth"});
+}
+</script></body></html>
