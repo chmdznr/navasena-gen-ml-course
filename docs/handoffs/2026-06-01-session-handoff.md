@@ -21,7 +21,7 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Module 02 (Deep Learning) — 5 notebook OK **+ slide deck 33 frame** ✅
 - Module 03 (NLP) — notebook + theory cells + slide deck 20 hal OK
 - Module 04 (LLM) — 1 notebook **+ theory cells (8 md)** ✅ **+ slide deck 23 frame** ✅
-- Module 05 (RAG) — 1 notebook **+ intro & theory cells (8 md)** ✅, slide deck belum ada
+- Module 05 (RAG) — 1 notebook **+ intro & theory cells (8 md)** ✅ **+ slide deck 20 frame** ✅
 - Module 06 (NVIDIA Ecosystem) — 3 notebook **+ theory cells (4/14/7 md)** ✅, slide deck belum ada
 
 ### Update Jun 1 (sesi lanjutan) — theory cells Module 04/05/06 SELESAI
@@ -45,7 +45,15 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Figures: `gen_activations.py`, `gen_gpu_benchmark.py` (dari workflow), `gen_confusion.py`, `gen_rnn_sine.py` (ditulis manual, ilustratif); mermaid `nn_layers.mmd`, `cnn_flow.mmd`; inline TikZ untuk softmax/RNN-unroll/LSTM-gates/IMDB-pipeline.
 - Gotcha LaTeX baru: nama node TikZ TIDAK boleh ada titik desimal (`(h0.5)` → error "No shape named h0"); pakai index integer + posisi `y` terpisah (`\foreach \i/\y in {1/0.5,...} \node (h\i) at (2,\y)`).
 - Status modul slide deck: 01 ✅, 02 ✅, 03 ✅, 04 ✅. Sisa: **05 (RAG)**, **06 (NVIDIA)**.
-- **Belum di-push** — Module 02 deck (`c3ed8d1`) masih lokal.
+- Module 02 deck sudah di-push.
+
+### Update Jun 2 — Module 05 SLIDE DECK selesai
+- Design spec: `docs/superpowers/specs/2026-06-02-module05-rag-slide-deck-design.md`.
+- `05_rag/slides/module05_slides.tex` — 20 frame, 4 act, footer "RAG Fundamentals". Commit `f5bbb1d`.
+- Figures: `rag_pipeline.mmd` (mermaid), `gen_embedding_space.py` (matplotlib, 3 cluster semantik); inline TikZ untuk solusi-RAG & augment.
+- **Build clean di percobaan pertama** (0 overfull) — semua gotcha LaTeX diterapkan di depan ([fragile] listing, tabcolsep, scale+transform shape, integer node names).
+- Status slide deck: 01 ✅ 02 ✅ 03 ✅ 04 ✅ 05 ✅. **Sisa: Module 06 (NVIDIA)** — deck terakhir.
+- **Belum di-push** — Module 05 deck (`f5bbb1d`) masih lokal.
 
 ## Pola Kerja yang Sudah Terbentuk
 
