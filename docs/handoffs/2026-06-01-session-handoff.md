@@ -68,6 +68,17 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Semua di-push ke origin (kecuali Module 06 deck `a68e7cf` + handoff ini bila belum).
 - Sisa pekerjaan opsional (defer): cheat sheet PDF Modul 03-06; quiz/assignment; tutorial video script.
 
+### Update Jun 2 — QC menyeluruh 6 deck selesai
+- QC mechanical (semua deck): compile bersih, 0 overfull, theme/footer konsisten, 0 NCA-GENL, 0 placeholder.
+- QC content via workflow (6 reviewer paralel) → 23 temuan; diperbaiki yang nyata (commit `09a85bf`):
+  - **M02 CRITICAL**: `Conv2D(32,(3,3),'relu',...)` salah API (arg posisi ke-3 = strides) → `activation='relu'`.
+  - **M03 bug render pre-existing**: frame Setup&Tools punya `lstlisting` tapi TANPA `[fragile]` → error "Missing number" + slide rusak. Setelah fix: 20→23 halaman (listing tampil benar). PELAJARAN: SEMUA frame lstlisting wajib [fragile] — cek deck lama juga.
+  - M01 tabel {clll}→{cll}; R² wording; RandomForest 500→ratusan.
+  - M03 Sastrawi(stemmer)→nlp-id Lemmatizer; nlp-id sentiment→IndoBERT/lexicon.
+  - M04 distilbert SST-2; float16 framing; grammar. M05 contoh embed EN; k=1 note; temperature nuance. M06 nmt full name.
+- Defer (cosmetic/subjektif, dicatat tidak di-fix): M01 konsistensi em-dash judul; M01 catatan taksonomi Reinforcement/Forecasting.
+- Final: 6 deck (48/33/23/23/20/21 hal) semua 0 error, 0 overfull.
+
 ## Pola Kerja yang Sudah Terbentuk
 
 ### 1. Build artifacts & gitignore
