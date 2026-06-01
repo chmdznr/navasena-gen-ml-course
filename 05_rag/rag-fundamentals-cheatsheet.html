@@ -1,0 +1,54 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8">
+<title>RAG Fundamentals — Cheat Sheet</title><style>
+@page { size: A4; margin: 7mm; }
+* { box-sizing: border-box; }
+body { font-family: -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  margin:0; color:#1a1a2e; font-size:8.4px; line-height:1.32; background:#fff; }
+.header { background: linear-gradient(135deg,#76B900,#5a8c00); color:#fff;
+  padding:7px 12px; border-radius:8px; display:flex; justify-content:space-between;
+  align-items:center; margin-bottom:6px; }
+.header .mod { font-size:8.5px; opacity:.9; letter-spacing:1.5px; text-transform:uppercase; }
+.header h1 { font-size:17px; margin:1px 0; font-weight:800; }
+.header .scope { font-size:8px; opacity:.95; max-width:62%; text-align:right; }
+.pipeline { display:flex; align-items:center; gap:4px; background:#f4f7ec;
+  border:1px solid #cfe0a8; border-radius:6px; padding:5px 8px; margin-bottom:6px; flex-wrap:wrap; }
+.pipeline .lbl { font-weight:700; color:#5a8c00; font-size:8px; margin-right:2px; }
+.pipeline .step { background:#76B900; color:#fff; padding:3px 7px; border-radius:10px;
+  font-weight:600; font-size:8px; white-space:nowrap; }
+.pipeline .arr { color:#76B900; font-weight:800; }
+.grid { column-count:3; column-gap:6px; }
+.card { break-inside:avoid; background:#fafafb; border:1px solid #e3e3ea;
+  border-left:3px solid #76B900; border-radius:5px; padding:5px 7px; margin:0 0 6px; }
+.card h3 { color:#4f7a00; font-size:9px; margin:0 0 3px; }
+.card ul { margin:0; padding-left:12px; }
+.card li { margin:1px 0; }
+.codeblock { font-family:"SF Mono",Menlo,Consolas,monospace; font-size:7.2px;
+  background:#1a1a2e; color:#a3d944; display:block; padding:3px 5px; border-radius:4px;
+  margin-top:3px; white-space:pre-wrap; word-break:break-word; }
+.when { font-style:italic; color:#8a8a96; font-size:7.6px; margin-top:3px; }
+.section { break-inside:avoid; margin-top:2px; }
+table { width:100%; border-collapse:collapse; font-size:7.7px; margin-top:2px; }
+th { background:#76B900; color:#fff; text-align:left; padding:2px 5px; }
+td { border-bottom:1px solid #e6e6ec; padding:2px 5px; vertical-align:top; }
+tr:nth-child(even) td { background:#f6f8ef; }
+.sectitle { color:#4f7a00; font-size:9.5px; font-weight:800; margin:6px 0 2px; }
+.glossary { font-size:8px; }
+.glossary div { margin:1.5px 0; }
+.glossary b { color:#4f7a00; }
+.footer { text-align:center; color:#aaa; font-size:7px; margin-top:6px;
+  border-top:1px solid #eee; padding-top:3px; }
+</style></head><body>
+<div class="header"><div><div class="mod">Module 05 · Cheat Sheet</div><h1>RAG Fundamentals</h1></div>
+<div class="scope">RAG (Retrieval-Augmented Generation) membekali LLM dengan konteks faktual dari knowledge base eksternal lewat embedding + similarity search sebelum menjawab, sehingga halusinasi berkurang dan jawaban bisa di-update tanpa melatih ulang model.</div></div>
+<div class="pipeline"><span class="lbl">Alur:</span><span class="step">Encode knowledge base (semua dokumen -&gt; vektor)</span> <span class="arr">→</span> <span class="step">Simpan vektor ke FAISS index (index.add)</span> <span class="arr">→</span> <span class="step">Embed query jadi vektor (query_embedding)</span> <span class="arr">→</span> <span class="step">Retrieve top-k dokumen terdekat (index.search)</span> <span class="arr">→</span> <span class="step">Augment: gabung konteks + pertanyaan jadi 1 prompt</span> <span class="arr">→</span> <span class="step">Generate: TinyLlama susun jawaban dari prompt</span> <span class="arr">→</span> <span class="step">Bersihkan &amp; kembalikan jawaban akhir</span></div>
+<div class="grid"><div class="card"><h3>Kenapa Perlu RAG?</h3><ul><li>LLM menjawab dari ingatan training saja</li><li>Masalah 1: halusinasi (mengarang tapi meyakinkan)</li><li>Masalah 2: knowledge cutoff (tak tahu kejadian terbaru)</li><li>Solusi: bekali konteks faktual segar sebelum menjawab</li></ul><div class="when">▸ fakta terbaru / spesifik / domain</div></div><div class="card"><h3>RAG = Retrieve + Augment + Generate</h3><ul><li>Retrieval: cari potongan info relevan dari knowledge base</li><li>Augment: sisipkan konteks ke prompt</li><li>Generation: LLM menyusun jawaban dari konteks</li><li>Tidak mengubah otak LLM, hanya membekali konteks</li></ul><div class="codeblock"># alur: Pertanyaan -&gt; Retrieve -&gt; Generate -&gt; Jawaban</div><div class="when">▸ inti seluruh sistem RAG</div></div><div class="card"><h3>Embeddings &amp; SentenceTransformer</h3><ul><li>Embedding: teks -&gt; vektor (deretan angka)</li><li>Makna mirip -&gt; vektor berdekatan</li><li>Komputer bandingkan jarak antar-angka, bukan kata</li><li>Model: all-MiniLM-L6-v2</li></ul><div class="codeblock">embedder = SentenceTransformer(&#x27;sentence-transformers/all-MiniLM-L6-v2&#x27;)
+v = embedder.encode([&quot;capital of France&quot;])</div><div class="when">▸ ubah teks jadi angka yang bisa dicari</div></div><div class="card"><h3>Similarity Search &amp; FAISS</h3><ul><li>FAISS = Facebook AI Similarity Search, pencari vektor super cepat</li><li>IndexFlatL2: ukur jarak Euclidean (L2)</li><li>Jarak makin kecil -&gt; makna makin mirip</li><li>Ambil top-k terdekat (notebook k=1; umumnya 3-5)</li></ul><div class="codeblock">index = faiss.IndexFlatL2(embedding_size)
+distances, indices = index.search(query_embedding.astype(&#x27;float32&#x27;), k)</div><div class="when">▸ cari dokumen relevan dari ribuan vektor</div></div><div class="card"><h3>Knowledge Base</h3><ul><li>Kumpulan dokumen/fakta sumber jawaban</li><li>Tiap dokumen di-encode() jadi vektor</li><li>Semua vektor masuk FAISS via index.add()</li><li>Tambah dokumen = encode lalu add (tanpa latih ulang)</li></ul><div class="codeblock">embeddings = embedder.encode(knowledge_base)
+index.add(embeddings.astype(&#x27;float32&#x27;))</div><div class="when">▸ ingatan eksternal LLM</div></div><div class="card"><h3>Generator LLM (TinyLlama)</h3><ul><li>Generator = penulis jawaban: TinyLlama 1.1B Chat</li><li>torch.float32 (presisi penuh) -&gt; stabil di CPU</li><li>Dibungkus pipeline(&quot;text-generation&quot;)</li><li>temperature=0.3 (fokus), top_p=0.9 (nucleus sampling)</li></ul><div class="codeblock">generator = pipeline(&quot;text-generation&quot;, model=model, tokenizer=tokenizer,
+  max_length=512, do_sample=True, temperature=0.3, top_p=0.9)</div><div class="when">▸ menyusun jawaban akhir tanpa GPU</div></div><div class="card"><h3>Langkah Retrieve</h3><ul><li>Query di-embed jadi vektor (query_embedding)</li><li>Dicocokkan ke FAISS (IndexFlatL2)</li><li>Ambil top-k terdekat lalu ambil teks asli dari knowledge_base</li></ul><div class="codeblock">query_embedding = embedder.encode([query])
+dist, idx = index.search(query_embedding.astype(&#x27;float32&#x27;), k)
+docs = [knowledge_base[i] for i in idx[0]]</div><div class="when">▸ tahap 1 pipeline</div></div><div class="card"><h3>Langkah Augment</h3><ul><li>Perkaya prompt dengan konteks hasil retrieve</li><li>Format: bagian Context: lalu Question:</li><li>Konteks + pertanyaan asli digabung jadi 1 prompt</li><li>Notebook asli membungkusnya dalam chat template TinyLlama &lt;|im_start|&gt;</li></ul><div class="codeblock">prompt = f&quot;Context: {context}\nQuestion: {query}&quot;</div><div class="when">▸ jembatan retrieve -&gt; generate</div></div><div class="card"><h3>Tips &amp; Batasan</h3><ul><li>Chunk: terlalu besar -&gt; kabur; terlalu kecil -&gt; info hilang</li><li>k: jumlah konteks diambil (notebook k=1, kadang butuh lebih)</li><li>Kualitas embedding (all-MiniLM-L6-v2) menentukan relevansi</li><li>RAG mengurangi halusinasi, BUKAN menghapusnya</li></ul><div class="when">▸ saat tuning kualitas jawaban</div></div></div>
+<div class="section"><div class="sectitle">Quick-Ref Komponen RAG</div><table><tr><th>Komponen</th><th>Library / Model</th><th>Tujuan</th></tr><tr><td>Embedding</td><td>SentenceTransformer (all-MiniLM-L6-v2)</td><td>Ubah teks jadi vektor</td></tr><tr><td>Index</td><td>FAISS (IndexFlatL2)</td><td>Cari vektor terdekat cepat</td></tr><tr><td>Generator</td><td>TinyLlama-1.1B-Chat (float32)</td><td>Susun jawaban akhir</td></tr><tr><td>Pipeline</td><td>Gabungan 1-3 (ask_question)</td><td>Retrieve -&gt; augment -&gt; generate</td></tr><tr><td>Lanjutan (Mod 06)</td><td>faiss-gpu + float16</td><td>RAG sama dipercepat GPU NVIDIA</td></tr></table></div>
+<div class="section"><div class="sectitle">Istilah Kunci</div><div class="glossary"><div><b>RAG</b> — Retrieval-Augmented Generation: bekali LLM dengan konteks eksternal sebelum menjawab.</div><div><b>Embedding</b> — Representasi teks sebagai vektor angka; makna mirip -&gt; vektor berdekatan.</div><div><b>FAISS</b> — Facebook AI Similarity Search; mesin pencari vektor terdekat yang cepat.</div><div><b>IndexFlatL2</b> — Index FAISS yang mengukur kemiripan via jarak Euclidean (L2).</div><div><b>top-k</b> — Jumlah dokumen paling dekat yang diambil saat retrieve (notebook k=1).</div><div><b>Knowledge base</b> — Kumpulan dokumen/fakta yang dibaca sistem RAG sebagai sumber jawaban.</div><div><b>Halusinasi</b> — LLM mengarang jawaban yang meyakinkan tapi salah.</div><div><b>temperature</b> — Pengatur keacakan jawaban; 0.3 = fokus/konsisten, makin tinggi makin acak.</div></div></div>
+<div class="footer">Navasena Gen-ML Course · Module 05 RAG Fundamentals — Cheat Sheet</div>
+</body></html>

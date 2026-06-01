@@ -1,0 +1,48 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8">
+<title>NVIDIA Ecosystem — Cheat Sheet</title><style>
+@page { size: A4; margin: 7mm; }
+* { box-sizing: border-box; }
+body { font-family: -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  margin:0; color:#1a1a2e; font-size:8.4px; line-height:1.32; background:#fff; }
+.header { background: linear-gradient(135deg,#76B900,#5a8c00); color:#fff;
+  padding:7px 12px; border-radius:8px; display:flex; justify-content:space-between;
+  align-items:center; margin-bottom:6px; }
+.header .mod { font-size:8.5px; opacity:.9; letter-spacing:1.5px; text-transform:uppercase; }
+.header h1 { font-size:17px; margin:1px 0; font-weight:800; }
+.header .scope { font-size:8px; opacity:.95; max-width:62%; text-align:right; }
+.pipeline { display:flex; align-items:center; gap:4px; background:#f4f7ec;
+  border:1px solid #cfe0a8; border-radius:6px; padding:5px 8px; margin-bottom:6px; flex-wrap:wrap; }
+.pipeline .lbl { font-weight:700; color:#5a8c00; font-size:8px; margin-right:2px; }
+.pipeline .step { background:#76B900; color:#fff; padding:3px 7px; border-radius:10px;
+  font-weight:600; font-size:8px; white-space:nowrap; }
+.pipeline .arr { color:#76B900; font-weight:800; }
+.grid { column-count:3; column-gap:6px; }
+.card { break-inside:avoid; background:#fafafb; border:1px solid #e3e3ea;
+  border-left:3px solid #76B900; border-radius:5px; padding:5px 7px; margin:0 0 6px; }
+.card h3 { color:#4f7a00; font-size:9px; margin:0 0 3px; }
+.card ul { margin:0; padding-left:12px; }
+.card li { margin:1px 0; }
+.codeblock { font-family:"SF Mono",Menlo,Consolas,monospace; font-size:7.2px;
+  background:#1a1a2e; color:#a3d944; display:block; padding:3px 5px; border-radius:4px;
+  margin-top:3px; white-space:pre-wrap; word-break:break-word; }
+.when { font-style:italic; color:#8a8a96; font-size:7.6px; margin-top:3px; }
+.section { break-inside:avoid; margin-top:2px; }
+table { width:100%; border-collapse:collapse; font-size:7.7px; margin-top:2px; }
+th { background:#76B900; color:#fff; text-align:left; padding:2px 5px; }
+td { border-bottom:1px solid #e6e6ec; padding:2px 5px; vertical-align:top; }
+tr:nth-child(even) td { background:#f6f8ef; }
+.sectitle { color:#4f7a00; font-size:9.5px; font-weight:800; margin:6px 0 2px; }
+.glossary { font-size:8px; }
+.glossary div { margin:1.5px 0; }
+.glossary b { color:#4f7a00; }
+.footer { text-align:center; color:#aaa; font-size:7px; margin-top:6px;
+  border-top:1px solid #eee; padding-top:3px; }
+</style></head><body>
+<div class="header"><div><div class="mod">Module 06 · Cheat Sheet</div><h1>NVIDIA Ecosystem</h1></div>
+<div class="scope">Mengenal stack hardware-software NVIDIA (GPU/CUDA), cara mempercepat inference (FP16, TensorRT), toolkit conversational AI NeMo, dan RAG yang dipercepat GPU.</div></div>
+<div class="pipeline"><span class="lbl">Alur:</span><span class="step">Hardware GPU (T4/A100/H100)</span> <span class="arr">→</span> <span class="step">CUDA (jembatan GPU)</span> <span class="arr">→</span> <span class="step">Library (cuDNN, cuBLAS, TensorRT)</span> <span class="arr">→</span> <span class="step">Framework (TF/PyTorch)</span> <span class="arr">→</span> <span class="step">Tools (NeMo, Triton)</span> <span class="arr">→</span> <span class="step">Aplikasi: benchmark, NeMo task, RAG</span></div>
+<div class="grid"><div class="card"><h3>NVIDIA Stack (5 lapis)</h3><ul><li>Hardware GPU di paling bawah; Tools di paling atas</li><li>CUDA = jembatan agar GPU bisa komputasi umum</li><li>Kita menulis di Framework, GPU yang kerja keras</li><li>Tiap lapisan berdiri di atas lapisan bawahnya</li></ul><div class="when">▸ Memetakan posisi tiap komponen NVIDIA</div></div><div class="card"><h3>Kenapa GPU (recap M02)</h3><ul><li>CPU: sedikit core pintar, kerja berurutan</li><li>GPU: ribuan core sederhana, kerja paralel</li><li>Deep learning = tumpukan matrix operations</li><li>Notebook hanya ukur waktu di GPU, bukan vs CPU</li></ul><div class="when">▸ Memahami kecocokan GPU untuk DL</div></div><div class="card"><h3>Benchmark phi-2</h3><ul><li>microsoft/phi-2 (~2.7B parameter)</li><li>FP16 + device_map=&#x27;auto&#x27; = pola load NVIDIA</li><li>Warmup dulu, lalu generate() 5x, dirata-rata</li><li>Benchmark = rata-rata waktu generate di GPU</li></ul><div class="codeblock">AutoModelForCausalLM.from_pretrained(&quot;microsoft/phi-2&quot;, torch_dtype=torch.float16, device_map=&quot;auto&quot;)</div><div class="when">▸ Mengukur kecepatan inference di GPU</div></div><div class="card"><h3>Half Precision FP16 vs FP32</h3><ul><li>FP32: 32-bit, presisi penuh, boros memori</li><li>FP16: 16-bit, hemat ~50% memori, cepat di Tensor Cores</li><li>Notebook pakai FP16 PENUH (torch.float16)</li><li>Bukan mixed precision/AMP (itu dibahas di M02)</li></ul><div class="codeblock">torch_dtype=torch.float16</div><div class="when">▸ Hemat memori GPU &amp; inference lebih cepat</div></div><div class="card"><h3>TensorRT (optimasi inference)</h3><ul><li>Alat NVIDIA mempercepat inference (saat dipakai)</li><li>Layer fusion + kernel auto-tuning</li><li>Precision calibration ke FP16/INT8</li><li>TF-TRT tipikal 2-5x lebih cepat (angka NVIDIA)</li></ul><div class="when">▸ Deploy model agar lebih cepat (di M06 hanya konseptual, tanpa demo)</div></div><div class="card"><h3>NeMo (Neural Modules)</h3><ul><li>Toolkit open-source NVIDIA untuk conversational AI</li><li>Kaya pre-trained model siap pakai, tanpa training</li><li>Modular seperti balok lego, dioptimalkan GPU</li><li>Inti: unduh model, panggil method, langsung pakai</li></ul><div class="when">▸ Butuh task AI percakapan siap pakai</div></div><div class="card"><h3>NeMo: NER, QA &amp; Classification</h3><ul><li>NER: TokenClassificationModel + ner_en_bert (BERT)</li><li>NER tandai entitas: NVIDIA-&gt;ORG, New York-&gt;LOC</li><li>QA: QAModel + qa_squadv1.1_bertbase (start-end jawaban)</li><li>Classification: TextClassificationModel -&gt; label kategori</li></ul><div class="codeblock">TokenClassificationModel.from_pretrained(&quot;ner_en_bert&quot;)</div><div class="when">▸ Memahami &amp; mengelompokkan teks</div></div><div class="card"><h3>NeMo: Punctuation, MT &amp; TTS</h3><ul><li>Punctuation: PunctuationCapitalizationModel + punctuation_en_bert</li><li>MT: MTEncDecModel + nmt_en_zh_transformer24x6 (EN-&gt;ZH)</li><li>TTS tahap 1 FastPitch: teks -&gt; spectrogram</li><li>TTS tahap 2 HiFiGAN (vocoder): spectrogram -&gt; audio</li></ul><div class="codeblock">audio = vocoder.convert_spectrogram_to_audio(spec=spec)</div><div class="when">▸ Merapikan teks, terjemah, &amp; sintesis suara</div></div><div class="card"><h3>NVIDIA-Accelerated RAG</h3><ul><li>Pipeline RAG sama (M05), yang ditukar = tooling NVIDIA</li><li>Embedding all-MiniLM-L6-v2 &amp; LLM gpt2 dipindah ke GPU (.to(self.device))</li><li>Index FAISS IndexFlatL2; cudf (RAPIDS) bungkus dokumen -&gt; pandas</li><li>Catatan: MegatronGPT hanya di-import; IndexFlatL2 sebenarnya di CPU</li></ul><div class="codeblock">df = cudf.DataFrame({&#x27;text&#x27;: documents}).to_pandas()</div><div class="when">▸ Menjalankan RAG dengan akselerasi GPU</div></div></div>
+<div class="section"><div class="sectitle">Quick-Ref: Model &amp; Library per Task</div><table><tr><th>Task</th><th>Model / Library</th><th>Catatan</th></tr><tr><td>Benchmark</td><td>microsoft/phi-2 (~2.7B)</td><td>FP16 + device_map=&#x27;auto&#x27;</td></tr><tr><td>Optimasi inference</td><td>TensorRT (TF-TRT)</td><td>2-5x, konseptual (tanpa demo)</td></tr><tr><td>NER</td><td>TokenClassificationModel / ner_en_bert</td><td>berbasis BERT</td></tr><tr><td>Question Answering</td><td>QAModel / qa_squadv1.1_bertbase</td><td>prediksi start-end</td></tr><tr><td>Text Classification</td><td>TextClassificationModel</td><td>label per kalimat</td></tr><tr><td>Punctuation</td><td>PunctuationCapitalizationModel / punctuation_en_bert</td><td>rapikan transkrip</td></tr><tr><td>Machine Translation</td><td>MTEncDecModel / nmt_en_zh_transformer24x6</td><td>EN -&gt; Mandarin</td></tr><tr><td>TTS</td><td>FastPitch + HiFiGAN</td><td>spectrogram lalu audio</td></tr><tr><td>RAG embedding</td><td>SentenceTransformer all-MiniLM-L6-v2</td><td>di GPU (.to(self.device))</td></tr><tr><td>RAG index / LLM</td><td>FAISS IndexFlatL2 / gpt2</td><td>faiss-gpu install, index di CPU</td></tr></table></div>
+<div class="section"><div class="sectitle">Istilah Kunci</div><div class="glossary"><div><b>CUDA</b> — Platform NVIDIA yang menjembatani GPU untuk komputasi umum (general-purpose).</div><div><b>Tensor Cores</b> — Unit GPU NVIDIA khusus yang sangat cepat untuk operasi FP16.</div><div><b>FP16 / FP32</b> — Angka 16-bit (hemat ~50% memori) vs 32-bit (presisi penuh, boros).</div><div><b>Mixed precision (AMP)</b> — Campur FP32+FP16 saat training; berbeda dari FP16 penuh, dibahas di M02.</div><div><b>TensorRT</b> — Library NVIDIA untuk optimasi inference via layer fusion &amp; precision calibration.</div><div><b>NeMo</b> — Toolkit open-source NVIDIA berbasis pre-trained model untuk conversational AI.</div><div><b>Vocoder (HiFiGAN)</b> — Komponen TTS yang mengubah spectrogram menjadi audio.</div><div><b>cudf (RAPIDS)</b> — DataFrame ber-GPU dari RAPIDS; di notebook hanya bungkus dokumen lalu .to_pandas().</div></div></div>
+<div class="footer">Navasena Gen-ML Course · Module 06 NVIDIA Ecosystem — Cheat Sheet</div>
+</body></html>
