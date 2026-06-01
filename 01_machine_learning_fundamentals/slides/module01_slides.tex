@@ -258,9 +258,11 @@
 \begin{frame}{Tiga Jenis Machine Learning}
   \vspace{0.3em}
   \begin{center}
-    \includegraphics[width=0.88\textwidth, height=0.78\textheight,
+    \includegraphics[width=0.88\textwidth, height=0.66\textheight,
                      keepaspectratio]{figures/ml_types.pdf}
   \end{center}
+  \vspace{-0.2em}
+  \begin{center}\textcolor{nvgray}{\scriptsize \textbf{Reinforcement Learning} hanya diperkenalkan sebagai konteks --- tidak dibahas di modul ini.}\end{center}
 \end{frame}
 
 % ----------------------------------------------------------
@@ -347,6 +349,8 @@
       };
     \end{tikzpicture}
   \end{center}
+  \vspace{0.4em}
+  \begin{center}\textcolor{nvgray}{\scriptsize \textbf{Forecasting}/Time Series sebenarnya kasus khusus \textbf{Supervised} dengan input waktu.}\end{center}
 \end{frame}
 
 % ----------------------------------------------------------
@@ -588,7 +592,7 @@
 \end{frame}
 
 % Slide 3 — Logistic Regression
-\begin{frame}{Logistic Regression — Probabilitas Ya/Tidak}
+\begin{frame}{Logistic Regression --- Probabilitas Ya/Tidak}
   \begin{center}
   \begin{tikzpicture}[scale=1.1]
     % axes
@@ -614,7 +618,7 @@
 \end{frame}
 
 % Slide 4 — Confusion Matrix
-\begin{frame}{Confusion Matrix — Detail Kesalahan}
+\begin{frame}{Confusion Matrix --- Detail Kesalahan}
   \begin{center}
   \begin{tikzpicture}[scale=0.9,font=\small]
     % column headers
@@ -643,7 +647,7 @@
 \end{frame}
 
 % Slide 5 — Decision Tree
-\begin{frame}{Decision Tree — Diagram Alur Keputusan}
+\begin{frame}{Decision Tree --- Diagram Alur Keputusan}
   \begin{center}
   \begin{tikzpicture}[
     decision/.style={rounded corners=4pt,fill=nvcard,draw=nvgreen,text=white,font=\footnotesize,
@@ -678,7 +682,7 @@
 \end{frame}
 
 % Slide 6 — KNN
-\begin{frame}{KNN — Siapa Tetanggamu?}
+\begin{frame}{KNN --- Siapa Tetanggamu?}
   \begin{center}
   \begin{tikzpicture}[scale=1.0]
     % scattered red dots
@@ -700,7 +704,7 @@
 \end{frame}
 
 % Slide 7 — SVM
-\begin{frame}{SVM — Margin Terlebar}
+\begin{frame}{SVM --- Margin Terlebar}
   \begin{center}
   \begin{tikzpicture}[scale=1.0]
     % green dots (class +1)
@@ -1155,7 +1159,7 @@
 \acttitle{Act 6}{Turbo Mode: NVIDIA GPU}{Bagaimana jika bisa 50x lebih cepat?}
 
 % Slide 2 — CPU vs GPU
-\begin{frame}{CPU vs GPU — Apa Bedanya?}
+\begin{frame}{CPU vs GPU --- Apa Bedanya?}
 \begin{columns}[T]
   \begin{column}{0.45\textwidth}
     \begin{center}
@@ -1347,7 +1351,7 @@ XGBClassifier(device="cuda")  # Hanya ini yang berubah!
 % ============================================================
 
 % Slide 9 — Full Summary
-\begin{frame}{Modul 1 — Selesai!}
+\begin{frame}{Modul 1 --- Selesai!}
 \begin{center}
 {\small
 \begin{tabular}{cll}
