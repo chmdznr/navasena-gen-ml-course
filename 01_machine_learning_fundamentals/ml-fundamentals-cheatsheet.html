@@ -1,0 +1,57 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8">
+<title>Machine Learning Fundamentals — Cheat Sheet</title><style>
+@page { size: A4; margin: 7mm; }
+* { box-sizing: border-box; }
+body { font-family: -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  margin:0; color:#1a1a2e; font-size:8.4px; line-height:1.32; background:#fff; }
+.header { background: linear-gradient(135deg,#76B900,#5a8c00); color:#fff;
+  padding:7px 12px; border-radius:8px; display:flex; justify-content:space-between;
+  align-items:center; margin-bottom:6px; }
+.header .mod { font-size:8.5px; opacity:.9; letter-spacing:1.5px; text-transform:uppercase; }
+.header h1 { font-size:17px; margin:1px 0; font-weight:800; }
+.header .scope { font-size:8px; opacity:.95; max-width:62%; text-align:right; }
+.pipeline { display:flex; align-items:center; gap:4px; background:#f4f7ec;
+  border:1px solid #cfe0a8; border-radius:6px; padding:5px 8px; margin-bottom:6px; flex-wrap:wrap; }
+.pipeline .lbl { font-weight:700; color:#5a8c00; font-size:8px; margin-right:2px; }
+.pipeline .step { background:#76B900; color:#fff; padding:3px 7px; border-radius:10px;
+  font-weight:600; font-size:8px; white-space:nowrap; }
+.pipeline .arr { color:#76B900; font-weight:800; }
+.grid { column-count:3; column-gap:6px; }
+.card { break-inside:avoid; background:#fafafb; border:1px solid #e3e3ea;
+  border-left:3px solid #76B900; border-radius:5px; padding:5px 7px; margin:0 0 6px; }
+.card h3 { color:#4f7a00; font-size:9px; margin:0 0 3px; }
+.card ul { margin:0; padding-left:12px; }
+.card li { margin:1px 0; }
+.codeblock { font-family:"SF Mono",Menlo,Consolas,monospace; font-size:7.2px;
+  background:#1a1a2e; color:#a3d944; display:block; padding:3px 5px; border-radius:4px;
+  margin-top:3px; white-space:pre-wrap; word-break:break-word; }
+.when { font-style:italic; color:#8a8a96; font-size:7.6px; margin-top:3px; }
+.section { break-inside:avoid; margin-top:2px; }
+table { width:100%; border-collapse:collapse; font-size:7.7px; margin-top:2px; }
+th { background:#76B900; color:#fff; text-align:left; padding:2px 5px; }
+td { border-bottom:1px solid #e6e6ec; padding:2px 5px; vertical-align:top; }
+tr:nth-child(even) td { background:#f6f8ef; }
+.sectitle { color:#4f7a00; font-size:9.5px; font-weight:800; margin:6px 0 2px; }
+.glossary { font-size:8px; }
+.glossary div { margin:1.5px 0; }
+.glossary b { color:#4f7a00; }
+.footer { text-align:center; color:#aaa; font-size:7px; margin-top:6px;
+  border-top:1px solid #eee; padding-top:3px; }
+</style></head><body>
+<div class="header"><div><div class="mod">Module 01 · Cheat Sheet</div><h1>Machine Learning Fundamentals</h1></div>
+<div class="scope">Quick-reference 1 halaman untuk ML klasik dengan scikit-learn: regresi &amp; time series, klasifikasi, ensemble, clustering, evaluasi model, plus akselerasi GPU NVIDIA (cuML/XGBoost).</div></div>
+<div class="pipeline"><span class="lbl">Alur:</span><span class="step">Definisikan masalah: regresi (angka), klasifikasi (kategori), atau clustering (tanpa label)</span> <span class="arr">→</span> <span class="step">Siapkan data: bersihkan, scaling untuk model berbasis jarak (KNN/SVM)</span> <span class="arr">→</span> <span class="step">Split data: train/test (mis. train_test_split), sisakan data uji</span> <span class="arr">→</span> <span class="step">Latih model: model.fit(X_train, y_train)</span> <span class="arr">→</span> <span class="step">Prediksi: model.predict(X_test)</span> <span class="arr">→</span> <span class="step">Evaluasi: regresi pakai MAE/RMSE/R^2, klasifikasi pakai confusion matrix/precision/recall</span> <span class="arr">→</span> <span class="step">Tuning &amp; validasi: cross-validation, cek overfitting; bandingkan beberapa model</span></div>
+<div class="grid"><div class="card"><h3>3 Jenis ML</h3><ul><li>Supervised: data berlabel (regresi + klasifikasi)</li><li>Unsupervised: tanpa label (clustering)</li><li>Reinforcement: hanya konteks, tidak dibahas</li><li>Time series = supervised dengan input waktu</li></ul><div class="when">▸ Menentukan kategori masalah</div></div><div class="card"><h3>Linear Regression</h3><ul><li>Cari garis terbaik: y = w*x + b</li><li>w = kemiringan, b = titik awal (intercept)</li><li>Output angka kontinu</li></ul><div class="codeblock">from sklearn.linear_model import LinearRegression
+m = LinearRegression().fit(X, y)</div><div class="when">▸ Prediksi nilai numerik (harga, suhu)</div></div><div class="card"><h3>Logistic Regression</h3><ul><li>Output sigmoid: probabilitas 0..1</li><li>Threshold (default 0.5) -&gt; kelas Ya/Tidak</li><li>Batas keputusan garis lurus, mudah diinterpretasi</li></ul><div class="codeblock">from sklearn.linear_model import LogisticRegression
+m = LogisticRegression().fit(X, y)</div><div class="when">▸ Klasifikasi biner / probabilitas</div></div><div class="card"><h3>Decision Tree &amp; KNN</h3><ul><li>Tree: rantai if/else, batas kotak-kotak, tak perlu scaling</li><li>KNN: lihat K tetangga terdekat, mayoritas menang</li><li>KNN perlu scaling, lambat saat predict</li></ul><div class="codeblock">from sklearn.neighbors import KNeighborsClassifier
+m = KNeighborsClassifier(n_neighbors=5)</div><div class="when">▸ Tree: data kecil/interpretasi; KNN: batas berliku</div></div><div class="card"><h3>SVM</h3><ul><li>Cari margin terlebar antar kelas</li><li>Support vectors = titik penentu batas</li><li>kernel=&#x27;linear&#x27; (lurus) atau &#x27;rbf&#x27; (melengkung)</li><li>Perlu scaling</li></ul><div class="codeblock">from sklearn.svm import SVC
+m = SVC(kernel=&#x27;rbf&#x27;)</div><div class="when">▸ Batas kompleks, dataset menengah</div></div><div class="card"><h3>Ensemble: Voting &amp; Bagging</h3><ul><li>Hard voting: 1 model = 1 suara, mayoritas menang</li><li>Soft voting: rata-rata probabilitas (biasanya lebih akurat)</li><li>Bagging = Bootstrap Aggregating</li><li>Random Forest: banyak pohon, data + fitur acak; tahan noise</li></ul><div class="codeblock">from sklearn.ensemble import RandomForestClassifier
+m = RandomForestClassifier()  # n_estimators=100 default</div><div class="when">▸ Mau lebih stabil &amp; akurat dari 1 model</div></div><div class="card"><h3>Boosting &amp; XGBoost</h3><ul><li>Boosting: model berurutan, perbaiki kesalahan sebelumnya</li><li>XGBoost = eXtreme Gradient Boosting (super cepat)</li><li>Built-in regularisasi (anti overfitting), tangani data kosong</li><li>Dominan di kompetisi Kaggle; NVIDIA dukung GPU-nya</li></ul><div class="codeblock">from xgboost import XGBClassifier
+m = XGBClassifier()</div><div class="when">▸ Dataset bersih/tabular, kejar akurasi tinggi</div></div><div class="card"><h3>Clustering</h3><ul><li>K-Means: tentukan K, cluster bulat, tak deteksi outlier</li><li>DBSCAN: berbasis kepadatan, tak perlu K, deteksi outlier</li><li>Hierarchical: gabung cluster terdekat, K opsional</li><li>Pilih K: Elbow Method (titik siku) &amp; Silhouette Score</li></ul><div class="codeblock">from sklearn.cluster import KMeans, DBSCAN
+labels = KMeans(n_clusters=3).fit_predict(X)</div><div class="when">▸ Data tanpa label (segmentasi, grouping)</div></div><div class="card"><h3>Time Series &amp; SARIMA</h3><ul><li>Data berurutan waktu: ada trend + seasonality + noise</li><li>Urutan waktu penting (beda dari regresi biasa)</li><li>SARIMA = Seasonal AutoRegressive Integrated Moving Average</li><li>Menangkap pola musiman otomatis untuk forecast</li></ul><div class="when">▸ Prediksi masa depan dari data historis</div></div><div class="card"><h3>Overfitting &amp; Cross-Validation</h3><ul><li>Underfitting: model terlalu sederhana (jelek di train &amp; test)</li><li>Overfitting: terlalu rumit (bagus di train, jelek di test)</li><li>Good fit: pas, generalisasi baik</li><li>Cross-validation: bagi data jadi beberapa fold untuk uji adil</li></ul><div class="codeblock">from sklearn.model_selection import cross_val_score
+scores = cross_val_score(m, X, y, cv=5)</div><div class="when">▸ Memastikan model tak hafal data latih</div></div><div class="card"><h3>GPU: cuML &amp; XGBoost</h3><ul><li>RAPIDS cuML: API identik scikit-learn, 10-50x lebih cepat</li><li>Cukup ganti import: sklearn.* -&gt; cuml.*</li><li>XGBoost: device=&#x27;cpu&#x27; -&gt; device=&#x27;cuda&#x27;</li><li>cuDF = Pandas di GPU; ONNX + Triton untuk deployment</li></ul><div class="codeblock">from cuml.ensemble import RandomForestClassifier
+XGBClassifier(device=&#x27;cuda&#x27;)</div><div class="when">▸ Dataset besar, butuh training cepat</div></div></div>
+<div class="section"><div class="sectitle">Quick-Ref Model Klasifikasi</div><table><tr><th>Model</th><th>Batas Keputusan</th><th>Scaling?</th><th>Kecepatan</th><th>Interpretasi</th></tr><tr><td>Logistic Reg.</td><td>Garis lurus</td><td>Ya</td><td>Cepat</td><td>Mudah</td></tr><tr><td>Decision Tree</td><td>Kotak-kotak</td><td>Tidak</td><td>Cepat</td><td>Mudah</td></tr><tr><td>KNN</td><td>Berliku</td><td>Ya</td><td>Lambat</td><td>Sulit</td></tr><tr><td>SVM Linear</td><td>Garis lurus</td><td>Ya</td><td>Sedang</td><td>Sedang</td></tr><tr><td>SVM RBF</td><td>Melengkung</td><td>Ya</td><td>Lambat</td><td>Sulit</td></tr></table></div>
+<div class="section"><div class="sectitle">Istilah Kunci</div><div class="glossary"><div><b>MAE / RMSE / R^2</b> — Metrik regresi: MAE &amp; RMSE -&gt; 0 (RMSE penalti besar untuk error besar); R^2 -&gt; 1.0 = makin baik. MAPE = error persen (ideal &lt; 10%).</div><div><b>Confusion Matrix</b> — Tabel TP/TN/FP/FN. FP = alarm palsu, FN = kasus terlewat (sering paling berbahaya).</div><div><b>Precision / Recall</b> — Precision = dari yang diprediksi positif, berapa benar. Recall = dari yang benar-benar positif, berapa tertangkap.</div><div><b>Threshold</b> — Batas probabilitas (default 0.5) untuk mengubah output sigmoid jadi kelas Ya/Tidak.</div><div><b>Bagging vs Boosting</b> — Bagging: pohon paralel dari data acak (Random Forest, tahan noise). Boosting: model berurutan saling memperbaiki (XGBoost, butuh data bersih).</div><div><b>Support Vectors</b> — Titik data terdekat ke batas keputusan SVM yang menentukan posisi margin terlebar.</div><div><b>Elbow &amp; Silhouette</b> — Cara pilih jumlah cluster K: Elbow cari titik siku kurva inertia; Silhouette pilih skor tertinggi.</div><div><b>No Free Lunch</b> — Tidak ada satu model terbaik untuk semua masalah; selalu coba &amp; bandingkan beberapa model.</div></div></div>
+<div class="footer">Navasena Gen-ML Course · Module 01 Machine Learning Fundamentals — Cheat Sheet</div>
+</body></html>

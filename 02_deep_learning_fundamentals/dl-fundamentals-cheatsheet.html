@@ -1,0 +1,62 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8">
+<title>Deep Learning Fundamentals — Cheat Sheet</title><style>
+@page { size: A4; margin: 7mm; }
+* { box-sizing: border-box; }
+body { font-family: -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  margin:0; color:#1a1a2e; font-size:8.4px; line-height:1.32; background:#fff; }
+.header { background: linear-gradient(135deg,#76B900,#5a8c00); color:#fff;
+  padding:7px 12px; border-radius:8px; display:flex; justify-content:space-between;
+  align-items:center; margin-bottom:6px; }
+.header .mod { font-size:8.5px; opacity:.9; letter-spacing:1.5px; text-transform:uppercase; }
+.header h1 { font-size:17px; margin:1px 0; font-weight:800; }
+.header .scope { font-size:8px; opacity:.95; max-width:62%; text-align:right; }
+.pipeline { display:flex; align-items:center; gap:4px; background:#f4f7ec;
+  border:1px solid #cfe0a8; border-radius:6px; padding:5px 8px; margin-bottom:6px; flex-wrap:wrap; }
+.pipeline .lbl { font-weight:700; color:#5a8c00; font-size:8px; margin-right:2px; }
+.pipeline .step { background:#76B900; color:#fff; padding:3px 7px; border-radius:10px;
+  font-weight:600; font-size:8px; white-space:nowrap; }
+.pipeline .arr { color:#76B900; font-weight:800; }
+.grid { column-count:3; column-gap:6px; }
+.card { break-inside:avoid; background:#fafafb; border:1px solid #e3e3ea;
+  border-left:3px solid #76B900; border-radius:5px; padding:5px 7px; margin:0 0 6px; }
+.card h3 { color:#4f7a00; font-size:9px; margin:0 0 3px; }
+.card ul { margin:0; padding-left:12px; }
+.card li { margin:1px 0; }
+.codeblock { font-family:"SF Mono",Menlo,Consolas,monospace; font-size:7.2px;
+  background:#1a1a2e; color:#a3d944; display:block; padding:3px 5px; border-radius:4px;
+  margin-top:3px; white-space:pre-wrap; word-break:break-word; }
+.when { font-style:italic; color:#8a8a96; font-size:7.6px; margin-top:3px; }
+.section { break-inside:avoid; margin-top:2px; }
+table { width:100%; border-collapse:collapse; font-size:7.7px; margin-top:2px; }
+th { background:#76B900; color:#fff; text-align:left; padding:2px 5px; }
+td { border-bottom:1px solid #e6e6ec; padding:2px 5px; vertical-align:top; }
+tr:nth-child(even) td { background:#f6f8ef; }
+.sectitle { color:#4f7a00; font-size:9.5px; font-weight:800; margin:6px 0 2px; }
+.glossary { font-size:8px; }
+.glossary div { margin:1.5px 0; }
+.glossary b { color:#4f7a00; }
+.footer { text-align:center; color:#aaa; font-size:7px; margin-top:6px;
+  border-top:1px solid #eee; padding-top:3px; }
+</style></head><body>
+<div class="header"><div><div class="mod">Module 02 · Cheat Sheet</div><h1>Deep Learning Fundamentals</h1></div>
+<div class="scope">Membangun neural network dengan TensorFlow/Keras: dari NN dasar (Sequential, Dense), fungsi aktivasi &amp; optimizer, CNN &amp; transfer learning untuk gambar, RNN/LSTM/GRU untuk data berurutan, hingga akselerasi GPU NVIDIA (mixed precision, TensorRT).</div></div>
+<div class="pipeline"><span class="lbl">Alur:</span><span class="step">Siapkan data: load dataset, normalisasi pixel (bagi 255 -&gt; 0.0--1.0), pisah train/val/test</span> <span class="arr">→</span> <span class="step">Bangun model: tf.keras.Sequential tumpuk layer (Flatten/Dense, Conv2D, LSTM, dll)</span> <span class="arr">→</span> <span class="step">compile: tentukan loss, optimizer (Adam), dan metrics=[&#x27;accuracy&#x27;]</span> <span class="arr">→</span> <span class="step">fit: latih beberapa epoch dengan batch_size + validation_data (cek overfitting)</span> <span class="arr">→</span> <span class="step">evaluate: uji di test set yang belum pernah dilihat (akurasi, confusion matrix)</span> <span class="arr">→</span> <span class="step">predict: Softmax multi-kelas -&gt; argmax (kelas prob tertinggi); Sigmoid biner -&gt; threshold 0.5</span> <span class="arr">→</span> <span class="step">Akselerasi (opsional): jalankan di GPU, mixed_float16, optimasi inference dengan TensorRT</span></div>
+<div class="grid"><div class="card"><h3>Neural Network: blok dasar</h3><ul><li>Neuron = unit pemrosesan terkecil; Layer = kumpulan neuron</li><li>Weights (bobot) = kekuatan koneksi yang DIPELAJARI saat training</li><li>Alur: input -&gt; hidden layers -&gt; output (prediksi)</li><li>NN belajar pola dengan menyetel ribuan weights, bukan aturan manual</li></ul><div class="when">▸ Fondasi semua arsitektur deep learning</div></div><div class="card"><h3>Model Sequential (Dense)</h3><ul><li>Sequential = tumpukan layer berurutan input -&gt; output</li><li>Flatten ratakan 28x28 jadi 784 angka</li><li>Dense = fully-connected; hidden pakai activation=&#x27;relu&#x27;</li><li>Output Dense(10, softmax) -&gt; probabilitas 10 kelas (Fashion MNIST)</li></ul><div class="codeblock">model = tf.keras.Sequential([
+  layers.Flatten(input_shape=(28,28)),
+  layers.Dense(128, activation=&#x27;relu&#x27;),
+  layers.Dense(10, activation=&#x27;softmax&#x27;)])</div><div class="when">▸ Klasifikasi/regresi data tabular atau gambar yang sudah diratakan</div></div><div class="card"><h3>Training: compile + fit</h3><ul><li>compile butuh: loss, optimizer, metrics</li><li>Loss (crossentropy) = ukur seberapa salah; optimizer perbaiki weights</li><li>Epoch = 1 putaran lihat SEMUA data, diproses per batch</li><li>Target: loss turun, kurva train &amp; val rapat (hindari overfitting)</li></ul><div class="codeblock">model.compile(loss=&#x27;sparse_categorical_crossentropy&#x27;,
+  optimizer=&#x27;adam&#x27;, metrics=[&#x27;accuracy&#x27;])
+model.fit(X_train, y_train, epochs=20,
+  batch_size=32, validation_data=(X_valid, y_valid))</div><div class="when">▸ Setelah model dibangun, sebelum evaluasi</div></div><div class="card"><h3>Kenapa perlu Activation?</h3><ul><li>Tanpa activation NN cuma jumlah &amp; kali (linear)</li><li>Banyak layer linear ditumpuk = tetap 1 fungsi linear</li><li>Activation tambah non-linearity -&gt; kenali pola berkelok</li><li>Tanpa activation, 100 layer = 1 layer linear belaka</li></ul><div class="when">▸ Memahami mengapa setiap hidden layer butuh fungsi aktivasi</div></div><div class="card"><h3>Fungsi Aktivasi utama</h3><ul><li>ReLU max(0,x): cepat, standar industri di hidden layer</li><li>Sigmoid (0--1): output biner Ya/Tidak</li><li>Tanh (-1--1): zero-centered, stabil</li><li>Softmax: output multi-kelas; semua probabilitas jumlahnya 100%</li><li>Risiko: vanishing gradient &amp; dead neuron (LeakyReLU bantu)</li></ul><div class="when">▸ Pilih per layer: ReLU hidden, Sigmoid biner, Softmax multi-kelas, Linear regresi</div></div><div class="card"><h3>Optimizer</h3><ul><li>Optimizer = cara update weights via gradient (turun gunung berkabut)</li><li>SGD+Momentum: langkah kecil, inersia stabil</li><li>RMSprop: sesuaikan langkah; cocok RNN/LSTM</li><li>Adam: adaptif arah + kecepatan, paling populer (default)</li></ul><div class="codeblock">optimizer=&#x27;adam&#x27;</div><div class="when">▸ Mulai selalu dengan Adam; pindah SGD+Momentum bila tak stabil</div></div><div class="card"><h3>CNN untuk gambar</h3><ul><li>Convolution: filter/kernel 3x3 pindai gambar cari pola lokal (tepi, tekstur)</li><li>Pooling (MaxPooling2D): susutkan ukuran, simpan fitur penting</li><li>Weights di-share -&gt; parameter jauh lebih sedikit</li><li>Belajar bertingkat: tepi -&gt; bentuk -&gt; bagian objek</li><li>Praktik: CIFAR-10 (60K gambar warna 32x32, 10 kelas)</li></ul><div class="codeblock">Conv2D(32, (3,3), activation=&#x27;relu&#x27;,
+  padding=&#x27;same&#x27;, input_shape=(32,32,3))
+MaxPooling2D()   # 32-&gt;16</div><div class="when">▸ Klasifikasi/deteksi citra</div></div><div class="card"><h3>Transfer Learning (ResNet50)</h3><ul><li>Pakai model pretrained ImageNet (14 juta gambar) yang sudah pintar</li><li>Freeze layer bawah: base.trainable = False</li><li>Ganti head: pooling -&gt; Dense -&gt; Dense(10)</li><li>Unggul saat data berlabel terbatas; latih cepat (layer di-freeze)</li></ul><div class="codeblock">base = ResNet50(weights=&#x27;imagenet&#x27;,
+  include_top=False, input_shape=(32,32,3))
+base.trainable = False   # freeze</div><div class="when">▸ Data terbatas / gambar resolusi tinggi -&gt; jalan pintas standar industri</div></div><div class="card"><h3>RNN / LSTM / GRU (data berurutan)</h3><ul><li>Sequential data: urutan PENTING (teks, saham, cuaca)</li><li>RNN ingat langkah sebelumnya via hidden state (h)</li><li>Masalah RNN: vanishing gradient -&gt; lupa konteks panjang</li><li>LSTM punya cell state + 3 gates (forget/input/output) = memori panjang</li><li>GRU: 2 gates (update/reset), seimbang cepat &amp; akurat</li></ul><div class="codeblock">Embedding(vocab_size, 64)  # panjang dari input (batch,200)
+LSTM(64)
+Dense(1, activation=&#x27;sigmoid&#x27;)  # sentimen IMDB</div><div class="when">▸ Teks, deret waktu, sinyal; urutan punya makna</div></div><div class="card"><h3>Akselerasi GPU NVIDIA</h3><ul><li>CPU serial (sedikit core kuat) vs GPU paralel (ribuan core)</li><li>Inti NN = matrix multiplication -&gt; sangat paralel, GPU ~10--100x lebih cepat (ilustratif, tergantung ukuran/operasi)</li><li>Mixed precision: float16 untuk forward/backward (Tensor Cores), float32 untuk master weights -&gt; hemat memori ~50%</li><li>TensorRT optimasi model terlatih: layer fusion + precision calibration -&gt; inference 2--5x lebih cepat (TF-TRT, FP16)</li></ul><div class="codeblock">from tensorflow.keras import mixed_precision
+mixed_precision.set_global_policy(&#x27;mixed_float16&#x27;)
+Dense(10, &#x27;softmax&#x27;, dtype=&#x27;float32&#x27;)  # output FP32</div><div class="when">▸ Latih/inference model besar dengan cepat dan hemat memori</div></div></div>
+<div class="section"><div class="sectitle">Quick-Ref: Layer, Optimizer, Model &amp; Dataset</div><table><tr><th>Item</th><th>Pakai untuk</th><th>Catatan kunci</th></tr><tr><td>Dense</td><td>Fully-connected layer</td><td>Hidden activation=&#x27;relu&#x27;; output sesuai tugas</td></tr><tr><td>Conv2D</td><td>Ekstrak fitur gambar</td><td>Filter 3x3, activation=&#x27;relu&#x27;, padding=&#x27;same&#x27;</td></tr><tr><td>MaxPooling2D</td><td>Susutkan dimensi</td><td>32-&gt;16-&gt;8-&gt;4 sambil filter bertambah</td></tr><tr><td>Dropout(0.5)</td><td>Cegah overfitting</td><td>Matikan sebagian neuron acak saat training</td></tr><tr><td>SimpleRNN</td><td>Urutan pendek (&lt;10 langkah)</td><td>0 gates, cepat tapi mudah lupa</td></tr><tr><td>LSTM</td><td>Urutan panjang, teks, musik</td><td>3 gates + cell state; ~4x parameter, lebih lambat</td></tr><tr><td>GRU</td><td>Seimbang cepat &amp; akurat</td><td>2 gates (update/reset)</td></tr><tr><td>Adam</td><td>Optimizer default</td><td>Adaptif; selalu coba dulu</td></tr><tr><td>RMSprop</td><td>Optimizer untuk RNN/LSTM</td><td>Sesuaikan ukuran langkah</td></tr><tr><td>Fashion MNIST</td><td>Latihan NN (Act 1)</td><td>70K gambar 28x28 grayscale, 10 kelas, ~88% acc</td></tr><tr><td>CIFAR-10</td><td>Latihan CNN (Act 3)</td><td>60K gambar warna 32x32, 10 kelas</td></tr><tr><td>IMDB</td><td>Latihan LSTM sentimen (Act 4)</td><td>50K review, Embedding 64-dim, pad 200 kata</td></tr></table></div>
+<div class="section"><div class="sectitle">Istilah Kunci</div><div class="glossary"><div><b>Weights (bobot)</b> — Nilai kekuatan koneksi antar neuron yang dipelajari dan dioptimalkan selama training.</div><div><b>Activation function</b> — Fungsi non-linear (ReLU, Sigmoid, Tanh, Softmax) yang membuat jaringan bisa mengenali pola kompleks.</div><div><b>Loss</b> — Ukuran seberapa salah prediksi model; training berusaha menurunkannya (mis. crossentropy, mse).</div><div><b>Optimizer</b> — Algoritma update weights memakai gradient (Adam, SGD+Momentum, RMSprop).</div><div><b>Epoch / batch</b> — Epoch = 1 putaran melihat semua data; data diproses per batch (mis. batch_size=32).</div><div><b>Overfitting</b> — Model hafal data latih tapi buruk di data baru; terlihat saat kurva train &amp; val melebar.</div><div><b>Hidden state</b> — Memori RNN yang diteruskan antar timestep agar informasi langkah sebelumnya tersimpan.</div><div><b>Mixed precision</b> — Latih dengan float16 (cepat, Tensor Cores) + float32 (master weights) untuk hemat memori ~50%.</div></div></div>
+<div class="footer">Navasena Gen-ML Course · Module 02 Deep Learning Fundamentals — Cheat Sheet</div>
+</body></html>
