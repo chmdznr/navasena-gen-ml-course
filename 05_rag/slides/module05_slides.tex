@@ -1,0 +1,513 @@
+% ============================================================
+% Module 05: RAG Fundamentals
+% Custom Navasena Dark Beamer Theme
+% Compiler: xelatex
+% ============================================================
+\documentclass[aspectratio=169,t]{beamer}
+
+% ---- Fonts (xelatex) ----------------------------------------
+\usepackage{fontspec}
+\usepackage[sfdefault]{FiraSans}
+
+% ---- Core packages ------------------------------------------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% ============================================================
+% COLOR PALETTE (Navasena dark theme)
+% ============================================================
+\definecolor{nvbg}{HTML}{1A1A2E}
+\definecolor{nvdark}{HTML}{1A1A2E}
+\definecolor{nvcard}{HTML}{2D2D44}
+\definecolor{nvgreen}{HTML}{76B900}
+\definecolor{nvlightgreen}{HTML}{A3D944}
+\definecolor{nvwhite}{HTML}{FFFFFF}
+\definecolor{nvgray}{HTML}{AAAACC}
+\definecolor{nvdarkcard}{HTML}{23233A}
+\definecolor{nvred}{HTML}{EF5350}
+\definecolor{nvorange}{HTML}{FF6F00}
+\definecolor{nvblue}{HTML}{42A5F5}
+
+% ============================================================
+% LISTINGS STYLE
+% ============================================================
+\lstset{
+  backgroundcolor=\color{nvcard},
+  basicstyle=\ttfamily\small\color{nvwhite},
+  keywordstyle=\color{nvgreen}\bfseries,
+  stringstyle=\color{nvlightgreen},
+  commentstyle=\color{nvgray}\itshape,
+  numberstyle=\tiny\color{nvgray},
+  numbers=left,
+  numbersep=6pt,
+  frame=none,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2,
+  xleftmargin=8pt,
+  xrightmargin=4pt,
+}
+
+% ============================================================
+% BEAMER THEME — NAVASENA DARK
+% ============================================================
+\usetheme{default}
+\usecolortheme{default}
+
+\setbeamercolor{background canvas}{bg=nvbg}
+\setbeamercolor{normal text}{fg=nvwhite}
+\setbeamercolor{frametitle}{fg=nvwhite, bg=nvbg}
+\setbeamercolor{framesubtitle}{fg=nvgray, bg=nvbg}
+\setbeamercolor{title}{fg=nvgreen}
+\setbeamercolor{author}{fg=nvgray}
+\setbeamercolor{date}{fg=nvgray}
+\setbeamercolor{item}{fg=nvgreen}
+\setbeamercolor{subitem}{fg=nvlightgreen}
+\setbeamercolor{subsubitem}{fg=nvgray}
+\setbeamercolor{block title}{fg=nvwhite, bg=nvcard}
+\setbeamercolor{block body}{fg=nvwhite, bg=nvcard}
+
+\setbeamertemplate{footline}{%
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1ex,leftskip=2em]{author in head/foot}%
+      \color{nvgray}\small\textbf{RAG Fundamentals} \hfill \insertframenumber\,/\,\inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+}
+\setbeamertemplate{navigation symbols}{}
+
+% ============================================================
+% CUSTOM COMMANDS
+% ============================================================
+\newcommand{\acttitle}[3]{%
+  \begin{frame}[plain]
+    \vspace{1.5cm}
+    \begin{center}
+      {\color{nvgreen}\Huge\bfseries Act #1}\\[1.2em]
+      {\color{nvwhite}\Huge #2}\\[0.8em]
+      {\color{nvgray}\Large #3}
+    \end{center}
+  \end{frame}%
+}
+
+\title{RAG Fundamentals}
+\subtitle{Navasena Gen-ML Course}
+\author{Navasena}
+\date{}
+
+% ============================================================
+\begin{document}
+
+% Slide 1 — Title
+\begin{frame}[plain]
+  \vspace{1.0cm}
+  \begin{center}
+    {\color{nvgreen}\Huge\bfseries Module 05}\\[1.0em]
+    {\color{nvwhite}\Huge\bfseries RAG Fundamentals}\\[0.6em]
+    {\color{nvgray}\Large Retrieval-Augmented Generation}\\[1.8em]
+
+    \begin{tikzpicture}[scale=0.85, every node/.style={transform shape},
+        b/.style={draw=nvgreen, fill=nvcard, rounded corners=6pt, text=white, font=\small, minimum width=1.9cm, minimum height=0.9cm, align=center}]
+      \node[b] (q) {Pertanyaan};
+      \node[b, right=0.7cm of q] (r) {Retrieve};
+      \node[b, right=0.7cm of r] (g) {Generate};
+      \node[b, right=0.7cm of g, draw=nvorange] (a) {Jawaban};
+      \draw[->,thick,color=nvgreen] (q)--(r);
+      \draw[->,thick,color=nvgreen] (r)--(g);
+      \draw[->,thick,color=nvorange] (g)--(a);
+      \node[color=nvgray, font=\scriptsize] at (r.south) [below=2pt] {cari konteks};
+      \node[color=nvgray, font=\scriptsize] at (g.south) [below=2pt] {LLM jawab};
+    \end{tikzpicture}
+
+    \vspace{0.8em}
+    {\color{nvgray}\small Achmad Zaenuri \quad $\cdot$ \quad \today}
+  \end{center}
+\end{frame}
+
+% ── Act 1: Apa itu RAG? ───────────────────────────────────
+\acttitle{1}{Apa itu RAG?}{Memberi LLM akses ke pengetahuan eksternal}
+
+% Slide 2 — Masalah LLM
+\begin{frame}{Masalah LLM}
+  \framesubtitle{Kenapa LLM saja tidak cukup?}
+  \begin{itemize}
+    \item LLM menjawab dari \textbf{ingatan} hasil pelatihannya saja
+    \item[\textcolor{nvred}{$\bullet$}] Masalah 1: \textbf{halusinasi} --- mengarang jawaban meyakinkan tapi salah
+    \item[\textcolor{nvred}{$\bullet$}] Masalah 2: \textbf{knowledge cutoff} --- tak tahu kejadian setelah training
+    \item Contoh: tanya berita minggu lalu $\to$ LLM bisa salah / menebak
+    \item Akibatnya: jawaban tak bisa dipercaya untuk fakta terbaru / spesifik
+  \end{itemize}
+  \vspace{0.5em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
+    \centering\small\color{white}
+    LLM pintar berbahasa, tapi \textbf{bukan sumber kebenaran fakta} --- ingatannya terbatas dan kadang ngawur.
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide 3 — Solusi RAG
+\begin{frame}{Solusi: RAG}
+  \framesubtitle{Retrieval-Augmented Generation}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{RAG} $=$ \textbf{Retrieval} $+$ \textbf{Generation}
+        \item \textbf{Retrieval}: cari potongan info relevan dari dokumen (knowledge base)
+        \item \textbf{Generation}: LLM menyusun jawaban dari \textbf{context} yang ditemukan
+        \item Hasilnya: jawaban faktual, bisa di-update, halusinasi berkurang
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.8, every node/.style={transform shape},
+          b/.style={draw=nvgreen, fill=nvcard, rounded corners=5pt, text=white, font=\footnotesize, minimum width=3cm, minimum height=0.8cm, align=center}]
+        \node[b] (q) {Pertanyaan};
+        \node[b, below=0.5cm of q] (r) {Retrieval\\\scriptsize cari konteks};
+        \node[b, below=0.5cm of r, draw=nvorange] (g) {Generation\\\scriptsize LLM jawab};
+        \draw[->,thick,color=nvgreen] (q)--(r);
+        \draw[->,thick,color=nvorange] (r)--(g);
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \vspace{0.3em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \centering\small\color{white}
+    RAG tidak mengubah otak LLM --- ia \textbf{membekali} LLM dengan konteks faktual segar sebelum menjawab.
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide 4 — Analogi
+\begin{frame}{Analogi: Ujian Buka Buku}
+  \framesubtitle{LLM tidak menjawab dari ingatan saja}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textcolor{nvred}{\textbf{Tanpa RAG}} (tutup buku):
+      \begin{itemize}
+        \footnotesize
+        \item Jawab dari ingatan $\to$ mudah lupa / salah
+      \end{itemize}
+      \vspace{0.4em}
+      \textcolor{nvgreen}{\textbf{Dengan RAG}} (buka buku):
+      \begin{itemize}
+        \footnotesize
+        \item Boleh lihat "buku contekan" dulu
+        \item \textbf{Retrieval} $=$ buka halaman relevan dengan soal
+        \item Konteks dibekalkan ke LLM sebelum menjawab
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+      \resizebox{0.9\linewidth}{!}{%
+      \begin{tikzpicture}
+        \node[draw=nvgreen, fill=nvcard, rounded corners=8pt, text=white,
+              font=\small, minimum width=3.5cm, minimum height=2cm, align=center] {LLM\\[0.3em]\scriptsize\color{nvgray}+ buku contekan\\(knowledge base)};
+      \end{tikzpicture}%
+      }
+      \end{center}
+    \end{column}
+  \end{columns}
+  \vspace{0.3em}
+  \begin{center}\textcolor{nvlightgreen}{\small Dibekali konteks faktual dulu, baru menjawab --- bukan tebakan dari ingatan.}\end{center}
+\end{frame}
+
+% ── Act 2: Komponen RAG ───────────────────────────────────
+\acttitle{2}{Komponen RAG}{Embedding, FAISS, knowledge base, dan generator}
+
+% Slide 5 — Embeddings
+\begin{frame}[fragile]{Embeddings \& SentenceTransformer}
+  \framesubtitle{Mengubah teks menjadi angka yang bisa dibandingkan}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{Embedding}: teks $\to$ \textbf{vektor} (deretan angka)
+        \item Kalimat \textbf{mirip makna} $\to$ vektor \textbf{berdekatan}
+        \item Komputer paham jarak antar-angka, bukan kata
+        \item Model \textbf{all-MiniLM-L6-v2} via \textbf{SentenceTransformer}
+      \end{itemize}
+      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
+embedder = SentenceTransformer(
+  'sentence-transformers/all-MiniLM-L6-v2')
+v = embedder.encode(["ibu kota Prancis"])
+      \end{lstlisting}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+        \includegraphics[width=\linewidth]{figures/embedding_space.pdf}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 6 — FAISS
+\begin{frame}[fragile]{Similarity Search \& FAISS}
+  \framesubtitle{Mencari vektor terdekat dengan cepat}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{FAISS} (Facebook AI Similarity Search): pencari vektor mirip super cepat
+        \item \textbf{IndexFlatL2}: ukur \textbf{jarak Euclidean (L2)} antar vektor
+        \item Makin kecil jarak $\to$ makin mirip maknanya
+        \item Ambil \textbf{top-k} terdekat (notebook \texttt{k=1})
+        \item Tetap cepat walau knowledge base ribuan dokumen
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
+index = faiss.IndexFlatL2(
+            embedding_size)
+distances, indices = index.search(
+  query_embedding.astype('float32'), k)
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}\textcolor{nvlightgreen}{\small FAISS $=$ mesin pencari makna: dari query ke dokumen paling relevan dalam sekejap.}\end{center}
+\end{frame}
+
+% Slide 7 — Knowledge Base
+\begin{frame}[fragile]{Knowledge Base}
+  \framesubtitle{Sumber fakta yang dibaca sistem RAG}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{Knowledge base}: kumpulan dokumen / fakta sumber jawaban
+        \item Contoh: Paris, Python, Machine Learning, Tembok China, dll
+        \item Tiap dokumen di-\texttt{encode()} jadi vektor
+        \item Semua vektor masuk \textbf{FAISS} via \texttt{index.add()}
+        \item Tambah dokumen $=$ encode lalu masukkan (tanpa latih ulang)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
+knowledge_base = [
+  "...Paris...", "...Python...", ...]
+embeddings = embedder.encode(
+                knowledge_base)
+index.add(embeddings.astype('float32'))
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}\textcolor{nvlightgreen}{\small Knowledge base $=$ ingatan eksternal LLM: cukup tambah dokumen, tak perlu latih ulang.}\end{center}
+\end{frame}
+
+% Slide 8 — Generator
+\begin{frame}[fragile]{Generator LLM}
+  \framesubtitle{TinyLlama menyusun jawaban akhir}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{Generator}: LLM penulis jawaban --- \textbf{TinyLlama} 1.1B Chat
+        \item \texttt{torch.float32} (presisi penuh) agar \textbf{stabil di CPU}
+        \item Dibungkus \texttt{pipeline("text-generation")}
+        \item \texttt{temperature=0.3} $\to$ fokus; makin tinggi makin acak
+        \item \texttt{top\_p=0.9} $\to$ \textbf{nucleus sampling}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
+generator = pipeline(
+  "text-generation",
+  model=model, tokenizer=tokenizer,
+  max_length=512, do_sample=True,
+  temperature=0.3, top_p=0.9)
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}\textcolor{nvlightgreen}{\small TinyLlama float32 $+$ sampling rendah: jawaban fokus berbasis konteks, stabil tanpa GPU.}\end{center}
+\end{frame}
+
+% ── Act 3: Pipeline RAG ───────────────────────────────────
+\acttitle{3}{Pipeline RAG}{Retrieve, Augment, Generate}
+
+% Slide 9 — Alur End-to-End
+\begin{frame}{Alur End-to-End}
+  \framesubtitle{Tiga langkah dari pertanyaan ke jawaban}
+  \begin{center}
+    \includegraphics[width=0.96\textwidth]{figures/rag_pipeline.png}
+  \end{center}
+  \vspace{0.3em}
+  \begin{center}\textcolor{nvlightgreen}{\small \textbf{Retrieve} $\to$ \textbf{Augment} $\to$ \textbf{Generate}: LLM dibekali konteks faktual dulu (fungsi \texttt{ask\_question()}).}\end{center}
+\end{frame}
+
+% Slide 10 — Retrieve
+\begin{frame}[fragile]{Langkah 1 --- Retrieve}
+  \framesubtitle{Mencari konteks paling relevan}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item Query di-\textbf{embed} jadi \textbf{vektor}
+        \item Dicocokkan ke \textbf{FAISS} (\texttt{IndexFlatL2})
+        \item Ambil \textbf{top-k} terdekat (\texttt{k=1})
+        \item Teks asli diambil dari \texttt{knowledge\_base}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny\color{nvwhite}]
+def retrieve_relevant_context(query, k=1):
+    q_emb = embedder.encode([query])
+    dist, idx = index.search(
+        q_emb.astype('float32'), k)
+    docs = [knowledge_base[i] for i in idx[0]]
+    return "\n".join(docs)
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}\textcolor{nvlightgreen}{\small Makin dekat letak vektor, makin mirip maknanya --- FAISS cari tetangga terdekat dengan cepat.}\end{center}
+\end{frame}
+
+% Slide 11 — Augment
+\begin{frame}{Langkah 2 --- Augment}
+  \framesubtitle{Menyisipkan konteks ke dalam prompt}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{Augment}: perkaya \textbf{prompt} dengan konteks hasil retrieve
+        \item Konteks $+$ pertanyaan asli digabung jadi satu prompt
+        \item Format: bagian \texttt{Context:} lalu \texttt{Question:}
+        \item LLM punya bahan faktual, bukan sekadar menebak
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.8, every node/.style={transform shape},
+          b/.style={draw=nvgreen, fill=nvcard, rounded corners=4pt, text=white, font=\scriptsize, minimum width=2.2cm, minimum height=0.7cm, align=center}]
+        \node[b] (q) at (0,1) {Pertanyaan};
+        \node[b] (c) at (0,0) {Konteks};
+        \node[b, draw=nvorange, minimum width=2.4cm] (p) at (3,0.5) {Prompt};
+        \node[b, draw=nvblue] (l) at (5.6,0.5) {LLM};
+        \draw[->,thick,color=nvgreen] (q)--(p);
+        \draw[->,thick,color=nvgreen] (c)--(p);
+        \draw[->,thick,color=nvorange] (p)--(l);
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \vspace{0.3em}
+  \begin{center}\textcolor{nvlightgreen}{\small Augment $=$ jembatan antara \textbf{retrieve} dan \textbf{generate}: konteks $+$ pertanyaan $\to$ satu prompt.}\end{center}
+\end{frame}
+
+% Slide 12 — Generate
+\begin{frame}[fragile]{Langkah 3 --- Generate}
+  \framesubtitle{LLM menjawab berbasis konteks}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{Generation}: LLM susun jawaban dari prompt yang diperkaya
+        \item \textbf{TinyLlama} baca konteks $\to$ tulis jawaban relevan
+        \item \texttt{float32} (bukan float16) agar stabil di CPU
+        \item \texttt{temperature=0.3} $\to$ fokus, kurangi \textbf{halusinasi}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
+response = generator(prompt,
+  max_length=512, do_sample=True,
+  temperature=0.3,
+  num_return_sequences=1)
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}\textcolor{nvlightgreen}{\small Berbekal konteks faktual, jawaban LLM lebih akurat \& tidak mengarang --- inti nilai RAG.}\end{center}
+\end{frame}
+
+% ── Act 4: Praktik & Lanjutan ─────────────────────────────
+\acttitle{4}{Praktik \& Lanjutan}{Kode, batasan, dan langkah berikutnya}
+
+% Slide 13 — Kode Sistem RAG
+\begin{frame}[fragile]{Kode Sistem RAG}
+  \framesubtitle{Dua fungsi inti (disederhanakan): ambil konteks lalu susun jawaban}
+  \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
+def retrieve_relevant_context(query, k=1):
+    q_emb = embedder.encode([query])
+    dist, idx = index.search(q_emb.astype('float32'), k)
+    return "\n".join(knowledge_base[i] for i in idx[0])
+
+def generate_response(query, context):
+    prompt = build_tinyllama_prompt(context, query)   # Context: ... Question: ...
+    out = generator(prompt)[0]['generated_text']
+    return clean_response(out)
+
+# ask_question(): retrieve -> augment prompt -> generate
+  \end{lstlisting}
+  \vspace{0.1em}
+  \begin{center}\textcolor{nvlightgreen}{\small Pola RAG: \textbf{retrieve} $\to$ \textbf{augment} prompt $\to$ \textbf{generate}. (Notebook asli pakai chat template TinyLlama.)}\end{center}
+\end{frame}
+
+% Slide 14 — Tips & Batasan
+\begin{frame}{Tips \& Batasan}
+  \framesubtitle{Kualitas jawaban bergantung pada beberapa pilihan}
+  \begin{itemize}
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Ukuran chunk}: terlalu besar $\to$ konteks kabur; terlalu kecil $\to$ info penting hilang
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Nilai k}: berapa konteks diambil; notebook \texttt{k=1} (fokus), kadang butuh lebih
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Kualitas embedding}: model (all-MiniLM-L6-v2) menentukan ketepatan dokumen relevan
+    \item[\textcolor{nvred}{$\bullet$}] RAG \textbf{bukan jaminan 100\% benar}: konteks kurang relevan $\to$ jawaban tetap meleset
+  \end{itemize}
+  \vspace{0.5em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
+    \centering\small\color{white}
+    RAG \textbf{mengurangi} halusinasi, bukan menghapusnya. Jawaban hanya sebaik konteks yang berhasil diambil.
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide 15 — Ringkasan & Lanjutan
+\begin{frame}{Ringkasan \& Lanjutan}
+  \framesubtitle{Empat komponen RAG dan jembatan ke Module 06}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.35}
+  {\footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}p{0.20\linewidth}p{0.42\linewidth}p{0.32\linewidth}@{}}
+    \toprule
+    \rowcolor{nvcard!50}
+    \textbf{Komponen} & \textbf{Library / Model} & \textbf{Tujuan} \\
+    \midrule
+    Embedding & SentenceTransformer (all-MiniLM-L6-v2) & Ubah teks jadi vektor \\
+    Index & FAISS (IndexFlatL2) & Cari vektor terdekat cepat \\
+    Generator & TinyLlama-1.1B-Chat (float32) & Susun jawaban akhir \\
+    Pipeline & Gabungan 1--3 & Retrieve $\to$ augment $\to$ generate \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \end{center}
+  \vspace{0.4em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
+    \centering\small\color{nvlightgreen}
+    \textbf{Module 06}: RAG yang sama dipercepat GPU NVIDIA (\texttt{faiss-gpu} $+$ presisi \texttt{float16}).
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide 16 — Thank You
+\begin{frame}[plain]
+  \vspace{2cm}
+  \begin{center}
+    {\color{nvgreen}\Huge\bfseries Terima Kasih!}\\[1.5em]
+    {\color{nvgray}\Large Pertanyaan? Diskusi?}\\[2em]
+    \begin{beamercolorbox}[rounded=true,shadow=false,sep=8pt,wd=10cm]{block body}
+      \centering\color{white}
+      \textbf{RAG Fundamentals} \quad $\cdot$ \quad Modul 05 \\
+      Navasena Gen-ML Course
+    \end{beamercolorbox}
+  \end{center}
+\end{frame}
+
+\end{document}

@@ -1,0 +1,11 @@
+%%{init: {'theme':'dark','flowchart':{'htmlLabels':true,'curve':'basis'}}}%%
+flowchart LR
+    Q["Pertanyaan"] --> E["Embedding"]
+    E --> S["FAISS Search"]
+    S --> K["Konteks Relevan"]
+    K --> P["Prompt + Konteks"]
+    P --> L["LLM (TinyLlama)"]
+    L --> A["Jawaban"]
+
+    classDef key fill:#76B900,stroke:#5a8c00,stroke-width:2px,color:#0a0a0a;
+    class S,L key;
