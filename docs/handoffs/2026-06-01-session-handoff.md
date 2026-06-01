@@ -95,6 +95,13 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Catch menarik: M05 "RAG = Retrieve+Augment+Generate" salah-ekspansi akronim (A=Augmented, bukan verb Augment) → diperbaiki jadi "Pipeline RAG: Retrieve→Augment→Generate".
 - Env note: context-mode MCP sempat disconnect; pakai Bash/Read untuk processing. Cheatsheet HTML escaped (`'`→`&#x27;`, `>`→`&gt;`) — fix via python str.replace pakai bentuk escaped.
 
+### Update Jun 2 — kaidah penulisan + branding author
+- Cek narasi BI-Engineering (anti over-translation): **compliant** — 0 over-translation di seluruh konten (1 hit "menggelar karpet" = analogi sah Flatten, bukan anti-pattern "deploy").
+- Author di SEMUA materi: `Achmad Zaenuri` → **`Navasena AI`** (6 deck byline + `\author`, M01 title node). Commit `756a7d8`.
+- Contoh NER (PERSON) di M03 deck/cheatsheet/quiz: `Achmad Zaenuri` → **`Budi Santoso`** (butuh nama orang generik untuk entity demo).
+- nb04 (`04_llm/01_llm_basics.ipynb`): 15 blok metadata Colab `user` (displayName + userId) dihapus.
+- Konvensi utk next session: author = "Navasena AI"; contoh nama orang = "Budi Santoso". Verifikasi: 0 "Achmad Zaenuri" tersisa, 6 deck recompile bersih.
+
 ## STATUS AKHIR sesi (Jun 2): Materi lengkap untuk 6 modul
 - Per modul: notebook (+ theory cells), slide deck, cheat sheet (seragam), quiz interaktif. Semua sudah di-QC (qc-laporan, 0 issue tersisa). Cek push untuk commit terakhir.
 
