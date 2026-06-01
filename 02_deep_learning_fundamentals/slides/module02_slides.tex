@@ -266,7 +266,7 @@ history = model.fit(X_train, y_train,
         \item Test set: tipikal $\sim$88\% accuracy (per run berbeda)
         \item \textbf{Confusion matrix}: kelas mana sering tertukar
         \item Shirt vs T-shirt sering tertukar (mirip visual)
-        \item Softmax beri probabilitas SETIAP 10 kelas
+        \item Softmax beri probabilitas untuk tiap dari 10 kelas
         \item Prediksi $=$ kelas dengan probabilitas tertinggi
       \end{itemize}
     \end{column}
@@ -356,11 +356,11 @@ satu_layer = W_gabungan @ x
           \node[color=nvgray, font=\tiny] at (\x+0.3,-0.25) {\lab};
         }
         \node[color=nvgreen, font=\small\bfseries] at (1.3,2.7) {0.70};
-        \node[color=nvwhite, font=\tiny] at (-0.4,1.4) {logits};
+        \node[color=nvwhite, font=\tiny, rotate=90] at (-0.5,1.4) {probabilitas};
         \draw[->,thick,color=nvwhite] (-0.2,-0.6) -- (5,-0.6) node[right,font=\tiny]{kelas};
       \end{tikzpicture}
       \\[0.3em]
-      {\tiny\color{nvgray}logits $\to$ softmax $\to$ probabilitas (jumlah $=1$)}
+      {\tiny\color{nvgray}angka bawah $=$ \textbf{logit}; tinggi batang $=$ \textbf{probabilitas} (softmax, jumlah $=1$)}
       \end{center}
     \end{column}
   \end{columns}
@@ -465,12 +465,12 @@ model.compile(
     \begin{column}{0.54\textwidth}
       \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny\color{nvwhite}]
 model = Sequential([
-  Conv2D(32,(3,3),'relu',padding='same',
+  Conv2D(32,(3,3),activation='relu',padding='same',
          input_shape=(32,32,3)),
   MaxPooling2D(),               # 32->16
-  Conv2D(64,(3,3),'relu',padding='same'),
+  Conv2D(64,(3,3),activation='relu',padding='same'),
   MaxPooling2D(),               # 16->8
-  Conv2D(128,(3,3),'relu',padding='same'),
+  Conv2D(128,(3,3),activation='relu',padding='same'),
   MaxPooling2D(),               # 8->4
   Flatten(), Dense(128,'relu'),
   Dropout(0.5), Dense(10,'softmax')
@@ -547,7 +547,7 @@ model = Sequential([base,
     \midrule
     Data dibutuhkan & Banyak & Sedikit \\
     Kecepatan latih & Lambat & Cepat (layer di-freeze) \\
-    Gambar resolusi tinggi & Kurang akurat & Biasanya jauh unggul \\
+    Data berlabel terbatas & Mudah overfit & Unggul (fitur sudah jadi) \\
     Gambar kecil (32$\times$32) & Bisa bersaing & Tidak selalu unggul \\
     \bottomrule
   \end{tabular}%
@@ -733,7 +733,7 @@ model = Sequential([
       \begin{itemize}
         \footnotesize
         \item \textbf{CPU}: sedikit core kuat, kerja \textbf{serial}
-        \item \textbf{GPU}: ribuan core sederhana, kerja \textbf{parallel}
+        \item \textbf{GPU}: ribuan core sederhana, kerja \textbf{paralel}
         \item Inti NN $=$ \textbf{matrix multiplication}, sangat paralel
       \end{itemize}
     \end{column}

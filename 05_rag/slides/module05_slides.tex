@@ -237,7 +237,7 @@
       \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
 embedder = SentenceTransformer(
   'sentence-transformers/all-MiniLM-L6-v2')
-v = embedder.encode(["ibu kota Prancis"])
+v = embedder.encode(["capital of France"])
       \end{lstlisting}
     \end{column}
     \begin{column}{0.48\textwidth}
@@ -258,7 +258,7 @@ v = embedder.encode(["ibu kota Prancis"])
         \item \textbf{FAISS} (Facebook AI Similarity Search): pencari vektor mirip super cepat
         \item \textbf{IndexFlatL2}: ukur \textbf{jarak Euclidean (L2)} antar vektor
         \item Makin kecil jarak $\to$ makin mirip maknanya
-        \item Ambil \textbf{top-k} terdekat (notebook \texttt{k=1})
+        \item Ambil \textbf{top-k} terdekat (notebook \texttt{k=1} untuk fokus; umumnya 3--5)
         \item Tetap cepat walau knowledge base ribuan dokumen
       \end{itemize}
     \end{column}
@@ -414,7 +414,7 @@ def retrieve_relevant_context(query, k=1):
         \item \textbf{Generation}: LLM susun jawaban dari prompt yang diperkaya
         \item \textbf{TinyLlama} baca konteks $\to$ tulis jawaban relevan
         \item \texttt{float32} (bukan float16) agar stabil di CPU
-        \item \texttt{temperature=0.3} $\to$ fokus, kurangi \textbf{halusinasi}
+        \item \texttt{temperature=0.3} $\to$ jawaban fokus/konsisten (kurang ngawur)
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}

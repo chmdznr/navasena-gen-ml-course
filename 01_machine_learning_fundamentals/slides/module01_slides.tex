@@ -441,7 +441,7 @@
       \midrule
       MAE  & Rata-rata kesalahan          & $\rightarrow 0$   \\
       RMSE & Kesalahan (penalti besar)    & $\rightarrow 0$   \\
-      R$^2$   & \% data yang dijelaskan  & $\rightarrow 1.0$ \\
+      R$^2$   & \% variasi yang dijelaskan  & $\rightarrow 1.0$ \\
       MAPE & Kesalahan dalam persen       & $< 10\%$          \\
       \bottomrule
     \end{tabular}
@@ -844,7 +844,7 @@
             minimum width=2.8cm, minimum height=0.6cm, font=\small\bfseries]
             at (1.5, -0.9) {Satu Jawaban};
     \end{tikzpicture}\\[0.3em]
-    \scriptsize\color{gray} 500 pohon, masing-masing belajar dari data berbeda
+    \scriptsize\color{gray} ratusan pohon, masing-masing belajar dari data berbeda
     \end{center}
   \end{column}
   \begin{column}{0.52\textwidth}
@@ -1350,7 +1350,7 @@ XGBClassifier(device="cuda")  # Hanya ini yang berubah!
 \begin{frame}{Modul 1 — Selesai!}
 \begin{center}
 {\small
-\begin{tabular}{clll}
+\begin{tabular}{cll}
   \hline
   \rowcolor{nvgreen!80}
   \textbf{\textcolor{nvdark}{\#}} &

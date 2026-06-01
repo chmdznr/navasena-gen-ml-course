@@ -306,7 +306,7 @@
         \item \textbf{Attention} $=$ model "memperhatikan" kata paling relevan
         \item Saat memproses 1 kata, ia menimbang semua kata lain
         \item Model belajar \textbf{"itu"} merujuk ke \textbf{"buku"}, bukan "meja"
-        \item Kunci LLM paham konteks kalimat panjang
+        \item Kunci agar LLM paham konteks kalimat panjang
       \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -447,7 +447,7 @@ pipe("My name is")
         \item \texttt{pipeline("sentiment-analysis")} di atas \textbf{AutoModelForSequence\-Classification}
         \item \textbf{prajjwal1/bert-tiny} baru di-pretrain, \textbf{belum} punya head klasifikasi terlatih
         \item Akibatnya label $=$ \textbf{LABEL\_0/LABEL\_1}, score $\sim$0.5 (tebakan acak)
-        \item Untuk sentimen nyata: pakai model \emph{fine-tuned} (mis. \textbf{distilbert-sst-2})
+        \item Untuk sentimen nyata: pakai model \emph{fine-tuned} (mis. \texttt{distilbert} di \textbf{SST-2})
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
@@ -602,7 +602,7 @@ for prompt in test_prompts:
         \footnotesize
         \item Model kecil: \texttt{opt-350m}, \texttt{bert-tiny}
         \item Contoh model besar gated: \texttt{Llama-2-7b-chat-hf}
-        \item \texttt{float16} $\to$ hemat memori GPU separuhnya
+        \item \texttt{float16} $\to$ bobot $\sim$setengah memori vs float32
         \item Butuh GPU: Colab Tesla T4 (\texttt{!nvidia-smi})
       \end{itemize}
     \end{column}

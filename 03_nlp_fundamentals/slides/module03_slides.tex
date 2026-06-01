@@ -227,7 +227,7 @@
         \item Morphology sederhana\\
               \texttt{run $\to$ runs $\to$ running}
         \item Word order tetap (SVO)
-        \item Stem-based
+        \item Imbuhan terbatas (\texttt{-s, -ed, -ing})
       \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -330,8 +330,8 @@
         \item Kata $\to$ bentuk dasar
         \item \texttt{menjalankan} $\to$ \texttt{jalan}
         \item \texttt{kebersihan} $\to$ \texttt{bersih}
-        \item[\textcolor{nvgreen}{\checkmark}] Lebih akurat dari \emph{stemming}
-        \item[\textcolor{nvgreen}{\checkmark}] Sastrawi: \texttt{Stemmer.stem()}
+        \item[\textcolor{nvgreen}{\checkmark}] Lebih akurat dari \emph{stemming} (beri bentuk kamus)
+        \item[\textcolor{nvgreen}{\checkmark}] nlp-id: \texttt{Lemmatizer().lemmatize()}
       \end{itemize}
       \vspace{0.3em}
       \texttt{\footnotesize["menjalankan", "membaca", "kebersihan"]}\\
@@ -445,7 +445,7 @@
         \begin{itemize}
           \footnotesize
           \item \texttt{TextBlob} (Inggris)
-          \item \texttt{nlp-id} (Indonesia)
+          \item \texttt{IndoBERT} / lexicon (Indonesia)
         \end{itemize}
       \end{itemize}
     \end{column}
@@ -613,7 +613,7 @@
 \end{frame}
 
 % Slide 16 — Tools & Setup
-\begin{frame}{Setup \& Tools}
+\begin{frame}[fragile]{Setup \& Tools}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
       \textcolor{nvgreen}{\textbf{Install library:}}
