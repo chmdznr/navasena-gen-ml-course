@@ -66,7 +66,14 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Slide deck: 01 (48 hal), 02 (33), 03 (20), 04 (23), 05 (20), 06 (21).
 - Theory cells: 03, 04, 05, 06 ✅ (01/02 notebook sudah lengkap dari awal).
 - Semua di-push ke origin (kecuali Module 06 deck `a68e7cf` + handoff ini bila belum).
-- Sisa pekerjaan opsional (defer): cheat sheet PDF Modul 03-06; quiz/assignment; tutorial video script.
+- Sisa pekerjaan opsional (defer): ~~cheat sheet PDF Modul 03-06~~ ✅ SELESAI (lihat update Jun 2); quiz/assignment; tutorial video script.
+
+### Update Jun 2 — Cheat sheet Modul 03-06 selesai
+- Format: infografik HTML→PDF tema TERANG + aksen Navasena hijau, 1 halaman A4 padat (konsisten dgn cheat sheet M01/02 yg sudah ada). Commit `ba108d7`.
+- File di root tiap modul: `<topic>-cheatsheet.html` (SOURCE, improvement vs M01/02 yg tanpa source) + `.pdf`.
+- Pipeline render: headless Chrome `--headless=new --no-pdf-header-footer --print-to-pdf` (Chrome di `/Applications/Google Chrome.app/...`). Assembler: `/tmp/cheat_assemble.py` (template CSS + content JSON → HTML). Konten via workflow (4 agent draft + accuracy review), sumber = deck .tex yg sudah di-QC.
+- Struktur tiap cheat sheet: header + pipeline strip + grid kartu konsep (3 kolom) + tabel quick-ref library/model + glossary istilah. Semua verified 1 halaman.
+- CATATAN: M01/02 cheat sheet lama = infografik raster tema terang (700K-1.3M, tanpa source); M03-06 baru = vector HTML/PDF (~340K, ada source). Gaya selaras tapi M03-06 lebih ringkas (1 hal vs tall-flowing).
 
 ### Update Jun 2 — QC menyeluruh 6 deck selesai
 - QC mechanical (semua deck): compile bersih, 0 overfull, theme/footer konsisten, 0 NCA-GENL, 0 placeholder.
