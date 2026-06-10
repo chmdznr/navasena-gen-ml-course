@@ -126,6 +126,9 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - QC lintas-artefak: bahasa OK (0 anti-pattern), bergantian 0 hits, 1 overfull pre-existing 0.528pt (LSTM frame baris 662, di bawah guard threshold 2pt), cheatsheet 1 halaman, branding 0 hits.
 - Status M02: **6 notebook, 6 act deck — mapping 1:1 dipertahankan**. Deck M02 sekarang 39 halaman.
 - Spec: `docs/superpowers/specs/2026-06-10-module02-generative-ai-design.md`. Plan: `docs/superpowers/plans/2026-06-10-module02-generative-ai.md`.
+- Lanjutan Jun 10: user sudah test full run di Colab T4 — SEMUA cell jalan tanpa error, total < 5 menit (estimasi awal 15 menit terlalu konservatif; klaim runtime di notebook sudah dikalibrasi ulang).
+- Bagian D (Diffusion) ditambahkan sebagai section reguler (commit `30bb6e3`): forward diffusion di MNIST (tanpa training) + reverse diffusion via SD-Turbo (`stabilityai/sd-turbo`, diffusers, fp16, 4 step, callback_on_step_end untuk visualisasi denoising per step). Notebook jadi 33 cell (15 md/18 code). API diverifikasi terhadap docs resmi diffusers; BELUM dijalankan di GPU — perlu satu kali test run di Colab T4 oleh user.
+- Autoregressive transformer sengaja TIDAK didemokan di M02 (overlap dengan Module 04 yang sudah hands-on LLM).
 
 ## Pola Kerja yang Sudah Terbentuk
 
