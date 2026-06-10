@@ -894,17 +894,19 @@ Dense(10, 'softmax', dtype='float32')
 \end{frame}
 
 \begin{frame}{GAN: Generator vs Discriminator}
+  \begin{center}
+    \includegraphics[width=0.92\linewidth]{figures/gan_architecture.png}
+  \end{center}
+  \vspace{0.3em}
   \begin{columns}[T]
-    \begin{column}{0.52\textwidth}
-      \begin{center}
-        % kalau PNG portrait: ganti ke height=0.62\textheight
-        \includegraphics[width=\linewidth]{figures/gan_architecture.png}
-      \end{center}
-    \end{column}
-    \begin{column}{0.44\textwidth}
+    \begin{column}{0.48\textwidth}
       \begin{itemize}
         \item \textbf{Generator} = pemalsu: noise $\to$ gambar palsu
         \item \textbf{Discriminator} = kurator: asli atau palsu?
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
         \item Dilatih \textbf{bergantian} --- saling memaksa jadi lebih baik
         \item DCGAN: generator \texttt{Conv2DTranspose}, discriminator \texttt{Conv2D}
       \end{itemize}
