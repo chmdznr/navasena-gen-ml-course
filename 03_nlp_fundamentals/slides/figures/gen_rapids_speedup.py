@@ -1,7 +1,7 @@
 """
 Generate rapids_speedup.pdf — speedup GPU vs CPU operasi NLP (Module 03 slides).
 ANGKA dari benchmark_results.json hasil smoke-test Colab T4 notebook
-02_nlp_on_steroids. Sebelum smoke-test: nilai ESTIMASI (jangan dipakai final).
+02_nlp_on_steroids (dijalankan 2026-06-11, ±150 ribu paragraf Wikipedia ID).
 """
 
 import os
@@ -13,12 +13,11 @@ import numpy as np
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "rapids_speedup.pdf")
 
 # ── Data (kunci: operasi → speedup CPU/GPU) ────────────────────────────────
-# >>> ESTIMASI SEMENTARA — WAJIB diganti angka benchmark_results.json (Task 7) <<<
+# Hasil smoke-test Colab T4: CPU 5.00s/13.54s/22.98s vs GPU 0.187s/0.555s/0.283s
 SPEEDUP = {
-    "tokenize":   8.0,
-    "word count": 6.0,
-    "bigram":     10.0,
-    "TF-IDF + LogReg": 4.0,
+    "tokenize":   26.7,
+    "word count": 24.4,
+    "bigram":     81.3,
 }
 
 BG_COLOR  = "#1A1A2E"
