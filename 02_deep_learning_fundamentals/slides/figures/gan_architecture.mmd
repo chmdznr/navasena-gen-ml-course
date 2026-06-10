@@ -1,0 +1,14 @@
+flowchart LR
+    Z(["noise z<br/>(100 angka acak)"]) --> G["Generator<br/>Conv2DTranspose"]
+    G --> F["Gambar palsu<br/>28x28"]
+    R["Gambar asli<br/>MNIST"] --> D{"Discriminator<br/>Conv2D"}
+    F --> D
+    D --> O(["Asli atau palsu?"])
+    O -. "feedback: makin jago menipu" .-> G
+    O -. "feedback: makin jago membedakan" .-> D
+    style Z fill:#2D2D44,stroke:#76B900,color:#EEEEEE
+    style G fill:#2D2D44,stroke:#76B900,color:#A3D944
+    style F fill:#2D2D44,stroke:#FF6F00,color:#EEEEEE
+    style R fill:#2D2D44,stroke:#42A5F5,color:#EEEEEE
+    style D fill:#2D2D44,stroke:#76B900,color:#A3D944
+    style O fill:#2D2D44,stroke:#76B900,color:#EEEEEE
