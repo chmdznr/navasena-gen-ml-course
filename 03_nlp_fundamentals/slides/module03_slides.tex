@@ -705,6 +705,58 @@ sentimen("Gw suka bgt sama teknologi NLP nih")
   \end{columns}
 \end{frame}
 
+% Slide 16b — RAPIDS: NLP Klasik di GPU
+\begin{frame}{NLP on Steroids: NVIDIA RAPIDS}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \textcolor{nvgreen}{\textbf{Stack RAPIDS untuk NLP}}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{cuDF} — pandas versi GPU
+        \item \textbf{nvtext} — tokenize, n-gram, minhash di GPU
+        \item \textbf{cuML} — scikit-learn versi GPU
+        \item Pre-installed di Colab (runtime GPU)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \textcolor{nvorange}{\textbf{Kapan GPU menang?}}
+      \begin{itemize}
+        \footnotesize
+        \item Data besar (puluhan ribu dokumen ke atas)
+        \item Operasi string yang seragam \& masif
+        \item Overhead transfer CPU$\to$GPU tertutupi
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.6em}
+  \centering\footnotesize\textcolor{nvgray}{Hands-on: notebook \texttt{02\_nlp\_on\_steroids}}
+\end{frame}
+
+% Slide 16c — Zero Code Change
+\begin{frame}[fragile]{Zero Code Change: cudf.pandas \& cuml.accel}
+  \begin{lstlisting}
+# CPU: pandas + sklearn biasa
+python pipeline.py
+
+# GPU: file SAMA, nol perubahan kode
+python -m cudf.pandas -m cuml.accel pipeline.py
+  \end{lstlisting}
+  \vspace{0.4em}
+  \begin{itemize}
+    \item \texttt{cudf.pandas}: operasi pandas dialihkan ke GPU, sisanya \textit{fallback} otomatis ke CPU
+    \item \texttt{cuml.accel}: estimator scikit-learn $\to$ cuML di GPU
+    \item Akurasi identik — yang berubah hanya \textbf{waktu}
+  \end{itemize}
+\end{frame}
+
+% Slide 16d — Seberapa Cepat?
+\begin{frame}{Seberapa Cepat? (Colab T4, 150 ribu paragraf Wikipedia ID)}
+  \begin{center}
+    \includegraphics[width=0.88\textwidth]{figures/rapids_speedup.pdf}
+  \end{center}
+  \footnotesize\textcolor{nvgray}{Diukur langsung di notebook \texttt{02\_nlp\_on\_steroids} — angka di mesinmu bisa sedikit berbeda.}
+\end{frame}
+
 % Slide 17 — Next Steps
 \begin{frame}{Lanjutan: Modul 04 -- LLM}
   \begin{itemize}
