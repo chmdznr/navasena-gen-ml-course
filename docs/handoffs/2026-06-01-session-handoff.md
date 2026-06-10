@@ -130,6 +130,17 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - Bagian D (Diffusion) ditambahkan sebagai section reguler (commit `30bb6e3`): forward diffusion di MNIST (tanpa training) + reverse diffusion via SD-Turbo (`stabilityai/sd-turbo`, diffusers, fp16, 4 step, callback_on_step_end untuk visualisasi denoising per step). Notebook jadi 33 cell (15 md/18 code). API diverifikasi terhadap docs resmi diffusers; BELUM dijalankan di GPU — perlu satu kali test run di Colab T4 oleh user.
 - Autoregressive transformer sengaja TIDAK didemokan di M02 (overlap dengan Module 04 yang sudah hands-on LLM).
 
+### Update Jun 10 — Revamp Module 03 NLP SELESAI
+- Commits: `6de044e` (fix EN notebook), `2732393` (3 section baru notebook ID), `61f5a9b` (soften klaim multilingual tokenizer + drop Sastrawi dari intro), `6db5107` (Act 5 deck M03 + accuracy fixes), `3f9dbb8` (reframe 2 frame M04 jadi recap), `de9e058` (cheatsheet + quiz), `c36d3b6` (nit: stale Sastrawi di Act 1 + markdown spacing EN).
+- **Bug fix notebook EN** (`01_nlp_fundamentals_en.ipynb`): NLTK `punkt_tab` (resource baru menggantikan `punkt`) + metodologi klasifikasi diperbaiki (split dulu baru vectorize — tidak ada data leakage). Smoke run: accuracy 0.82.
+- **Notebook ID** (`01_nlp_fundamentals_id.ipynb`) 28 → 45 cell: Section 8 (kata ke vektor / embedding), Section 9 (subword tokenization), Section 10 (IndoBERT sentiment). Penyesuaian contoh: kalimat K2 jadi "Aku gemar..." dan contoh netral jadi "Rapat dijadwalkan...". Model HF yang dipakai: `paraphrase-multilingual-MiniLM-L12-v2` (sentence-transformers) + `w11wo/indonesian-roberta-base-sentiment-classifier` (IndoBERT sentiment).
+- **Deck M03** 23 → 27 halaman: Act 5 baru "Dari Kata ke Vektor" + 6 accuracy fixes + renumber Act. Snippet hasil di deck (token subword, label IndoBERT) diambil dari output smoke-run nyata.
+- **Deck M04**: 2 frame (tokenization & embedding) di-reframe sebagai recap Module 03 — batas materi: M03 = representasi (token/vektor/embedding), M04 = arsitektur (transformer/attention/LLM).
+- **Cheatsheet**: 11 kartu / 12 entri glossary, tetap 1 halaman. **Quiz**: 15 soal.
+- QC lintas-artefak (Task 6): bahasa OK (0 anti-pattern), Sastrawi 0 hits di deck M03, deck log 0 overfull (27 hal), cheatsheet 1 halaman, branding 0 hits (NCA-GENL/Achmad).
+- ⚠️ Catatan: notebook ID dan EN **BELUM diuji ulang penuh di Colab** oleh user (smoke-run lokal saja); network sempat down saat sesi.
+- Plan: `docs/superpowers/plans/2026-06-10-module03-nlp-revamp.md`.
+
 ## Pola Kerja yang Sudah Terbentuk
 
 ### 1. Build artifacts & gitignore
