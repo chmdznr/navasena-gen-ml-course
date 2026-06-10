@@ -297,7 +297,7 @@
         \footnotesize
         \item \textbf{Token} = unit terkecil (kata, sub-kata, atau karakter)
         \item Contoh: \texttt{"Saya belajar NLP"} $\to$ 3 token
-        \item Bahasa Indonesia: lebih challenging karena imbuhan
+        \item Imbuhan membuat lemmatization/stemming Indonesia lebih menantang
         \item[\textcolor{nvgreen}{\checkmark}] NLTK: \texttt{word\_tokenize()}
         \item[\textcolor{nvgreen}{\checkmark}] spaCy: \texttt{nlp(text)}
       \end{itemize}
@@ -386,6 +386,8 @@
       \end{itemize}
     \end{column}
   \end{columns}
+  \vspace{0.3em}
+  {\color{nvgray}\scriptsize Catatan: label di slide memakai tagset UD (ilustratif); nlp-id memakai NNP/VB/NN/IN.}
 \end{frame}
 
 % Slide 9 — Word Frequency (Figure)
@@ -429,6 +431,7 @@
           \textbf{ORG} (organisasi) \quad $\cdot$ \quad
           \textbf{LOC} (lokasi)
   \end{itemize}
+  {\color{nvgray}\scriptsize spaCy melabeli kota/negara sebagai GPE (bukan LOC).}
 \end{frame}
 
 % ── Act 4: Sentiment & Classification ───────────────────
@@ -562,6 +565,9 @@
         \item Stopword analysis
         \item Lemmatization
         \item Complete text analysis
+        \item Vektor \& semantic search
+        \item Subword tokenization (LLM)
+        \item Sentiment IndoBERT
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
@@ -569,9 +575,10 @@
       \begin{itemize}
         \footnotesize
         \item \texttt{nltk} — text processing dasar
-        \item \texttt{Sastrawi} — stemming Indonesia
-        \item \texttt{nlp-id} — tokenizer \& POS
+        \item \texttt{nlp-id} — tokenizer, POS, lemmatizer
         \item \texttt{pandas} — tabular data
+        \item \texttt{sentence-transformers} — embedding
+        \item \texttt{transformers} — IndoBERT pipeline
       \end{itemize}
     \end{column}
   \end{columns}
@@ -582,8 +589,67 @@
   \end{beamercolorbox}
 \end{frame}
 
-% ── Act 5: Summary & Next ────────────────────────────────
-\acttitle{5}{Ringkasan \& Lanjutan}{Apa selanjutnya?}
+% ============================================================
+% ACT 5: DARI KATA KE VEKTOR
+% ============================================================
+\acttitle{5}{Dari Kata ke Vektor}{Jembatan menuju LLM (Module 04) dan RAG (Module 05)}
+
+\begin{frame}{Dari Menghitung Kata ke Memahami Makna}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      {\color{nvgreen}\textbf{TF-IDF / Bag-of-Words}}
+      \begin{itemize}
+        \item Vektor = hitungan kata
+        \item ``suka'' dan ``gemar'' dianggap TIDAK berhubungan
+        \item Baseline klasik, murah, cepat
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      {\color{nvorange}\textbf{Embedding}}
+      \begin{itemize}
+        \item Vektor makna, belajar dari jutaan kalimat
+        \item Sinonim $\to$ vektor berdekatan
+        \item \texttt{sentence-transformers} multilingual
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.5em}
+  \begin{center}
+    {\color{nvlightgreen}\small Kedekatan diukur dengan \textbf{cosine similarity} --- semantic search: cari dokumen berdasarkan MAKNA query $\Rightarrow$ inti RAG di Module 05}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Subword Tokenization: Token ala LLM}
+  \begin{lstlisting}[language=Python]
+tok = AutoTokenizer.from_pretrained("gpt2")
+tok.tokenize("mempelajari")
+# ['mem', 'pel', 'aj', 'ari']  (potongan subword!)
+  \end{lstlisting}
+  \begin{itemize}
+    \item Kosakata terbatas ($\sim$30--50 ribu subword) bisa menulis kata APA PUN
+    \item Tokenizer English-centric memecah kata Indonesia jadi lebih banyak token $\to$ kalimat Indonesia ``lebih mahal'' di API per-token
+    \item Mulai Module 04: ``token'' = subword ini, bukan kata utuh
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Sentiment Indonesia dengan IndoBERT}
+  \begin{lstlisting}[language=Python]
+sentimen = pipeline("sentiment-analysis",
+    model="w11wo/indonesian-roberta-base-sentiment-classifier")
+sentimen("Gw suka bgt sama teknologi NLP nih")
+# [{'label': 'positive', 'score': 0.99}]
+  \end{lstlisting}
+  \begin{itemize}
+    \item Transformer fine-tuned untuk bahasa Indonesia --- tahan bahasa gaul
+    \item Pola transfer learning yang sama dengan ResNet di Module 02
+    \item Ekosistem: IndoBERT, IndoNLU, IndoLEM, NusaBERT (Hugging Face Hub)
+  \end{itemize}
+  \vspace{0.3em}
+  {\color{nvlightgreen}\small $\Rightarrow$ \texttt{pipeline} yang sama menjadi pintu masuk ke LLM di Module 04}
+\end{frame}
+
+% ── Act 6: Summary & Next ────────────────────────────────
+\acttitle{6}{Ringkasan \& Lanjutan}{Apa selanjutnya?}
 
 % Slide 15 — Ringkasan
 \begin{frame}{Ringkasan Modul 03}
@@ -606,6 +672,9 @@
     9 & NER & Ekstrak entitas \\
    10 & Sentiment & Deteksi opini \\
    11 & Classification & Spam vs ham \\
+   12 & Vektor \& embedding & TF-IDF vs makna, semantic search \\
+   13 & Subword tokenization & Token ala LLM (BPE) \\
+   14 & IndoBERT & Sentiment Indonesia via transformer \\
     \bottomrule
   \end{tabular}%
   }
@@ -619,7 +688,7 @@
       \textcolor{nvgreen}{\textbf{Install library:}}
       \begin{lstlisting}[language=bash, basicstyle=\ttfamily\footnotesize\color{nvwhite}]
 !pip install nltk spacy textblob
-!pip install Sastrawi nlp-id
+!pip install nlp-id
 !python -m spacy download en_core_web_sm
       \end{lstlisting}
     \end{column}
@@ -641,7 +710,7 @@
   \begin{itemize}
     \item[\textcolor{nvgreen}{\checkmark}] Module 04: \textbf{Large Language Models} dengan Transformers
     \item[\textcolor{nvgreen}{\checkmark}] Module 05: \textbf{RAG} (Retrieval-Augmented Generation)
-    \item[\textcolor{nvgreen}{\checkmark}] Module 06: NVIDIA ecosystem (TensorRT, NeMo, RAG)
+    \item[\textcolor{nvgreen}{\checkmark}] Module 06: NVIDIA ecosystem (TensorRT, NeMo, GPU optimization)
   \end{itemize}
   \vspace{0.8em}
   \begin{center}
