@@ -243,7 +243,8 @@
 
 % Slide 5 — Tokenization
 \begin{frame}{Tokenization: Teks Menjadi Angka}
-  \framesubtitle{Langkah pertama: memecah teks jadi token}
+  \framesubtitle{Ingat dari Module 03 --- kali ini kita lihat cara kerjanya di dalam LLM}
+  {\color{nvgray}\small Ingat dari Module 03: LLM memakai \textbf{subword tokenization} --- kamu sudah melihat ``mempelajari'' dipecah jadi potongan subword: \texttt{['mem','pel','aj','ari']}.}
   \begin{columns}[T]
     \begin{column}{0.5\textwidth}
       \begin{itemize}
@@ -293,6 +294,7 @@
     \footnotesize
     \item Tiap \textbf{token ID} $\to$ \textbf{embedding} (vektor angka); kata mirip makna $\to$ vektor mirip
     \item Vektor diproses berlapis lewat \textbf{transformer block}; output $=$ prediksi \textbf{token} berikutnya
+    \item Bedakan: di Module 03 kamu memakai \textbf{sentence embedding statis} (satu kalimat $\to$ satu vektor); di DALAM transformer, setiap token punya \textbf{contextual embedding} yang berubah mengikuti kalimatnya (``bisa'' dalam ``bisa ular'' vs ``saya bisa'')
   \end{itemize}
 \end{frame}
 
