@@ -116,6 +116,17 @@ Module terakhir yang disentuh: **Module 04/05/06 (theory cells)** — lihat upda
 - ~~Defer~~ DIPERBAIKI juga (commit `ac21850`): M01 judul em-dash diseragamkan ke `---`; M01 catatan taksonomi (Reinforcement context-only) + roadmap (Forecasting = kasus khusus Supervised).
 - Final: 6 deck (48/33/23/23/20/21 hal) semua 0 error, 0 overfull. Tidak ada item QC tersisa.
 
+### Update Jun 10 — Materi Generative AI Module 02 SELESAI
+- Notebook baru `06_generative_ai_intro.ipynb`: AE penuh (10 epoch) + DCGAN mini (15 epoch, subset 20k) di MNIST, arc "dari mengenali → mencipta", jembatan ke Module 04. Commit `2265a37` (buat) + `f510c45` (polish post-review).
+- Deck Act 6 (5 frame) ditambahkan ke `module02_slides.tex`; deck naik dari 33 → 39 halaman. Commit `8e65441` + `b015b7c` (fix ukuran diagram). Deck ter-recompile bersih.
+- Cheatsheet: +1 kartu "Generative AI: AE & GAN" + 4 entri glossary. Commit `54ce1e9` + `b96b1ab` (fix 1-halaman overflow).
+- Quiz: 12 → 15 soal, 3 soal baru generatif (diskriminatif vs generatif, GAN training, diffusion vs GPT). Commit `3e01add`. Uji puppeteer PASS.
+- Figure deck dari training NYATA via `slides/figures/train_generative_figs.py` (DCGAN 15 epoch mencapai digit yang bisa dikenali, ~3 menit CPU). Prefix `train_` supaya `build.sh` tidak melatih ulang. Commit `310dbcb`.
+- Fix konsistensi wording GAN: "bergantian" → "bersamaan dalam satu langkah" di deck (Act 6 frame) dan cheatsheet — selaras dengan `train_step` notebook yang memang melatih generator+discriminator bersamaan dalam satu `tf.GradientTape` ganda. Commit `bc270ff`.
+- QC lintas-artefak: bahasa OK (0 anti-pattern), bergantian 0 hits, 1 overfull pre-existing 0.528pt (LSTM frame baris 662, di bawah guard threshold 2pt), cheatsheet 1 halaman, branding 0 hits.
+- Status M02: **6 notebook, 6 act deck — mapping 1:1 dipertahankan**. Deck M02 sekarang 39 halaman.
+- Spec: `docs/superpowers/specs/2026-06-10-module02-generative-ai-design.md`. Plan: `docs/superpowers/plans/2026-06-10-module02-generative-ai.md`.
+
 ## Pola Kerja yang Sudah Terbentuk
 
 ### 1. Build artifacts & gitignore
