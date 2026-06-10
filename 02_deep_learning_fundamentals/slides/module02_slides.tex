@@ -851,6 +851,98 @@ Dense(10, 'softmax', dtype='float32')
   \begin{center}\textcolor{nvlightgreen}{\small Dibaca dari bawah (Hardware) ke atas (Tools) --- fondasi semua modul berikutnya.}\end{center}
 \end{frame}
 
+% ============================================================
+% ACT 6: GENERATIVE AI
+% ============================================================
+\acttitle{6}{Generative AI}{Saat neural network mencipta, bukan hanya mengenali}
+
+\begin{frame}{Diskriminatif vs Generatif}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      {\color{nvgreen}\textbf{Diskriminatif (Act 1--5)}}
+      \begin{itemize}
+        \item Input data $\to$ output \textbf{label/angka}
+        \item ``Gambar ini kucing atau anjing?''
+        \item Belajar \textbf{batas} antar kelas
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      {\color{nvorange}\textbf{Generatif (Act 6)}}
+      \begin{itemize}
+        \item Noise/konteks $\to$ output \textbf{data baru}
+        \item ``Buatkan gambar digit yang meyakinkan''
+        \item Belajar \textbf{distribusi} data itu sendiri
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.5em}
+  \begin{center}
+    {\color{nvgray}\small Fondasi ChatGPT \& Stable Diffusion --- dan jembatan kita menuju Module 04 (LLM)}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Autoencoder \& Latent Space}
+  \begin{itemize}
+    \item Encoder memampatkan 784 pixel $\to$ \textbf{32 angka} (latent); decoder merekonstruksi
+    \item Decoder pada dasarnya = \textbf{generator}: vektor angka $\to$ gambar
+    \item Latent space menyimpan \textbf{struktur}: titik di antara dua digit juga valid
+  \end{itemize}
+  \begin{center}
+    \includegraphics[width=0.85\linewidth]{figures/latent_interp.pdf}
+  \end{center}
+  {\color{nvgray}\small Tapi: sampling \emph{acak} dari latent space AE hasilnya kabur --- AE tidak dilatih untuk mencipta. Kita butuh GAN.}
+\end{frame}
+
+\begin{frame}{GAN: Generator vs Discriminator}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{center}
+        % kalau PNG portrait: ganti ke height=0.62\textheight
+        \includegraphics[width=\linewidth]{figures/gan_architecture.png}
+      \end{center}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{itemize}
+        \item \textbf{Generator} = pemalsu: noise $\to$ gambar palsu
+        \item \textbf{Discriminator} = kurator: asli atau palsu?
+        \item Dilatih \textbf{bergantian} --- saling memaksa jadi lebih baik
+        \item DCGAN: generator \texttt{Conv2DTranspose}, discriminator \texttt{Conv2D}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{DCGAN: Digit Lahir dari Noise}
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figures/gan_grid.pdf}
+  \end{center}
+  \begin{itemize}
+    \item Noise input \textbf{sama} di tiap baris --- yang berubah hanya kemampuan generator
+    \item Epoch 1: noise berbintik $\to$ epoch 15: mayoritas berbentuk digit
+    \item Catatan jujur: GAN rewel ---  \emph{mode collapse} (variasi macet) sering terjadi
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Peta Generative AI Modern}
+  \setlength{\tabcolsep}{3pt}
+  {\small
+  \begin{tabular}{p{0.2\linewidth}p{0.42\linewidth}p{0.28\linewidth}}
+    {\color{nvgreen}\textbf{Keluarga}} & {\color{nvgreen}\textbf{Ide inti}} & {\color{nvgreen}\textbf{Contoh}} \\
+    \hline
+    VAE & latent space diatur supaya bisa di-sampling & generator wajah awal \\
+    GAN & generator vs discriminator berlomba & StyleGAN, deepfake \\
+    Diffusion & generate = denoise bertahap dari noise murni & Stable Diffusion, DALL-E \\
+    Autoregressive & prediksi token berikutnya, berulang & GPT, ChatGPT, Llama \\
+  \end{tabular}}
+  \vspace{0.6em}
+  \begin{itemize}
+    \item Benang merah: semua \textbf{belajar distribusi data}, lalu sampling darinya
+    \item ChatGPT $\approx$ DCGAN kamu: sama-sama generator --- bedanya token, bukan pixel
+  \end{itemize}
+  \vspace{0.3em}
+  {\color{nvlightgreen}\small $\Rightarrow$ Module 04: hands-on dengan generator teks (LLM)}
+\end{frame}
+
 % Slide 26 — Ringkasan
 \begin{frame}{Ringkasan Modul 02}
   \begin{center}
@@ -867,6 +959,7 @@ Dense(10, 'softmax', dtype='float32')
     3 & CNN \& Transfer Learning & Convolution, ResNet50 & CIFAR-10 \\
     4 & RNN \& LSTM & Hidden state, gates & Sinus, IMDB \\
     5 & GPU NVIDIA & Paralelisme, mixed precision & Benchmark, TensorRT \\
+    6 & Generative AI & Autoencoder \& DCGAN & Network yang mencipta, jembatan ke LLM \\
     \bottomrule
   \end{tabular}%
   }
