@@ -1274,36 +1274,52 @@
 \end{frame}
 
 % Slide — LLM-as-judge
-\begin{frame}[fragile]{LLM-as-Judge: Lokal \& Cloud}
+\begin{frame}{LLM-as-Judge: Lokal \& Cloud}
   \framesubtitle{Pakai LLM lain sebagai ``juri'' untuk menilai jawaban}
   \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
+    \begin{column}{0.56\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[font=\scriptsize,
+          essay/.style={draw=nvgray, fill=nvcard, rounded corners=3pt, text=nvwhite,
+                        font=\tiny, minimum width=1.1cm, minimum height=0.75cm, align=center}]
+        % --- LEFT: model judging its own essay ---
+        \node[draw=nvred, line width=1pt, fill=nvdarkcard, rounded corners=5pt,
+              minimum width=4.3cm, minimum height=3.5cm] (lbox) at (0,0) {};
+        \node[draw=nvorange, fill=nvcard, circle, text=nvwhite, font=\scriptsize\bfseries,
+              minimum size=1.1cm] (mself) at (-0.9,0.7) {model};
+        \node[essay] (e1) at (0.9,0.7) {esai\\sendiri};
+        \draw[->, nvorange, thick] (mself) -- (e1) node[midway,above,font=\tiny,text=nvorange]{nilai};
+        % self-loop back
+        \draw[->, nvorange, thick] (e1) to[bend left=40] (mself);
+        \node[fill=nvgreen, rounded corners=2pt, text=nvwhite, font=\scriptsize\bfseries] at (0,-0.6) {5/5};
+        \node[text=nvred, font=\scriptsize\bfseries, align=center] at (0,-1.35)
+          {bias self-preference};
+        % --- RIGHT: independent cloud judge ---
+        \node[draw=nvgreen, line width=1pt, fill=nvdarkcard, rounded corners=5pt,
+              minimum width=4.3cm, minimum height=3.5cm] (rbox) at (5.0,0) {};
+        \node[essay] (e2) at (5.0-1.0,0.7) {esai\\sama};
+        \node[draw=nvgreen, fill=nvcard, circle, text=nvgreen, font=\scriptsize\bfseries,
+              minimum size=1.5cm, align=center] (cloud) at (5.0+1.0,0.7) {NIM\\cloud};
+        \draw[->, nvgreen, thick] (e2) -- (cloud) node[midway,above,font=\tiny,text=nvgreen]{nilai};
+        \node[fill=nvblue, rounded corners=2pt, text=nvwhite, font=\scriptsize\bfseries] at (5.0,-0.6) {3/5 jujur};
+        \node[text=nvgreen, font=\scriptsize\bfseries, align=center] at (5.0,-1.35)
+          {juri besar \& independen};
+      \end{tikzpicture}%
+      }
+    \end{column}
+    \begin{column}{0.42\textwidth}
       \begin{itemize}
         \footnotesize
-        \item Beri jawaban A \& B ke LLM ``juri'', minta ia menilai mana yang lebih baik
-        \item \textbf{Lokal}: pakai Qwen3B yang sudah kita muat (gratis)
-        \item \textbf{Cloud (opsional)}: NVIDIA \textbf{NIM} di \texttt{build.nvidia.com} $\to$ model lebih besar
-        \item Akses API cloud kini \textbf{diizinkan} untuk model raksasa
+        \item \textbf{LLM-as-judge} $=$ pakai LLM lain untuk menilai (\emph{reference-free}, fleksibel)
+        \item Model yang menilai output \textbf{keluarganya sendiri} cenderung memihak
+        \item Judge cloud besar yang \textbf{independen} lebih tepercaya
       \end{itemize}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-      \begin{lstlisting}[language=Python]
-from openai import OpenAI
-
-client = OpenAI(
-    base_url="https://integrate.api.nvidia.com/v1",
-    api_key=NVIDIA_API_KEY)
-
-judge = client.chat.completions.create(
-    model="meta/llama-3.1-70b-instruct",
-    messages=[{"role": "user",
-               "content": f"Nilai jawaban: {ans}"}])
-      \end{lstlisting}
     \end{column}
   \end{columns}
   \vspace{0.2em}
   \begin{center}
-    \textcolor{nvlightgreen}{\small Juri lokal $=$ cepat \& gratis; juri cloud $=$ lebih tajam untuk kasus sulit.}
+    \textcolor{nvlightgreen}{\small Lokal: Qwen3B $\cdot$ Cloud: NVIDIA NIM (build.nvidia.com), OpenAI-compatible.}
   \end{center}
 \end{frame}
 
