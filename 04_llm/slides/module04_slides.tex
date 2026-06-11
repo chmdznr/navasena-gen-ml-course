@@ -584,7 +584,7 @@ for prompt in test_prompts:
     \textbf{\#} & \textbf{Topik} & \textbf{Library/Model} & \textbf{Tujuan} \\
     \midrule
     1 & LLM inference & transformers (\texttt{facebook/opt-350m}) & Generasi teks dari prompt \\
-    2 & Pipeline vs manual & \texttt{pipeline()} vs AutoModel (Llama-2-7b, gated) & 2 cara load \& jalankan model \\
+    2 & Pipeline vs manual & \texttt{pipeline()} vs AutoModel (TinyLlama-1.1B-Chat) & 2 cara load \& jalankan model \\
     3 & Text classification & \texttt{prajjwal1/bert-tiny} & Klasifikasi sentimen (head ilustratif) \\
     4 & Chatbot interface & Gradio (\texttt{gr.ChatInterface}) & UI percakapan sederhana \\
     5 & Few-shot learning & \texttt{facebook/opt-350m} & Beri contoh di prompt, model meniru \\
@@ -602,7 +602,7 @@ for prompt in test_prompts:
     \begin{column}{0.5\textwidth}
       \begin{itemize}
         \footnotesize
-        \item Model kecil: \texttt{opt-350m}, \texttt{bert-tiny}
+        \item Model kecil: \texttt{opt-350m}, \texttt{bert-tiny}, \texttt{TinyLlama-1.1B}
         \item Contoh model besar gated: \texttt{Llama-2-7b-chat-hf}
         \item \texttt{float16} $\to$ bobot $\sim$setengah memori vs float32
         \item Butuh GPU: Colab Tesla T4 (\texttt{!nvidia-smi})
