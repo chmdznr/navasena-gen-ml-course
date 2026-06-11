@@ -139,11 +139,10 @@ Everything LLM-facing reuses the **just-completed Module 04** (Qwen2.5-3B in `01
 
 **T4-feasibility:** Docker & TGI **cannot run in Colab kernel** → ship as "run outside Colab" / concept boxes. vLLM has CUDA/version friction → pin verified version, smoke-test (highest fragility). Docling heavy/flaky first run → PyPDF2/pdfplumber default, Docling behind `try/except`. ngrok needs free authtoken.
 
-**Licensing / gated & paid traps (MUST swap to local non-gated):**
-- W5/W6 default to **Llama-3.2** (upstream gated) → Qwen2.5/Phi-3.5/Mistral.
-- W3 generation **Gemini/Groq/OpenAI** → local Qwen; `promptfoo` (OpenAI) → drop.
-- W5 **RAGAS judge = Gemini-2.5-flash (paid)** → local Qwen/Mistral judge.
-- W6 NB05 **DeepEval BiasMetric = OpenAI (paid, unflagged)** → free Detoxify/sklearn.
+**Licensing / models — POLICY UPDATE (2026-06-11):** Cloud LLM APIs are now **ALLOWED in Navasena** for accessing larger models. **Preferred: NVIDIA NIM (`build.nvidia.com`)** — OpenAI-compatible endpoint, free tier, on-theme with Module 06; participants register for `NVIDIA_API_KEY`. Gemini API is an acceptable alternative. **Default pattern:** local non-gated model (offline, no key) **+ optional cloud big-model path** (graceful skip if no key). This relaxes the earlier "must swap paid→local" rule:
+- W5 **RAGAS judge / W6 BiasMetric / W3 generation** — MAY use a cloud big model (NIM/Gemini) as the strong/independent option, but keep a **local fallback** so the notebook runs without a key.
+- Still avoid **gated model-weight downloads** (e.g., `meta-llama/Llama-3.2` from HF) on the runnable path — that's participant-friction at download time, different from cloud API access. Use Qwen/Phi/Mistral for local weights; reach big models like Llama-3.1-70B via **NIM API** instead of downloading.
+- `promptfoo` (Node + OpenAI key) — still drop or optional appendix.
 
 **Redundancy:** W6 NB01 quant overlaps 02_production (harvest only decision table); W2 NB01 partly duplicates existing 05_rag (cherry-pick PCA-viz + GPU benchmark); W5 has duplicate Unsloth iterations (keep one).
 
