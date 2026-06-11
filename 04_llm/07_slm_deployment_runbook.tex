@@ -1,0 +1,225 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\usepackage[sfdefault]{FiraSans}
+\usepackage[a4paper,margin=1.8cm,top=2.4cm,bottom=2cm]{geometry}
+\usepackage{xcolor}
+\definecolor{nvgreen}{HTML}{76B900}
+\definecolor{nvdgreen}{HTML}{4F7A00}
+\definecolor{nvdark}{HTML}{1A1A2E}
+\definecolor{nvcard}{HTML}{2D2D44}
+\definecolor{nvlightgreen}{HTML}{A3D944}
+\definecolor{nvgray}{HTML}{6B6B80}
+\definecolor{nvorange}{HTML}{D35400}
+\definecolor{nvred}{HTML}{C0392B}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{amssymb}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, urlcolor=nvdgreen, linkcolor=nvdgreen}
+\setlist{leftmargin=1.4em, topsep=2pt, itemsep=1pt}
+
+\titleformat{\section}{\Large\bfseries\color{nvgreen}}{\thesection}{0.5em}{}[{\color{nvgreen}\titlerule[1.2pt]}]
+\titlespacing{\section}{0pt}{10pt}{5pt}
+\titleformat{\subsection}{\large\bfseries\color{nvdgreen}}{\thesubsection}{0.4em}{}
+\titlespacing{\subsection}{0pt}{7pt}{3pt}
+
+\lstdefinestyle{nv}{
+  backgroundcolor=\color{nvdark}, basicstyle=\ttfamily\footnotesize\color{white},
+  keywordstyle=\color{nvlightgreen}, commentstyle=\color{nvgray}\itshape,
+  stringstyle=\color{nvlightgreen}, breaklines=true, frame=single, framerule=0pt,
+  xleftmargin=7pt, xrightmargin=4pt, aboveskip=6pt, belowskip=6pt,
+  showstringspaces=false, columns=fullflexible, keepspaces=true, breakindent=0pt,
+}
+\lstset{style=nv}
+
+\newtcolorbox{warn}{colback=nvorange!7,colframe=nvorange,boxrule=1pt,arc=2pt,left=7pt,right=7pt,top=4pt,bottom=4pt,fontupper=\small}
+\newtcolorbox{tip}{colback=nvgreen!8,colframe=nvgreen,boxrule=1pt,arc=2pt,left=7pt,right=7pt,top=4pt,bottom=4pt,fontupper=\small}
+
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\color{nvgray}Runbook Deployment SLM Spesialis}
+\fancyhead[R]{\small\color{nvgray}Module 04 $\cdot$ Navasena}
+\fancyfoot[C]{\small\color{nvgray}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\headrule}{\hbox to\headwidth{\color{nvgreen}\leaders\hrule height \headrulewidth\hfill}}
+
+\newcommand{\code}[1]{\colorbox{nvbg}{\texttt{\small #1}}}
+\definecolor{nvbg}{HTML}{EFF3E4}
+
+\begin{document}
+\thispagestyle{fancy}
+
+\noindent\begin{tcolorbox}[colback=nvgreen,colframe=nvgreen,arc=4pt,left=12pt,right=12pt,top=8pt,bottom=8pt]
+\color{white}\LARGE\bfseries Runbook Deployment SLM Spesialis\\[3pt]
+\normalsize\mdseries Mac + Jetson Orin Nano 8GB (Edge-First) $\cdot$ Module 04 Capstone $\cdot$ Navasena Gen-ML Course
+\end{tcolorbox}
+
+\vspace{4pt}
+\noindent Panduan langkah-demi-langkah men-deploy SLM spesialis (hasil notebook 05/06/07) ke perangkat nyata. Semua perintah \& angka di sini \textbf{diverifikasi langsung} di MacBook M4 dan Jetson Orin Nano 8GB (2026-06-12).
+
+\section*{\color{nvgreen}\S0\quad Prasyarat \& Artefak}
+\textbf{Artefak} (hasil notebook 07, sudah di HuggingFace):
+\begin{itemize}
+  \item Repo GGUF \texttt{chmdznr/qwen3-0.6b-spesialis-gguf} (Q8\_0 $\sim$0.6 GB, Q4\_K\_M $\sim$0.4 GB) --- \textbf{publik}, device mana pun bisa tarik tanpa login.
+  \item \texttt{Modelfile} (\S C) --- berisi TEMPLATE ChatML + SYSTEM prompt.
+\end{itemize}
+\textbf{Perangkat (diverifikasi):} MacBook Apple Silicon (M4, macOS 26) backend \textbf{Metal}; Jetson Orin Nano 8GB Super, JetPack 6.2.1 / CUDA 12.6, $\sim$5.6 GB RAM bebas, backend \textbf{CUDA}.
+
+\textbf{Prinsip jembatan:} HuggingFace Hub jadi distribusi. Push GGUF sekali dari Colab $\to$ tiap device tinggal \texttt{ollama create} yang menarik dari HF. \textbf{Nol scp, nol USB.}
+
+\begin{warn}
+\textbf{Tiga jebakan yang sudah dibuktikan} (baca dulu):
+\begin{enumerate}[leftmargin=1.6em]
+  \item \texttt{ollama run hf.co/...} telanjang \textbf{KEHILANGAN system prompt} $\to$ spesialis balik jadi chatbot biasa. \textbf{Wajib \texttt{ollama create} dengan Modelfile ber-SYSTEM.}
+  \item \textbf{Ollama \textless\ 0.30.7 menyisakan \texttt{<think></think>} kosong} (thinking-token Qwen3). \textbf{Upgrade ke $\geq$ 0.30.7} $\to$ bersih.
+  \item \textbf{Pakai Q8\_0} untuk spesialis mungil ($\sim$0.6 GB) --- near-lossless \& aman dari bug memori L4T.
+\end{enumerate}
+\end{warn}
+
+\section*{\color{nvgreen}\S A\quad MacBook (Apple Silicon) --- dev lokal}
+\textbf{A1. Install Ollama}
+\begin{lstlisting}
+brew install ollama        # atau app dari ollama.com/download
+ollama serve &             # backend Metal otomatis
+ollama --version           # pastikan >= 0.30.7
+\end{lstlisting}
+\textbf{A2--A3. Create dari HF (Modelfile \S C) + uji}
+\begin{lstlisting}
+ollama create navasena-spesialis -f Modelfile   # FROM menarik GGUF dari HF (~0.6 GB)
+ollama run navasena-spesialis "Pesan 3 kopi, harga 25000 per item."
+# -> {"produk":"kopi","jumlah":3,"harga_satuan":25000,"total":75000}
+\end{lstlisting}
+\textbf{A4. Benchmark}
+\begin{lstlisting}
+ollama run navasena-spesialis --verbose "minta 7 beras 14000 satunya"  # baca "eval rate"
+ollama ps    # PROCESSOR harus "100% GPU"
+\end{lstlisting}
+\begin{tip}\textbf{Hasil terverifikasi Mac M4:} 3/3 ekstraksi JSON benar, \textbf{$\sim$85 tok/dtk}, output bersih (Ollama 0.30.7).\end{tip}
+
+\section*{\color{nvgreen}\S B\quad Jetson Orin Nano 8GB --- target edge}
+\textbf{B1. Masuk + cek}
+\begin{lstlisting}
+ssh jetson@<jetson-ip>      # mis. 192.168.1.114
+ollama --version ; free -h
+\end{lstlisting}
+\textbf{B2. Upgrade Ollama ke $\geq$ 0.30.7} (kalau masih 0.30.6 $\to$ output kotor \texttt{<think>})
+\begin{lstlisting}
+# Jalankan SELURUH script sebagai root agar tak ada prompt sudo internal (butuh tty):
+sudo bash -c "curl -fsSL https://ollama.com/install.sh | sh"
+# Installer otomatis ambil build khusus: ollama-linux-arm64-jetpack6.tar.zst (butuh paket zstd)
+ollama --version            # -> 0.30.7+
+\end{lstlisting}
+\textbf{B3--B4. Create dari HF + verifikasi GPU}
+\begin{lstlisting}
+mkdir -p ~/navasena && cd ~/navasena && nano Modelfile   # tempel isi \S C
+ollama create navasena-spesialis -f Modelfile
+ollama run navasena-spesialis "Tolong kirim 12 sabun harga 8500 per item."
+# -> {"produk":"sabun","jumlah":12,"harga_satuan":8500,"total":102000}
+ollama ps    # PROCESSOR -> "100% GPU" (CUDA)
+\end{lstlisting}
+\textbf{B5. Termal/daya + benchmark}
+\begin{lstlisting}
+sudo nvpmodel -m 0          # MAXN (atau -m 1 utk 25W)
+sudo jetson_clocks ; sudo tegrastats     # pantau RAM/GPU%/suhu (Ctrl-C berhenti)
+ollama run navasena-spesialis --verbose "minta 7 beras 14000 satunya"
+\end{lstlisting}
+\begin{tip}\textbf{Hasil terverifikasi Jetson Orin Nano:} 3/3 JSON benar, \textbf{$\sim$39 tok/dtk}, 100\% GPU, output bersih setelah upgrade 0.30.7.\end{tip}
+\textbf{B6. (Opsional) Ekspose ke LAN} agar Mac bisa panggil Jetson
+\begin{lstlisting}
+sudo systemctl edit ollama   # tambah: [Service]  Environment="OLLAMA_HOST=0.0.0.0:11434"
+sudo systemctl restart ollama
+\end{lstlisting}
+\textbf{B7. (Advanced) Build llama.cpp-CUDA}
+\begin{lstlisting}
+which nvcc && nvcc --version   # WAJIB 12.6 di PATH
+git clone https://github.com/ggml-org/llama.cpp && cd llama.cpp
+cmake -B build -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="87"   # sm_87 = Orin
+cmake --build build --config Release --parallel 4
+\end{lstlisting}
+
+\section*{\color{nvgreen}\S C\quad Modelfile (identik Mac \& Jetson)}
+\begin{warn}Ollama \textbf{mengabaikan} chat-template Jinja di GGUF $\to$ kita suplai TEMPLATE ChatML sendiri. \textbf{SYSTEM wajib} --- tanpa itu spesialis balik jadi chatbot biasa.\end{warn}
+\begin{lstlisting}
+FROM hf.co/chmdznr/qwen3-0.6b-spesialis-gguf:Q8_0
+
+TEMPLATE """{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{- range .Messages }}<|im_start|>{{ .Role }}
+{{ .Content }}<|im_end|>
+{{ end }}<|im_start|>assistant
+"""
+
+PARAMETER stop "<|im_start|>"
+PARAMETER stop "<|im_end|>"
+PARAMETER temperature 0.2
+
+SYSTEM Ekstrak pesanan ke JSON dengan key produk, jumlah, harga_satuan, total; angka tanpa titik; keluarkan HANYA JSON.
+\end{lstlisting}
+
+\section*{\color{nvgreen}\S D\quad Pola Client Universal (OpenAI-compatible)}
+Inti deployment: \textbf{kode aplikasi portabel.} Ollama (lokal/edge), vLLM (cloud), NVIDIA NIM --- semua OpenAI-compatible. Pindah target = ganti \textbf{3 baris}.
+\begin{lstlisting}
+from openai import OpenAI
+client = OpenAI(base_url="http://localhost:11434/v1/", api_key="ollama")  # Ollama lokal (Mac)
+# Jetson di LAN :  base_url="http://<jetson-ip>:11434/v1"
+# vLLM cloud    :  base_url="http://<host>:8000/v1", api_key="EMPTY"
+# NVIDIA NIM    :  base_url="https://integrate.api.nvidia.com/v1", api_key=<nvapi-key>
+MODEL = "navasena-spesialis"
+r = client.chat.completions.create(model=MODEL,
+    messages=[{"role":"user","content":"Pesan 5 kopi, harga 25000 per item."}])
+print(r.choices[0].message.content)
+\end{lstlisting}
+
+\section*{\color{nvgreen}\S E\quad Perbandingan \& Kerangka Keputusan}
+\renewcommand{\arraystretch}{1.25}
+\noindent\begin{tabularx}{\textwidth}{@{}l l l c X@{}}
+\toprule
+\rowcolor{nvgreen}\color{white}\textbf{Tool} & \color{white}\textbf{Target} & \color{white}\textbf{Setup} & \color{white}\textbf{Course?} & \color{white}\textbf{Kapan dipakai} \\
+\midrule
+\textbf{Ollama} & Mac, Jetson & termudah & \textcolor{nvgreen}{\checkmark} & default edge/dev \\
+\rowcolor{nvbg}\textbf{llama.cpp} & Mac, Jetson & build manual & \textcolor{nvgreen}{\checkmark} opsi & kontrol penuh, benchmark mentah \\
+TensorRT-LLM & Jetson produksi & build engine berat & konsep & latency-kritis fixed-model \\
+\rowcolor{nvbg}vLLM / SGLang & GPU datacenter & server & konsep & banyak user, throughput \\
+NVIDIA NIM & cloud & API & \textcolor{nvgreen}{\checkmark} & model besar via API \\
+\rowcolor{nvbg}TGI & --- & --- & legacy & \emph{maintenance mode sejak Des 2025} \\
+\bottomrule
+\end{tabularx}
+
+\vspace{4pt}\noindent\textbf{Pohon keputusan:} 1 user/edge $\to$ Ollama; banyak/cloud $\to$ vLLM/NIM. Target laptop/Jetson $\to$ Ollama (mudah) atau llama.cpp (dalam). \textbf{Punchline:} semua bicara OpenAI API $\to$ kode aplikasi sama, beda hanya \texttt{base\_url}.
+\begin{warn}\textbf{Jujur:} vLLM/TGI \textbf{bukan} untuk Orin Nano 8GB (tool datacenter). Untuk edge: Ollama/llama.cpp/TensorRT.\end{warn}
+
+\section*{\color{nvgreen}\S F\quad Troubleshooting}
+\renewcommand{\arraystretch}{1.3}
+\noindent\begin{tabularx}{\textwidth}{@{}X X X@{}}
+\toprule
+\rowcolor{nvgreen}\color{white}\textbf{Gejala} & \color{white}\textbf{Sebab} & \color{white}\textbf{Fix} \\
+\midrule
+Jawaban percakapan, bukan JSON & \texttt{ollama run hf.co/...} telanjang $\to$ SYSTEM hilang & \texttt{ollama create} dgn Modelfile ber-SYSTEM (\S C) \\
+\rowcolor{nvbg}Output \texttt{<think></think>\{json\}} & Ollama \textless\ 0.30.7 tak parse thinking-token & upgrade $\geq$ 0.30.7; atau parser JSON klien (regex) tetap valid \\
+Output \texttt{GGGG...} / gibberish & merge adapter ke base 4-bit (NaN) & merge dari base fp16 lalu re-export GGUF \\
+\rowcolor{nvbg}\texttt{sudo: a terminal is required} & cache sudo tak dihormati installer & \texttt{sudo bash -c "curl ... | sh"} (script sbg root) \\
+Installer minta \texttt{zstd} & paket zstd hilang & \texttt{sudo apt-get install -y zstd} \\
+\rowcolor{nvbg}\texttt{NvMap ... ENOMEM} saat load & bug CMA/NvMap L4T 36.4 ($>$1.3 GB) & GGUF Q4 \textless\ 1.3 GB; satu model/sesi (0.6B Q8\_0 aman) \\
+\texttt{ollama ps} tampil CPU & model $>$ VRAM / runtime salah & cek \texttt{nvpmodel}/\texttt{tegrastats}; pakai Q4\_K\_M \\
+\rowcolor{nvbg}Build llama.cpp gagal (arch) & arsitektur CUDA salah & set CUDA arch \texttt{"87"} (sm\_87) \\
+Mac tak bisa akses Jetson & Ollama loopback-only & \texttt{OLLAMA\_HOST=0.0.0.0:11434} + restart (\S B6) \\
+\bottomrule
+\end{tabularx}
+
+\section*{\color{nvgreen}\S G\quad Rollback / Cleanup}
+\begin{lstlisting}
+ollama rm navasena-spesialis
+ollama rm hf.co/chmdznr/qwen3-0.6b-spesialis-gguf   # hapus cache HF (opsional)
+\end{lstlisting}
+
+\vspace{6pt}
+\begin{tcolorbox}[colback=nvdark,colframe=nvgreen,arc=3pt,left=10pt,right=10pt,top=6pt,bottom=6pt]
+\color{white}\textbf{\color{nvlightgreen}Yang sudah terbukti.} Satu GGUF di HF $\to$ deploy ke \textbf{Mac (Metal)} \& \textbf{Jetson (CUDA)} dengan kode \& Modelfile identik, beda hanya \texttt{base\_url}. Mac M4 $\sim$85 tok/dtk $\cdot$ Jetson Orin Nano $\sim$39 tok/dtk, keduanya 100\% GPU, 3/3 ekstraksi benar, output bersih (Ollama 0.30.7). SLM spesialis 0.6B yang dilatih gratis di Colab kini berjalan di edge $\sim$\$249 --- inilah ``kecil tapi cakap'' yang bisa diproduksikan.\\[4pt]
+\textbf{Selesai. Module 04 lengkap (00--07). Selanjutnya: Module 05 --- RAG.}
+\end{tcolorbox}
+
+\end{document}
