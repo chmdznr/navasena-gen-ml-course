@@ -127,15 +127,17 @@
 % ============================================================
 \begin{document}
 
+% ============================================================
 % Slide 1 — Title
+% ============================================================
 \begin{frame}[plain]
   \vspace{1.2cm}
   \begin{center}
     {\color{nvgreen}\Huge\bfseries Module 04}\\[1.2em]
     {\color{nvwhite}\Huge\bfseries LLM Fundamentals}\\[0.6em]
-    {\color{nvgray}\Large Large Language Models dengan Transformers}\\[2.2em]
+    {\color{nvgray}\Large Bangun $\to$ Pakai $\to$ Produksikan $\to$ Adapt $\to$ Ukur}\\[2.0em]
 
-    \begin{tikzpicture}[scale=0.9]
+    \begin{tikzpicture}[scale=0.82]
       \node[draw=nvgreen, fill=nvcard, rounded corners=6pt, line width=1.5pt,
             text=nvwhite, font=\small, minimum width=2cm, minimum height=0.9cm,
             align=center] (in) at (-4,0) {Prompt\\(teks)};
@@ -150,63 +152,66 @@
       \node[color=nvgray, font=\scriptsize] at (0,-1.5) {transformer + data masif};
     \end{tikzpicture}
 
-    \vspace{0.8em}
-    {\color{nvgray}\small Navasena AI \quad $\cdot$ \quad 2026}
+    \vspace{0.7em}
+    {\color{nvgray}\small 5 notebook $\cdot$ gratis di Colab Tesla T4 16GB $\cdot$ Navasena AI $\cdot$ 2026}
   \end{center}
 \end{frame}
 
-% ── Act 1: Apa itu LLM? ───────────────────────────────────
-\acttitle{1}{Apa itu LLM?}{Dari NLP ke model bahasa raksasa}
+% ============================================================
+% Act 1: Apa & Mengapa LLM
+% ============================================================
+\acttitle{1}{Apa \& Mengapa LLM}{Kenapa model bahasa raksasa mengubah segalanya}
 
-% Slide 2 — Definisi LLM
-\begin{frame}{Definisi LLM}
-  \framesubtitle{NLP itu bidang luas, LLM satu jenis model di dalamnya}
+% Slide — Definisi LLM
+\begin{frame}{Apa itu LLM?}
+  \framesubtitle{Mesin penebak kata berikutnya yang sangat pintar}
   \begin{columns}[T]
     \begin{column}{0.55\textwidth}
       \begin{itemize}
         \footnotesize
-        \item \textbf{LLM} = \emph{Large Language Model}, jenis model \textbf{NLP} khusus
-        \item Dilatih pada teks masif (miliaran kata dari internet)
-        \item Berbasis arsitektur \textbf{transformer} + deep learning
-        \item[\textcolor{nvgreen}{\checkmark}] \textbf{NLP}: bidang luas
-        \item[\textcolor{nvgreen}{\checkmark}] \textbf{LLM}: satu jenis model di dalamnya
-        \item Jago menulis, menerjemahkan, menjawab seperti manusia
+        \item \textbf{LLM} $=$ \emph{Large Language Model}: model bahasa raksasa
+        \item Belajar dengan membaca teks sangat banyak (miliaran kata dari internet)
+        \item Tugas intinya satu \& sederhana: \textbf{menebak kata berikutnya}
+        \item[\textcolor{nvgreen}{\checkmark}] Ulangi tebakan itu terus-menerus $\to$ lahir kalimat utuh
+        \item Dibangun di atas arsitektur \textbf{transformer} (sejak 2017)
       \end{itemize}
     \end{column}
     \begin{column}{0.42\textwidth}
       \begin{center}
       \resizebox{\linewidth}{!}{%
       \begin{tikzpicture}
-        \node[draw=nvblue, fill=nvcard, rounded corners=10pt, line width=1.2pt,
-              text=nvblue, font=\small\bfseries, minimum width=4.5cm,
-              minimum height=3.2cm] (nlp) at (0,0) {};
-        \node[text=nvblue, font=\small\bfseries] at (0,1.2) {NLP};
-        \node[draw=nvgreen, fill=nvdarkcard, rounded corners=8pt, line width=1.2pt,
+        \node[text=nvgray, font=\small] at (0,1.4) {``Ibu kota Indonesia adalah \dots''};
+        \node[draw=nvgreen, fill=nvcard, rounded corners=6pt, line width=1.2pt,
               text=nvgreen, font=\small\bfseries, minimum width=2.6cm,
-              minimum height=1.4cm, align=center] (llm) at (0,-0.3) {LLM};
+              minimum height=1.0cm] (llm) at (0,0) {LLM};
+        \node[draw=nvorange, fill=nvcard, rounded corners=4pt,
+              text=nvorange, font=\small\bfseries, minimum width=2.2cm,
+              minimum height=0.7cm] (out) at (0,-1.5) {``Jakarta''};
+        \draw[->,thick,color=nvgreen] (0,1.0) -- (llm);
+        \draw[->,thick,color=nvorange] (llm) -- (out);
       \end{tikzpicture}%
       }
       \end{center}
     \end{column}
   \end{columns}
-  \vspace{0.4em}
+  \vspace{0.3em}
   \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
     \small\color{white}
-    Data masif $+$ \textbf{transformer} $=$ pemahaman bahasa luar biasa --- lompatan besar di dalam NLP.
+    Data sangat banyak $+$ \textbf{transformer} $=$ tebakan kata berikutnya yang sangat jitu. Itulah ``kepintaran'' LLM.
   \end{beamercolorbox}
 \end{frame}
 
-% Slide 3 — Skala & Evolusi
-\begin{frame}{Skala \& Evolusi}
-  \framesubtitle{Skala parameter membantu, tapi data \& arsitektur juga menentukan}
+% Slide — Skala & Evolusi
+\begin{frame}{Dari Membaca Satu-satu ke Membaca Sekaligus}
+  \framesubtitle{Evolusi singkat menuju transformer}
   \begin{columns}[T]
     \begin{column}{0.5\textwidth}
       \begin{itemize}
         \footnotesize
-        \item Evolusi: \textbf{n-gram} $\to$ \textbf{RNN/LSTM} $\to$ \textbf{Transformer} (2017)
-        \item \textbf{Transformer} memproses kata secara paralel lewat \textbf{attention}, bukan satu per satu seperti RNN
-        \item Umumnya makin banyak \textbf{parameter}, makin mampu menangkap pola (sampai titik tertentu)
-        \item Kualitas \textbf{data}, arsitektur \& fine-tuning sama pentingnya
+        \item Dulu: model membaca kata \textbf{satu per satu} (RNN/LSTM) --- lambat \& mudah lupa
+        \item \textbf{Transformer} (2017): membaca \textbf{seluruh kalimat sekaligus} lewat \textbf{attention}
+        \item Makin banyak \textbf{parameter} (``kenop'') $\to$ makin banyak pola yang bisa ditangkap
+        \item Tapi kualitas \textbf{data} sama pentingnya dengan ukuran
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
@@ -217,49 +222,77 @@
   \end{columns}
   \vspace{0.3em}
   \begin{center}
-    \textcolor{nvlightgreen}{\small Terobosan \textbf{Transformer} 2017 memicu ledakan ukuran: BERT 110M $\to$ GPT-3 175B}
+    \textcolor{nvlightgreen}{\small Transformer memicu ledakan ukuran: dari ratusan juta jadi ratusan miliar parameter.}
   \end{center}
 \end{frame}
 
-% Slide 4 — Aplikasi LLM
-\begin{frame}{Aplikasi LLM di Dunia Nyata}
+% Slide — Aplikasi sehari-hari
+\begin{frame}{LLM di Kehidupan Sehari-hari}
   \framesubtitle{Satu model, banyak tugas bahasa}
   \begin{itemize}
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Chatbot} \& asisten: ChatGPT, Gemini, customer service
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Code generation}: bantu menulis \& menjelaskan kode
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Translation}: terjemahan antar bahasa
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Summarization}: meringkas dokumen panjang
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Question answering}: menjawab pertanyaan informatif
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Chatbot \& asisten}: ChatGPT, Gemini, layanan pelanggan
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Bantu menulis kode}: membuat \& menjelaskan program
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Terjemahan}: dari satu bahasa ke bahasa lain
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Ringkasan}: memadatkan dokumen panjang
+    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Tanya-jawab}: menjawab pertanyaan informatif
   \end{itemize}
-  \vspace{0.6em}
+  \vspace{0.5em}
   \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
     \centering\small\color{nvlightgreen}
-    Satu \textbf{LLM} bisa mengerjakan banyak tugas bahasa sekaligus tanpa dilatih ulang per tugas.
+    Di modul ini kita akan \textbf{bangun}, \textbf{pakai}, \textbf{produksikan}, \textbf{adapt}, dan \textbf{ukur} LLM --- semuanya gratis di Colab T4.
   \end{beamercolorbox}
 \end{frame}
 
-% ── Act 2: Cara Kerja LLM ─────────────────────────────────
-\acttitle{2}{Cara Kerja LLM}{Apa yang terjadi di balik layar}
+% ============================================================
+% Act 2: Bagaimana LLM Bekerja & Memahami Bahasa
+% ============================================================
+\acttitle{2}{Bagaimana LLM Bekerja}{Dari teks sampai kata berikutnya}
 
-% Slide 5 — Tokenization
-\begin{frame}{Tokenization: Teks Menjadi Angka}
-  \framesubtitle{Ingat dari Module 03 --- kali ini kita lihat cara kerjanya di dalam LLM}
-  {\color{nvgray}\small Ingat dari Module 03: LLM memakai \textbf{subword tokenization} --- kamu sudah melihat ``mempelajari'' dipecah jadi potongan subword: \texttt{['mem','pel','aj','ari']}.}
+% Slide — Peta besar: alur transformer (HOW IT WORKS, req 1)
+\begin{frame}{Alur Besar: Bagaimana Transformer Bekerja}
+  \framesubtitle{Teks $\to$ token $\to$ embedding $\to$ attention berlapis $\to$ kata berikutnya}
+  \begin{center}
+  \resizebox{0.96\textwidth}{!}{%
+  \begin{tikzpicture}[node distance=4mm,
+      box/.style={draw, rounded corners=4pt, fill=nvcard, text=nvwhite,
+                  font=\small, minimum height=1.0cm, minimum width=2.2cm, align=center}]
+    \node[box, draw=nvgray]    (teks)  {Teks\\``saya suka''};
+    \node[box, draw=nvblue, right=of teks] (tok) {Token\\\texttt{[saya][suka]}};
+    \node[box, draw=nvblue, right=of tok] (emb) {Embedding\\(deret angka)};
+    \node[box, draw=nvgreen, right=of emb, minimum width=2.6cm] (att) {Attention\\berlapis};
+    \node[box, draw=nvorange, right=of att] (pred) {Tebak\\kata berikutnya};
+    \draw[->,thick,nvgreen] (teks)--(tok);
+    \draw[->,thick,nvgreen] (tok)--(emb);
+    \draw[->,thick,nvgreen] (emb)--(att);
+    \draw[->,thick,nvgreen] (att)--(pred);
+  \end{tikzpicture}%
+  }
+  \end{center}
+  \vspace{0.4em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \small\color{white}
+    \textbf{Analogi}: bayangkan membaca kalimat yang kata terakhirnya ditutup, lalu kamu menebaknya. Otakmu memakai \emph{semua} kata sebelumnya. Transformer melakukan hal yang sama --- tapi dengan angka dan secara paralel. Tiap kotak di atas kita bedah di slide berikutnya.
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide — Tokenization
+\begin{frame}{Langkah 1 --- Memecah Teks jadi Token}
+  \framesubtitle{Komputer tidak membaca huruf; ia membaca potongan ber-nomor}
   \begin{columns}[T]
     \begin{column}{0.5\textwidth}
       \begin{itemize}
         \footnotesize
-        \item Model tidak baca huruf; ia baca \textbf{token}
-        \item \textbf{Token} sering berupa subword (potongan kata)
-        \item Tiap \textbf{token} dipetakan ke sebuah \textbf{ID} angka
+        \item Teks dipecah jadi \textbf{token} --- biasanya potongan kata
+        \item Tiap token diberi sebuah \textbf{nomor} (ID)
         \item Kata umum $=$ 1 token; kata jarang dipecah jadi beberapa
+        \item Di notebook \texttt{00} kita pakai cara paling sederhana: \textbf{1 huruf $=$ 1 token}
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
       \centering
-      \begin{tikzpicture}[scale=0.6, every node/.style={transform shape}]
+      \begin{tikzpicture}[scale=0.62, every node/.style={transform shape}]
         \node[draw=nvcard, fill=nvcard, rounded corners=4pt, text=white,
-              font=\small, minimum width=2.4cm, minimum height=0.6cm] (raw) at (0,1.4) {"belajar"};
+              font=\small, minimum width=2.4cm, minimum height=0.6cm] (raw) at (0,1.4) {``belajar''};
         \node[draw=nvcard, fill=nvdarkcard, text=nvwhite, font=\small,
               minimum width=1.1cm, minimum height=0.55cm] (t1) at (-0.9,0.2) {bel};
         \node[draw=nvcard, fill=nvdarkcard, text=nvwhite, font=\small,
@@ -274,56 +307,76 @@
         \draw[->,thick,color=nvgreen] (t2) -- (id2);
       \end{tikzpicture}
       \\[0.2em]
-      {\tiny\color{nvgray}(ID hanya ilustrasi)}
+      {\tiny\color{nvgray}(nomor hanya ilustrasi)}
     \end{column}
   \end{columns}
   \vspace{0.2em}
   \begin{center}
-    \textcolor{nvlightgreen}{\small Komputer tidak mengerti kata; semua diubah jadi \textbf{token ID} dulu.}
+    \textcolor{nvlightgreen}{\small Semua teks diubah jadi \textbf{token ber-nomor} dulu sebelum diolah model.}
   \end{center}
 \end{frame}
 
-% Slide 6 — Embedding & Transformer
-\begin{frame}{Embedding \& Transformer}
-  \framesubtitle{Dari ID angka ke prediksi kata berikutnya}
-  \begin{center}
-    \includegraphics[width=0.82\textwidth]{figures/llm_architecture.png}
-  \end{center}
-  \vspace{0.4em}
-  \begin{itemize}
-    \footnotesize
-    \item Tiap \textbf{token ID} $\to$ \textbf{embedding} (vektor angka); kata mirip makna $\to$ vektor mirip
-    \item Vektor diproses berlapis lewat \textbf{transformer block}; output $=$ prediksi \textbf{token} berikutnya
-    \item Bedakan: di Module 03 kamu memakai \textbf{sentence embedding statis} (satu kalimat $\to$ satu vektor); di DALAM transformer, setiap token punya \textbf{contextual embedding} yang berubah mengikuti kalimatnya (``bisa'' dalam ``bisa ular'' vs ``saya bisa'')
-  \end{itemize}
+% Slide — Embedding = makna jadi angka (HOW IT UNDERSTANDS, req 2)
+\begin{frame}{Langkah 2 --- Embedding: Mengubah Makna jadi Angka}
+  \framesubtitle{Inilah cara LLM ``memahami'' bahasa}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item Tiap token diubah jadi \textbf{deret angka} (disebut \emph{vektor})
+        \item Aturannya: \textbf{makna mirip $\to$ angka mirip}; makna jauh $\to$ angka jauh
+        \item ``raja'' dekat ``ratu''; ``kucing'' jauh dari ``traktor''
+        \item Jadi ``memahami'' di sini $=$ menaruh tiap kata di \emph{peta angka} sesuai maknanya
+        \item Model menyusun peta ini sendiri dari \textbf{pola} dalam teks yang sangat banyak
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=0.95]
+        \draw[->,nvgray] (-0.2,0) -- (3.4,0);
+        \draw[->,nvgray] (0,-0.2) -- (0,2.6);
+        \node[circle,fill=nvgreen,inner sep=1.6pt,label={[nvwhite,font=\tiny]right:raja}]   at (2.6,2.0) {};
+        \node[circle,fill=nvgreen,inner sep=1.6pt,label={[nvwhite,font=\tiny]right:ratu}]   at (2.9,1.7) {};
+        \node[circle,fill=nvorange,inner sep=1.6pt,label={[nvwhite,font=\tiny]right:kucing}] at (0.7,0.9) {};
+        \node[circle,fill=nvorange,inner sep=1.6pt,label={[nvwhite,font=\tiny]right:anjing}] at (1.0,0.6) {};
+        \node[circle,fill=nvblue,inner sep=1.6pt,label={[nvwhite,font=\tiny]right:traktor}] at (0.4,2.2) {};
+        \node[nvgray,font=\tiny] at (1.7,-0.45) {peta makna (disederhanakan)};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \small\color{white}
+    LLM ``memahami'' $=$ mengenali \textbf{pola} lalu menaruh makna sebagai \textbf{angka}. Ini statistik dan pola --- bukan kesadaran atau perasaan seperti manusia.
+  \end{beamercolorbox}
 \end{frame}
 
-% Slide 7 — Attention
-\begin{frame}{Attention secara Intuitif}
-  \framesubtitle{Model belajar kata mana yang saling merujuk}
+% Slide — Attention intuitif
+\begin{frame}{Langkah 3 --- Attention: Memakai Konteks}
+  \framesubtitle{Model belajar kata mana yang saling berhubungan}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
       \begin{itemize}
         \footnotesize
-        \item \textbf{Attention} $=$ model "memperhatikan" kata paling relevan
-        \item Saat memproses 1 kata, ia menimbang semua kata lain
-        \item Model belajar \textbf{"itu"} merujuk ke \textbf{"buku"}, bukan "meja"
-        \item Kunci agar LLM paham konteks kalimat panjang
+        \item \textbf{Attention} $=$ model ``memperhatikan'' kata yang paling relevan
+        \item Saat mengolah satu kata, ia menimbang semua kata lain di kalimat
+        \item Contoh: model belajar \textbf{``itu''} merujuk ke \textbf{``buku''}, bukan ``meja''
+        \item Inilah cara LLM memakai \textbf{konteks} --- kunci memahami kalimat panjang
       \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{center}
       \resizebox{\linewidth}{!}{%
       \begin{tikzpicture}
-        \node[text=nvgray, font=\scriptsize] at (0,2) {"...menaruh buku di meja karena itu berat"};
+        \node[text=nvgray, font=\scriptsize] at (0,2) {``\dots menaruh buku di meja karena itu berat''};
         \node[draw=nvgreen, fill=nvcard, rounded corners=3pt, text=nvgreen,
               font=\small\bfseries, minimum width=1.6cm] (buku) at (-2,0.6) {buku};
         \node[draw=nvgray, fill=nvcard, rounded corners=3pt, text=nvgray,
               font=\small, minimum width=1.4cm] (meja) at (0.2,0.6) {meja};
         \node[draw=nvorange, fill=nvcard, rounded corners=3pt, text=nvorange,
               font=\small\bfseries, minimum width=1.2cm] (itu) at (2.4,0.6) {itu};
-        \draw[->,thick,color=nvgreen, bend right=30] (itu) to[bend right=30] (buku);
-        \node[text=nvgreen, font=\tiny] at (0,-0.5) {attention: "itu" $\to$ "buku"};
+        \draw[->,thick,color=nvgreen] (itu) to[bend right=30] (buku);
+        \node[text=nvgreen, font=\tiny] at (0,-0.5) {attention: ``itu'' $\to$ ``buku''};
       \end{tikzpicture}%
       }
       \end{center}
@@ -332,139 +385,397 @@
   \vspace{0.3em}
   \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
     \centering\small\color{white}
-    Attention membuat model fokus pada kata yang benar-benar relevan, bukan semua sama rata.
+    Attention membuat model fokus pada kata yang benar-benar relevan, bukan menganggap semua kata sama penting.
   \end{beamercolorbox}
 \end{frame}
 
-% Slide 8 — Generasi & Sampling
-\begin{frame}{Generasi Teks \& Sampling}
-  \framesubtitle{Menulis satu token demi satu token}
-  \begin{center}
-    \includegraphics[width=0.92\textwidth]{figures/sampling.pdf}
-  \end{center}
-  \vspace{0.1em}
+% Slide — Q, K, V (req 3, group-discussion analogy) — analogi & roles
+\begin{frame}{Q, K, V --- Analogi Diskusi Kelompok}
+  \framesubtitle{Mesin di dalam attention, tanpa rumus}
   \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.56\textwidth}
+      \footnotesize
+      Bayangkan satu kelas sedang diskusi. \textbf{Tiap kata adalah seorang murid}:
       \begin{itemize}
-        \footnotesize
-        \item LLM \textbf{autoregressive}: prediksi 1 \textbf{token} lalu ulang
-        \item Tiap token baru jadi input token selanjutnya
+        \item \textcolor{nvorange}{\textbf{Query (Q)}} $=$ \emph{pertanyaanku}: ``murid mana yang relevan untukku?''
+        \item \textcolor{nvblue}{\textbf{Key (K)}} $=$ \emph{name-tag keahlian} tiap murid: ``aku tahu soal X''
+        \item \textcolor{nvgreen}{\textbf{Value (V)}} $=$ \emph{isi informasi} yang dibawa tiap murid
       \end{itemize}
+      \vspace{0.3em}
+      \textbf{Cara kerjanya}: cocokkan \textbf{Q}-ku ke semua \textbf{K}. Murid yang paling cocok dapat \emph{bobot} besar, lalu aku ambil \emph{campuran-berbobot} dari \textbf{V} mereka.
     \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{temperature}: rendah $=$ fokus, tinggi $=$ kreatif/acak
-        \item \texttt{do\_sample=True} $\to$ pilih token acak-terbobot
-      \end{itemize}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% ── Act 3: Memakai LLM dengan HuggingFace ─────────────────
-\acttitle{3}{Memakai LLM dengan HuggingFace}{Dari teori ke kode}
-
-% Slide 9 — Ekosistem HuggingFace
-\begin{frame}{Ekosistem HuggingFace}
-  \framesubtitle{Pustaka open-source untuk LLM}
-  \begin{itemize}
-    \item[\textcolor{nvgreen}{\checkmark}] Library \textbf{transformers}: API standar memuat \& menjalankan model
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Model Hub}: ribuan model siap pakai, gratis di-\emph{download}
-    \item[\textcolor{nvgreen}{\checkmark}] Tiap model punya \textbf{model card}: deskripsi, lisensi, cara pakai
-    \item[\textcolor{nvgreen}{\checkmark}] Model datang lengkap dengan \textbf{tokenizer} \& \textbf{config}
-  \end{itemize}
-  \vspace{0.6em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
-    \centering\small\color{nvlightgreen}
-    Tidak perlu melatih dari nol --- ambil model siap pakai dari Hub.
-  \end{beamercolorbox}
-\end{frame}
-
-% Slide 10 — pipeline vs Load Manual
-\begin{frame}[fragile]{pipeline vs Load Manual}
-  \framesubtitle{Dua cara memanggil model}
-  \begin{columns}[T]
-    \begin{column}{0.44\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{pipeline}: cepat, cukup sebut task + nama model
-        \item \textbf{AutoModel + AutoTokenizer}: manual, lebih fleksibel
-        \item pipeline cocok untuk eksperimen cepat
-        \item Load manual: kontrol penuh atas tokenizer \& \textbf{inference}
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-from transformers import pipeline
-
-pipe = pipeline("text-generation",
-                model="facebook/opt-350m")
-pipe("My name is")
-      \end{lstlisting}
+    \begin{column}{0.42\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        \node[draw=nvorange, fill=nvcard, rounded corners=4pt, text=nvorange,
+              font=\scriptsize\bfseries, minimum width=1.8cm] (q) at (0,2.2) {Q: tanyaku};
+        \node[draw=nvblue, fill=nvcard, rounded corners=4pt, text=nvblue,
+              font=\scriptsize, minimum width=1.3cm] (k1) at (-1.7,0.8) {K\textsubscript{1}};
+        \node[draw=nvblue, fill=nvcard, rounded corners=4pt, text=nvblue,
+              font=\scriptsize, minimum width=1.3cm] (k2) at (0,0.8) {K\textsubscript{2}};
+        \node[draw=nvblue, fill=nvcard, rounded corners=4pt, text=nvblue,
+              font=\scriptsize, minimum width=1.3cm] (k3) at (1.7,0.8) {K\textsubscript{3}};
+        \node[draw=nvgreen, fill=nvcard, rounded corners=4pt, text=nvgreen,
+              font=\scriptsize, minimum width=2.4cm, align=center] (v) at (0,-0.8) {campur V\\(berbobot)};
+        \draw[->,nvgray] (q)--(k1);
+        \draw[->,nvgreen,thick] (q)--(k2);
+        \draw[->,nvgray] (q)--(k3);
+        \draw[->,nvgreen,thick] (k2)--(v);
+      \end{tikzpicture}%
+      }
+      \\[0.2em]
+      {\tiny\color{nvgray}garis tebal $=$ bobot besar (paling cocok)}
     \end{column}
   \end{columns}
   \vspace{0.2em}
   \begin{center}
-    \textcolor{nvlightgreen}{\small pipeline $=$ mudah \quad$\cdot$\quad AutoModel $=$ fleksibel \& terkontrol}
+    \textcolor{nvlightgreen}{\small Q $=$ pertanyaan $\cdot$ K $=$ label keahlian $\cdot$ V $=$ isi info. Attention $=$ ambil campuran V yang paling cocok.}
   \end{center}
 \end{frame}
 
-% Slide 11 — Model Gated & Login HF
-\begin{frame}[fragile]{Model Gated \& Login HF}
-  \framesubtitle{Akses model yang dibatasi}
+% Slide — Output projection O (req 3, part O)
+\begin{frame}{O --- Merangkum Hasil Diskusi}
+  \framesubtitle{Output projection: langkah terakhir attention}
   \begin{columns}[T]
     \begin{column}{0.54\textwidth}
+      \footnotesize
+      Setelah tiap kata mengambil campuran info dari kata lain, hasilnya masih ``mentah''. Perlu satu langkah terakhir:
       \begin{itemize}
-        \footnotesize
-        \item Sebagian model \textbf{gated}, contoh: \textbf{Llama-2} dari Meta
-        \item Perlu setujui lisensi \& punya \textbf{token} akses HuggingFace
-        \item Login dulu lewat \textbf{huggingface-cli login}
-        \item Tujuan: lisensi, kontrol penggunaan, verifikasi pengguna
+        \item \textcolor{nvlightgreen}{\textbf{Output projection (O)}} $=$ \emph{merangkum} info yang terkumpul jadi \textbf{catatan baru} untuk kata itu
+        \item Analogi: setelah bertanya ke teman-teman sekelas, kamu \textbf{menulis ringkasan} di catatanmu sendiri
+        \item Catatan baru inilah yang dipakai lapisan berikutnya
       \end{itemize}
     \end{column}
     \begin{column}{0.44\textwidth}
-      \begin{lstlisting}[language=bash, basicstyle=\ttfamily\footnotesize\color{nvwhite}]
-!huggingface-cli login
-      \end{lstlisting}
-      \vspace{0.4em}
-      \begin{center}
-        \textcolor{nvgreen}{\footnotesize token HF $\to$ akses model gated}
-      \end{center}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[node distance=6mm,
+          b/.style={draw, rounded corners=4pt, fill=nvcard,
+                    font=\scriptsize, minimum width=3.0cm, minimum height=0.9cm, align=center}]
+        \node[b, draw=nvgreen, text=nvgreen] (v) {campuran V\\\scriptsize(info terkumpul)};
+        \node[b, draw=nvlightgreen, text=nvlightgreen, below=of v] (o) {O: rangkuman\\\scriptsize(catatan baru kata)};
+        \draw[->,nvlightgreen,thick] (v)--(o) node[midway,right,nvlightgreen,font=\tiny]{rangkum};
+      \end{tikzpicture}%
+      }
     \end{column}
   \end{columns}
   \vspace{0.3em}
   \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
     \centering\small\color{white}
-    Model gated butuh token: \textbf{login} dulu sebelum download.
+    Urutan lengkap: \textbf{Q} tanya $\to$ cocokkan ke \textbf{K} $\to$ ambil campuran \textbf{V} $\to$ \textbf{O} merangkum jadi catatan baru.
   \end{beamercolorbox}
 \end{frame}
 
-% Slide 12 — Text Classification
-\begin{frame}{Text Classification}
-  \framesubtitle{Mekanik pipeline \& pentingnya fine-tuning}
+% Slide — Multi-head attention (one idea)
+\begin{frame}{Langkah 4a --- Multi-Head: Banyak Diskusi Paralel}
+  \framesubtitle{Beberapa attention sekaligus, lalu digabung}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \footnotesize
+      \begin{itemize}
+        \item \textbf{Multi-head} $=$ jalankan beberapa attention sekaligus (tiap satu disebut \emph{head})
+        \item Tiap head fokus pada \textbf{hubungan berbeda}: ada yang lihat tata bahasa, ada yang lihat makna, ada yang lihat urutan
+        \item Analogi: \textbf{beberapa kelompok diskusi} berjalan paralel, lalu semua hasilnya digabung jadi satu
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \resizebox{0.95\linewidth}{!}{%
+      \begin{tikzpicture}[node distance=4mm,
+          h/.style={draw, rounded corners=3pt, fill=nvcard, text=nvwhite,
+                    font=\scriptsize, minimum width=2.0cm, minimum height=0.7cm, align=center}]
+        \node[h, draw=nvgreen]  (h1) {head 1\\\scriptsize tata bahasa};
+        \node[h, draw=nvblue, right=of h1]  (h2) {head 2\\\scriptsize makna};
+        \node[h, draw=nvorange, right=of h2] (h3) {head 3\\\scriptsize urutan};
+        \node[h, draw=nvlightgreen, below=of h2, minimum width=2.4cm] (g) {gabung};
+        \draw[->,nvgray] (h1)--(g);
+        \draw[->,nvgray] (h2)--(g);
+        \draw[->,nvgray] (h3)--(g);
+      \end{tikzpicture}%
+      }
+    \end{column}
+  \end{columns}
+  \vspace{0.3em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Banyak sudut pandang sekaligus $\to$ model menangkap lebih banyak jenis hubungan antar-kata.}
+  \end{center}
+\end{frame}
+
+% Slide — Transformer block anatomy (one idea)
+\begin{frame}{Langkah 4b --- Satu Lapisan Transformer (Block)}
+  \framesubtitle{Empat bagian yang ditumpuk berulang-ulang}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \footnotesize
+      Satu \textbf{transformer block} berisi empat bagian:
+      \begin{itemize}
+        \item \textbf{LayerNorm} $\to$ merapikan angka biar stabil
+        \item \textbf{Multi-head attention} $\to$ tukar konteks antar-kata
+        \item \textbf{Feed-forward} $\to$ mengolah tiap kata lebih dalam
+        \item \textbf{Residual} $\to$ jalan pintas agar info awal tidak hilang
+      \end{itemize}
+      \vspace{0.3em}
+      Tumpuk block ini berkali-kali $\to$ makin dalam, makin paham.
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \resizebox{0.9\linewidth}{!}{%
+      \begin{tikzpicture}[node distance=4mm,
+          b/.style={draw, rounded corners=3pt, fill=nvcard, text=nvwhite,
+                    font=\scriptsize, minimum width=3.2cm, minimum height=0.7cm, align=center}]
+        \node[b, draw=nvgray]   (ln1) {LayerNorm};
+        \node[b, draw=nvgreen, below=of ln1] (mha) {Multi-Head Attention};
+        \node[b, draw=nvgray, below=of mha] (ln2) {LayerNorm};
+        \node[b, draw=nvblue, below=of ln2] (ff)  {Feed-Forward};
+        \draw[->,nvgreen] (ln1)--(mha);
+        \draw[->,nvgreen] (mha)--(ln2);
+        \draw[->,nvgreen] (ln2)--(ff);
+        \draw[->,nvorange,thick]
+          (ln1.west) -- ++(-0.5,0) |- (ff.west);
+        \node[nvorange, font=\tiny] at (-2.7,-1.4) {residual};
+      \end{tikzpicture}%
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide — Generasi & Sampling
+\begin{frame}{Langkah 5 --- Menulis Jawaban Token demi Token}
+  \framesubtitle{Generasi (autoregressive) \& cara mengatur gayanya}
+  \begin{center}
+    \includegraphics[width=0.82\textwidth]{figures/sampling.pdf}
+  \end{center}
+  \vspace{0.2em}
   \begin{columns}[T]
     \begin{column}{0.5\textwidth}
       \begin{itemize}
         \footnotesize
-        \item \texttt{pipeline("sentiment-analysis")} di atas \textbf{AutoModelForSequence\-Classification}
-        \item \textbf{prajjwal1/bert-tiny} baru di-pretrain, \textbf{belum} punya head klasifikasi terlatih
-        \item Akibatnya label $=$ \textbf{LABEL\_0/LABEL\_1}, score $\sim$0.5 (tebakan acak)
-        \item Untuk sentimen nyata: pakai model \emph{fine-tuned} (mis. \texttt{distilbert} di \textbf{SST-2})
+        \item Model menebak \textbf{1 token}, lalu token itu jadi input untuk menebak token berikutnya
+        \item Ulangi terus sampai jawaban selesai
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{temperature}: rendah $=$ fokus/aman; tinggi $=$ kreatif/lebih acak
+        \item \texttt{top\_p} \& \texttt{repetition\_penalty}: atur variasi \& cegah pengulangan
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+% Act 3: BANGUN — Transformer dari Nol (NB 00)
+% ============================================================
+\acttitle{3}{BANGUN: Transformer dari Nol}{Notebook 00 --- PyTorch saja, tanpa library ajaib}
+
+% Slide — Ide from scratch
+\begin{frame}{Membangun TinyGPT dari Nol}
+  \framesubtitle{Menyusun sendiri tiap potongan yang baru dipelajari}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item Hanya pakai \textbf{PyTorch} --- tanpa library \texttt{transformers}
+        \item \textbf{1 huruf $=$ 1 token} (tokenizer paling sederhana)
+        \item Susun bertahap: \textbf{self-attention} $\to$ \textbf{multi-head} $\to$ \textbf{transformer block}
+        \item \textbf{Causal mask}: tiap token hanya boleh melihat ke kiri (masa lalu), tidak boleh mengintip masa depan
+        \item Rakit jadi \textbf{TinyGPT} $\approx$ 0,8 juta parameter
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[node distance=3mm,
+          b/.style={draw, rounded corners=3pt, fill=nvcard, text=nvwhite,
+                    font=\scriptsize, minimum width=3.2cm, minimum height=0.62cm, align=center}]
+        \node[b, draw=nvblue]  (e) {Token + Posisi (Embedding)};
+        \node[b, draw=nvgreen, below=of e] (blk) {Transformer Block $\times$ N};
+        \node[b, draw=nvgray, below=of blk] (lnf) {LayerNorm};
+        \node[b, draw=nvorange, below=of lnf] (head) {Linear $\to$ skor tiap kata};
+        \draw[->,nvgreen] (e)--(blk);
+        \draw[->,nvgreen] (blk)--(lnf);
+        \draw[->,nvgreen] (lnf)--(head);
+      \end{tikzpicture}%
+      }
+      \\[0.2em]
+      {\tiny\color{nvgray}TinyGPT $\approx$ 0,8M parameter}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide — self-attention code
+\begin{frame}[fragile]{Self-Attention dalam Beberapa Baris}
+  \framesubtitle{Inilah ``diskusi kelompok'' tadi, ditulis sebagai kode}
+  \begin{lstlisting}[language=Python]
+# x: (batch, seq, dim) -> hitung Q, K, V lewat layer linear
+Q, K, V = self.q(x), self.k(x), self.v(x)
+
+scores = (Q @ K.transpose(-2, -1)) / (d ** 0.5)   # skor kecocokan Q vs K
+scores = scores.masked_fill(causal_mask == 0, float('-inf'))  # causal mask
+weights = torch.softmax(scores, dim=-1)            # ubah jadi bobot (0..1)
+out = weights @ V                                  # campuran berbobot dari V
+  \end{lstlisting}
+  \vspace{0.2em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Empat baris: cocokkan Q dengan K $\to$ tutup masa depan $\to$ jadikan bobot $\to$ campur V.}
+  \end{center}
+\end{frame}
+
+% Slide — train & generate
+\begin{frame}[fragile]{Latih \& Hasilkan Teks}
+  \framesubtitle{Korpus Indonesia kecil $\to$ model bisa melanjutkan kalimat}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item Latih di \textbf{korpus Indonesia kecil}
+        \item Angka \emph{loss} turun $\to$ tebakan huruf makin tepat
+        \item \textbf{Generate}: beri awalan, model lanjutkan huruf demi huruf
+        \item Hasil belum sempurna --- tapi sudah ``berbau'' Indonesia
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \begin{lstlisting}[language=Python]
+for step in range(n_steps):
+    logits = model(xb)
+    loss = F.cross_entropy(
+        logits.view(-1, vocab), yb.view(-1))
+    loss.backward(); opt.step(); opt.zero_grad()
+
+# lanjutkan dari awalan "saya "
+print(model.generate("saya ", n=80))
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \centering\small\color{white}
+    Dengan $\approx$ 0,8M parameter kamu sudah membangun GPT mini --- konsep yang sama dipakai model raksasa.
+  \end{beamercolorbox}
+\end{frame}
+
+% ============================================================
+% Act 4: PAKAI — Model Instruct (NB 01)
+% ============================================================
+\acttitle{4}{PAKAI: Model Instruct}{Notebook 01 --- Qwen2.5-3B-Instruct di Colab T4}
+
+% Slide — Chat template & system prompt
+\begin{frame}[fragile]{Chat Template \& System Prompt}
+  \framesubtitle{Cara yang benar untuk ``berbicara'' dengan model instruct}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item Model instruct mengenal format chat dengan peran: \emph{system}, \emph{user}, \emph{assistant}
+        \item \textbf{system prompt} $=$ mengatur ``kepribadian'' \& aturan model
+        \item \texttt{apply\_chat\_template} merakit format itu otomatis
+        \item Pakai \texttt{return\_dict=True} lalu \texttt{generate(**inputs)}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \begin{lstlisting}[language=Python]
+msgs = [
+  {"role": "system",
+   "content": "Kamu asisten yang ramah."},
+  {"role": "user", "content": "Halo!"},
+]
+inputs = tokenizer.apply_chat_template(
+    msgs, add_generation_prompt=True,
+    return_tensors="pt", return_dict=True
+).to(model.device)
+out = model.generate(**inputs, max_new_tokens=128)
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small System prompt $=$ ``brief'' untuk model; chat template $=$ amplop resmi yang membungkusnya.}
+  \end{center}
+\end{frame}
+
+% Slide — Generation params
+\begin{frame}{Mengatur Gaya Jawaban}
+  \framesubtitle{Parameter generasi yang sering dipakai}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.3}
+  {\footnotesize
+  \setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+    \toprule
+    \rowcolor{nvcard!50}
+    \textbf{Parameter} & \textbf{Efek} \\
+    \midrule
+    \texttt{temperature} & Rendah $=$ fokus/aman; tinggi $=$ kreatif/acak \\
+    \texttt{top\_p} & Hanya pilih dari kumpulan kata berprobabilitas teratas \\
+    \texttt{repetition\_penalty} & Mengurangi jawaban yang mengulang-ulang \\
+    \texttt{max\_new\_tokens} & Batas panjang jawaban yang dihasilkan \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \end{center}
+  \vspace{0.5em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
+    \centering\small\color{nvlightgreen}
+    Untuk fakta: \texttt{temperature} rendah. Untuk ide kreatif: naikkan \texttt{temperature} \& \texttt{top\_p}.
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide — Prompt engineering zero/few-shot
+\begin{frame}[fragile]{Prompt Engineering: Zero-shot \& Few-shot}
+  \framesubtitle{Mengarahkan model lewat cara bertanya}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{Zero-shot}: langsung minta, tanpa contoh
+        \item \textbf{Few-shot}: beri beberapa \textbf{contoh} dulu di dalam prompt
+        \item Tanpa melatih ulang, model meniru pola dari contoh itu
+        \item Tunjukkan pola lewat contoh --- sering lebih ampuh daripada sekadar memerintah
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \begin{lstlisting}[language=Python]
+# few-shot di dalam prompt
+Teks: "Filmnya bagus!"       -> Positif
+Teks: "Pelayanan lambat."    -> Negatif
+Teks: "Kopinya enak sekali." ->
+      <- model melanjutkan: Positif
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Prompt yang baik $=$ separuh dari hasil yang baik.}
+  \end{center}
+\end{frame}
+
+% Slide — Text classification
+\begin{frame}{Klasifikasi Teks: Head Terlatih vs Belum}
+  \framesubtitle{Kenapa skor bisa $\sim$0,5 (sekadar tebakan acak)}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{bert-tiny}: bagian klasifikasi \textbf{belum} dilatih $\to$ label \texttt{LABEL\_0/1}, skor $\sim$0,5
+        \item \textbf{distilbert-sst2}: sudah dilatih (\emph{fine-tuned}) $\to$ \texttt{POSITIVE/NEGATIVE} yang benar
+        \item \textbf{bart-mnli} (zero-shot): kita beri \emph{label sendiri}, tanpa melatih
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
       \begin{center}
-      \renewcommand{\arraystretch}{1.15}
+      \renewcommand{\arraystretch}{1.2}
       {\scriptsize
       \setlength{\tabcolsep}{3pt}
-      \begin{tabular}{@{}p{0.58\linewidth}p{0.16\linewidth}p{0.14\linewidth}@{}}
+      \begin{tabular}{@{}p{0.42\linewidth}p{0.30\linewidth}p{0.16\linewidth}@{}}
         \toprule
         \rowcolor{nvcard!50}
-        \textbf{Teks} & \textbf{Label} & \textbf{Score} \\
+        \textbf{Model} & \textbf{Label} & \textbf{Skor} \\
         \midrule
-        I love working with language models! & LABEL\_1 & 0.535 \\
-        This task is quite challenging. & LABEL\_1 & 0.510 \\
-        The results are impressive and amazing. & LABEL\_1 & 0.522 \\
+        bert-tiny & LABEL\_1 & 0,51 \\
+        distilbert-sst2 & POSITIVE & 0,99 \\
+        bart-mnli (zero-shot) & ``ulasan bagus'' & 0,94 \\
         \bottomrule
       \end{tabular}%
       }
@@ -474,14 +785,11 @@ pipe("My name is")
   \vspace{0.3em}
   \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
     \centering\small\color{white}
-    Head belum terlatih $\to$ output $\sim$0.5 (acak); butuh model \emph{fine-tuned} untuk sentimen nyata.
+    Bagian klasifikasi belum dilatih $\to$ skor $\sim$0,5 (acak). Untuk hasil nyata: pakai model \emph{fine-tuned} atau zero-shot.
   \end{beamercolorbox}
 \end{frame}
 
-% ── Act 4: Aplikasi LLM ───────────────────────────────────
-\acttitle{4}{Aplikasi LLM}{Membangun sesuatu yang berguna}
-
-% Slide 13 — Chatbot dengan Gradio
+% Slide — Gradio chatbot
 \begin{frame}[fragile]{Chatbot dengan Gradio}
   \framesubtitle{Antarmuka chat dalam beberapa baris kode}
   \begin{columns}[T]
@@ -489,144 +797,443 @@ pipe("My name is")
       \begin{itemize}
         \footnotesize
         \item \textbf{gr.ChatInterface} membuat tampilan chat siap pakai
-        \item Fungsi menyusun \textbf{prompt} \texttt{"User: ...\textbackslash nAssistant:"}
-        \item Parameter \textbf{history} disediakan Gradio (di sini diabaikan)
-        \item \textbf{launch(share=True)} beri tautan publik
+        \item Fungsi kita merakit pesan lalu memanggil \texttt{generate}
+        \item Parameter \textbf{history} disediakan Gradio otomatis
+        \item \texttt{launch(share=True)} memberi tautan publik
       \end{itemize}
     \end{column}
     \begin{column}{0.56\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-def chatbot_response(message, history):
-    prompt = f"User: {message}\nAssistant:"
-    return generate_text(prompt, model,
-                         tokenizer, max_length=150)
+      \begin{lstlisting}[language=Python]
+def reply(message, history):
+    msgs = [{"role": "user", "content": message}]
+    inputs = tokenizer.apply_chat_template(
+        msgs, add_generation_prompt=True,
+        return_tensors="pt", return_dict=True
+    ).to(model.device)
+    out = model.generate(**inputs, max_new_tokens=128)
+    return tokenizer.decode(out[0])
 
-iface = gr.ChatInterface(chatbot_response,
-            title="Simple LLM Chatbot")
-iface.launch(share=True)
+gr.ChatInterface(reply).launch(share=True)
       \end{lstlisting}
     \end{column}
   \end{columns}
 \end{frame}
 
-% Slide 14 — Few-shot Learning
-\begin{frame}[fragile]{Few-shot Learning}
-  \framesubtitle{Mengajari model lewat contoh di dalam prompt}
+% ============================================================
+% Act 5: PRODUKSIKAN — 4-bit & Serving (NB 02)
+% ============================================================
+\acttitle{5}{PRODUKSIKAN: 4-bit \& Serving}{Notebook 02 --- Mistral-7B muat di T4 16GB}
+
+% Slide — kenapa 7B OOM
+\begin{frame}{Kenapa 7B fp16 ``Meledak'' di T4?}
+  \framesubtitle{Hitungan kasar memori GPU}
   \begin{columns}[T]
-    \begin{column}{0.44\textwidth}
+    \begin{column}{0.52\textwidth}
       \begin{itemize}
         \footnotesize
-        \item Beri beberapa \textbf{contoh} langsung di dalam \textbf{prompt}
-        \item Tanpa melatih ulang, model meniru pola
-        \item Pola Q/A berulang, pertanyaan baru dibiarkan kosong
-        \item Prompt lebih panjang $\to$ naikkan \textbf{max\_length}
+        \item Tesla T4 punya \textbf{$\sim$16GB} memori (gratis di Colab)
+        \item \textbf{fp16} $=$ 2 byte per parameter
+        \item 7 miliar parameter $\times$ 2 byte $\approx$ \textbf{14GB} hanya untuk bobotnya
+        \item Tambah data kerja lain $\to$ \textbf{OOM} (memori habis)
+        \item Solusi: \textbf{kecilkan} bobot lewat \textbf{4-bit quantization}
       \end{itemize}
     \end{column}
-    \begin{column}{0.54\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-Question: What is the capital of France?
-Answer: The capital of France is Paris.
-
-Question: What is the capital of Japan?
-Answer: The capital of Japan is Tokyo.
-
-Question: What is the capital of Italy?
-Answer:    <- model melanjutkan
-      \end{lstlisting}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        \fill[nvcard] (0,0) rectangle (1.6,4.0);
+        \node[nvgray,font=\scriptsize] at (0.8,4.3) {T4: 16GB};
+        \fill[nvred] (0,0) rectangle (1.6,3.5);
+        \node[nvwhite,font=\scriptsize,align=center] at (0.8,1.7) {7B fp16\\$\approx$14GB+};
+        \fill[nvgreen] (2.2,0) rectangle (3.8,1.4);
+        \node[nvwhite,font=\scriptsize,align=center] at (3.0,0.7) {7B 4-bit\\$\approx$5,5GB};
+        \draw[nvgray] (0,0) rectangle (1.6,4.0);
+        \draw[nvgray] (2.2,0) rectangle (3.8,4.0);
+      \end{tikzpicture}%
+      }
     \end{column}
   \end{columns}
   \vspace{0.2em}
   \begin{center}
-    \textcolor{nvlightgreen}{\small Contoh $>$ perintah: tunjukkan pola, model akan menirunya.}
+    \textcolor{nvlightgreen}{\small fp16 nyaris menyentuh langit-langit T4; 4-bit menyusutkannya jadi $\sim$1/3.}
   \end{center}
 \end{frame}
 
-% Slide 15 — Model Evaluation
-\begin{frame}[fragile]{Model Evaluation}
-  \framesubtitle{Mengukur kualitas output secara sederhana}
+% Slide — 4-bit NF4 quantization code
+\begin{frame}[fragile]{4-bit NF4 Quantization}
+  \framesubtitle{BitsAndBytesConfig --- dan jebakan T4}
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{NF4} $=$ format 4-bit yang pintar untuk menyimpan bobot model
+        \item \texttt{compute\_dtype=float16} \textbf{WAJIB} di T4
+        \item \textcolor{nvred}{\textbf{bf16 membuat crash}} di T4
+        \item Hasil: 7B muat di $\sim$\textbf{5,5GB} memori
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \begin{lstlisting}[language=Python]
+from transformers import BitsAndBytesConfig
+import torch
+
+bnb = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,  # bukan bf16!
+)
+model = AutoModelForCausalLM.from_pretrained(
+    "mistralai/Mistral-7B-Instruct-v0.3",
+    quantization_config=bnb, device_map="auto")
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \centering\small\color{white}
+    Ingat: di T4, \texttt{compute\_dtype} harus \texttt{float16}. \texttt{bfloat16} membuat kernel crash.
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide — profiling, batching, streaming
+\begin{frame}[fragile]{Profiling, Batching \& Streaming}
+  \framesubtitle{Trik agar layanan model hemat \& terasa cepat}
   \begin{columns}[T]
     \begin{column}{0.46\textwidth}
       \begin{itemize}
         \footnotesize
-        \item Jalankan beberapa \textbf{test prompt} ke model
-        \item Catat tiap \textbf{prompt}, \textbf{response}, \& panjang jawaban
-        \item Panjang $=$ jumlah kata (metrik sederhana)
-        \item Dasar untuk metrik lebih lanjut nanti
+        \item \textbf{Profiling}: pantau pemakaian memori GPU
+        \item \textbf{Batching}: olah banyak prompt sekaligus (set \texttt{padding\_side='left'})
+        \item \textbf{Streaming}: tampilkan token sambil dibuat $\to$ terasa responsif
       \end{itemize}
     \end{column}
-    \begin{column}{0.52\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-for prompt in test_prompts:
-    response = generate_text(prompt, model,
-                             tokenizer)
-    results.append({
-        'prompt': prompt,
-        'response': response,
-        'length': len(response.split()),
-    })
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-\end{frame}
+    \begin{column}{0.54\textwidth}
+      \begin{lstlisting}[language=Python]
+from transformers import TextStreamer
 
-% ── Act 5: Ringkasan & Lanjutan ───────────────────────────
-\acttitle{5}{Ringkasan \& Lanjutan}{Apa selanjutnya?}
+streamer = TextStreamer(tokenizer,
+                        skip_prompt=True)
+model.generate(**inputs,
+               max_new_tokens=200,
+               streamer=streamer)  # token muncul live
 
-% Slide 16 — Ringkasan
-\begin{frame}{Ringkasan Modul 04}
-  \begin{center}
-  \renewcommand{\arraystretch}{1.3}
-  {\tiny
-  \setlength{\tabcolsep}{3pt}
-  \begin{tabular}{@{}p{0.05\linewidth}p{0.20\linewidth}p{0.40\linewidth}p{0.28\linewidth}@{}}
-    \toprule
-    \rowcolor{nvcard!50}
-    \textbf{\#} & \textbf{Topik} & \textbf{Library/Model} & \textbf{Tujuan} \\
-    \midrule
-    1 & LLM inference & transformers (\texttt{facebook/opt-350m}) & Generasi teks dari prompt \\
-    2 & Pipeline vs manual & \texttt{pipeline()} vs AutoModel (TinyLlama-1.1B-Chat) & 2 cara load \& jalankan model \\
-    3 & Text classification & \texttt{prajjwal1/bert-tiny} & Klasifikasi sentimen (head ilustratif) \\
-    4 & Chatbot interface & Gradio (\texttt{gr.ChatInterface}) & UI percakapan sederhana \\
-    5 & Few-shot learning & \texttt{facebook/opt-350m} & Beri contoh di prompt, model meniru \\
-    6 & Model evaluation & transformers (fungsi sendiri) & Uji respons \& ukur panjang output \\
-    \bottomrule
-  \end{tabular}%
-  }
-  \end{center}
-\end{frame}
-
-% Slide 17 — Setup, Tools & Next
-\begin{frame}[fragile]{Setup, Tools \& Lanjut ke Module 05}
-  \framesubtitle{Model kecil, hemat memori, dan kenapa kita butuh RAG}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Model kecil: \texttt{opt-350m}, \texttt{bert-tiny}, \texttt{TinyLlama-1.1B}
-        \item Contoh model besar gated: \texttt{Llama-2-7b-chat-hf}
-        \item \texttt{float16} $\to$ bobot $\sim$setengah memori vs float32
-        \item Butuh GPU: Colab Tesla T4 (\texttt{!nvidia-smi})
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-model = AutoModelForCausalLM\
-  .from_pretrained(
-    "facebook/opt-350m",
-    device_map="auto",
-    torch_dtype=torch.float16,
-  )
+tokenizer.padding_side = "left"  # untuk batching
       \end{lstlisting}
     \end{column}
   \end{columns}
   \vspace{0.2em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Streaming tidak mempercepat model --- ia membuat \emph{pengalaman} terasa jauh lebih cepat.}
+  \end{center}
+\end{frame}
+
+% ============================================================
+% Act 6: ADAPT — Fine-Tuning LoRA/QLoRA (NB 03)
+% ============================================================
+\acttitle{6}{ADAPT: Fine-Tuning LoRA/QLoRA}{Notebook 03 --- ajari model hal baru tanpa GPU mahal}
+
+% Slide — masalah: kenapa tak latih ulang semuanya
+\begin{frame}{Masalah: Melatih Ulang Model Raksasa Itu Mahal}
+  \framesubtitle{Miliaran ``kenop'' --- terlalu berat untuk diubah semua}
+  \begin{columns}[T]
+    \begin{column}{0.54\textwidth}
+      \footnotesize
+      \begin{itemize}
+        \item Model raksasa punya \textbf{miliaran ``kenop''} (angka bobot) yang menentukan perilakunya
+        \item Untuk mengajarinya hal baru, kita ingin \emph{menyetel} kenop-kenop itu
+        \item Tapi menyetel \textbf{semua} kenop butuh GPU sangat mahal \& waktu sangat lama
+        \item Pertanyaannya: bisakah kita ajari hal baru \textbf{tanpa} menyentuh semuanya?
+      \end{itemize}
+      \vspace{0.3em}
+      \textcolor{nvlightgreen}{\textbf{Jawabannya: LoRA.}}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \resizebox{0.9\linewidth}{!}{%
+      \begin{tikzpicture}
+        \node[draw=nvgray, fill=nvcard, rounded corners=4pt, text=nvwhite,
+              font=\small, minimum width=3.4cm, minimum height=2.8cm, align=center]
+              (book) {Model raksasa\\[2pt]\scriptsize miliaran kenop\\\scriptsize (mahal diubah semua)};
+      \end{tikzpicture}%
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide — LoRA sticky-note analogy (req 4 part 1)
+\begin{frame}{LoRA --- Tempel Sticky-Note, Jangan Tulis Ulang Buku}
+  \framesubtitle{Bekukan model raksasa, latih catatan kecil saja}
+  \begin{columns}[T]
+    \begin{column}{0.54\textwidth}
+      \footnotesize
+      \textbf{LoRA} $=$ \emph{Low-Rank Adaptation}. Idenya:
+      \begin{itemize}
+        \item \textcolor{nvblue}{\textbf{Bekukan}} model raksasa --- jangan sentuh kenopnya sama sekali
+        \item Tambahkan \textbf{matriks kecil} (``catatan tepi'') yang \emph{dilatih}
+        \item \textbf{Analogi}: daripada menulis ulang seluruh buku teks, cukup tempel \textbf{sticky-note} kecil berisi koreksi/tambahan
+        \item Yang dilatih hanya $\sim$\textbf{1\%} dari seluruh parameter
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        \node[draw=nvgray, fill=nvcard, rounded corners=4pt, text=nvgray,
+              font=\small, minimum width=3.0cm, minimum height=2.6cm, align=center]
+              (book) {Model raksasa\\(BEKU)\\[2pt]\scriptsize miliaran kenop};
+        \node[draw=nvorange, fill=nvdarkcard, rounded corners=2pt, text=nvorange,
+              font=\scriptsize\bfseries, minimum width=1.5cm, minimum height=0.8cm,
+              rotate=8] at (1.4,1.0) {sticky-note};
+        \node[draw=nvgreen, fill=nvdarkcard, rounded corners=2pt, text=nvgreen,
+              font=\scriptsize\bfseries, minimum width=1.5cm, minimum height=0.8cm,
+              rotate=-6] at (1.5,-0.9) {LoRA $\sim$1\%};
+      \end{tikzpicture}%
+      }
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Latih hanya sticky-note kecilnya $\to$ cepat, murah, mudah disimpan \& dibagi.}
+  \end{center}
+\end{frame}
+
+% Slide — QLoRA (req 4 part 2)
+\begin{frame}{QLoRA --- Buku Edisi Saku 4-bit + Sticky-Note}
+  \framesubtitle{Gabungkan 4-bit dengan LoRA agar muat di T4}
+  \begin{columns}[T]
+    \begin{column}{0.54\textwidth}
+      \footnotesize
+      \textbf{QLoRA} $=$ \textbf{Quantized} LoRA. Dua langkah:
+      \begin{enumerate}
+        \item \textcolor{nvblue}{\textbf{Kecilkan dulu}} model ke \textbf{4-bit} (quantization) agar muat di GPU kecil
+        \item \textcolor{nvgreen}{\textbf{Baru tempel}} sticky-note \textbf{LoRA} di atasnya
+      \end{enumerate}
+      \vspace{0.2em}
+      \textbf{Analogi}: buku tebal diubah jadi \textbf{edisi saku 4-bit} (ringan dibawa), lalu ditempeli \textbf{sticky-note} LoRA.
+      \begin{itemize}
+        \item Model 4-bit tetap dibekukan; hanya sticky-note LoRA yang dilatih
+        \item Inilah kenapa fine-tuning bisa jalan di \textbf{T4 gratis} dalam $\sim$2 menit
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[node distance=4mm,
+          b/.style={draw, rounded corners=4pt, fill=nvcard, text=nvwhite,
+                    font=\scriptsize, minimum width=3.2cm, minimum height=0.9cm, align=center}]
+        \node[b, draw=nvgray] (full) {Model penuh\\\scriptsize berat, tak muat};
+        \node[b, draw=nvblue, below=of full] (q) {Edisi saku 4-bit\\\scriptsize quantization};
+        \node[b, draw=nvgreen, below=of q] (l) {+ sticky-note LoRA\\\scriptsize dilatih $\sim$1\%};
+        \draw[->,nvblue,thick] (full)--(q) node[midway,right,nvblue,font=\tiny]{kecilkan};
+        \draw[->,nvgreen,thick] (q)--(l) node[midway,right,nvgreen,font=\tiny]{tempel};
+      \end{tikzpicture}%
+      }
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide — LoraConfig + Trainer
+\begin{frame}[fragile]{QLoRA dalam Kode}
+  \framesubtitle{Notebook 03 --- ajari Qwen2.5-1.5B fakta-fakta Navasena}
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item Model 4-bit $+$ \textbf{LoraConfig}: hanya $\sim$1,2\% parameter yang dilatih
+        \item Dilatih lewat \texttt{Trainer} dalam $\sim$2 menit
+        \item \textbf{Bandingkan} sebelum vs sesudah: \texttt{model.disable\_adapter()}
+        \item \textbf{Simpan sticky-note-nya saja} (file kecil), bukan seluruh model
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \begin{lstlisting}[language=Python]
+from peft import LoraConfig, get_peft_model
+
+lora = LoraConfig(
+    r=8, lora_alpha=16, lora_dropout=0.05,
+    target_modules=["q_proj", "v_proj"],
+    task_type="CAUSAL_LM",
+)
+model = get_peft_model(base_4bit, lora)
+model.print_trainable_parameters()  # ~1.2%
+
+with model.disable_adapter():       # uji model asli
+    base_answer = model.generate(**inputs)
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Setelah dilatih, model tahu fakta Navasena --- sticky-note mungilnya bisa dibagi ke siapa pun.}
+  \end{center}
+\end{frame}
+
+% ============================================================
+% Act 7: UKUR — Evaluasi (NB 04)
+% ============================================================
+\acttitle{7}{UKUR: Evaluasi}{Notebook 04 --- model mana yang benar-benar lebih baik?}
+
+% Slide — metrics
+\begin{frame}{Metrik Otomatis}
+  \framesubtitle{Mengukur kualitas jawaban dengan angka}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.3}
+  {\footnotesize
+  \setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}p{0.24\linewidth}p{0.68\linewidth}@{}}
+    \toprule
+    \rowcolor{nvcard!50}
+    \textbf{Metrik} & \textbf{Mengukur apa} \\
+    \midrule
+    \texttt{ROUGE} & Tumpang-tindih kata dengan jawaban acuan (untuk ringkasan) \\
+    \texttt{BLEU} & Kecocokan frasa (sering untuk terjemahan) \\
+    \texttt{BERTScore} & Kemiripan \emph{makna}, bukan kata yang persis sama \\
+    \texttt{Perplexity} & Seberapa ``terkejut'' model --- makin rendah makin lancar \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \end{center}
+  \vspace{0.5em}
   \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
     \centering\small\color{nvlightgreen}
-    LLM bisa \textbf{halusinasi} \& punya \textbf{knowledge cutoff} $\to$ \textbf{Module 05 (RAG)} memberi LLM "buku contekan".
+    ROUGE/BLEU $=$ cocok-kata; BERTScore $=$ cocok-makna; Perplexity $=$ kelancaran model.
   \end{beamercolorbox}
 \end{frame}
 
-% Slide 18 — Thank You
+% Slide — statistical significance
+\begin{frame}{Apakah Bedanya Nyata?}
+  \framesubtitle{Skor lebih tinggi belum tentu benar-benar lebih baik}
+  \begin{columns}[T]
+    \begin{column}{0.54\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item Model B skornya sedikit lebih tinggi --- tapi apa itu cuma \textbf{kebetulan}?
+        \item Kita uji dengan \texttt{p-value} (paired t-test)
+        \item \texttt{p < 0,05} $\to$ beda \textbf{nyata} (kecil kemungkinan kebetulan)
+        \item \texttt{p > 0,05} $\to$ \textbf{belum} bisa disimpulkan lebih baik
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{center}
+      \renewcommand{\arraystretch}{1.25}
+      {\scriptsize
+      \setlength{\tabcolsep}{4pt}
+      \begin{tabular}{@{}p{0.5\linewidth}p{0.4\linewidth}@{}}
+        \toprule
+        \rowcolor{nvcard!50}
+        \textbf{Hasil} & \textbf{Arti} \\
+        \midrule
+        p $=$ 0,12 & \textcolor{nvorange}{belum nyata} \\
+        p $=$ 0,01 & \textcolor{nvgreen}{nyata} \\
+        \bottomrule
+      \end{tabular}%
+      }
+      \end{center}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \centering\small\color{white}
+    Pelajaran: metrik boleh memihak model yang lebih besar, tapi \texttt{p > 0,05} berarti bedanya belum meyakinkan.
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide — LLM-as-judge
+\begin{frame}[fragile]{LLM-as-Judge: Lokal \& Cloud}
+  \framesubtitle{Pakai LLM lain sebagai ``juri'' untuk menilai jawaban}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item Beri jawaban A \& B ke LLM ``juri'', minta ia menilai mana yang lebih baik
+        \item \textbf{Lokal}: pakai Qwen3B yang sudah kita muat (gratis)
+        \item \textbf{Cloud (opsional)}: NVIDIA \textbf{NIM} di \texttt{build.nvidia.com} $\to$ model lebih besar
+        \item Akses API cloud kini \textbf{diizinkan} untuk model raksasa
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \begin{lstlisting}[language=Python]
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://integrate.api.nvidia.com/v1",
+    api_key=NVIDIA_API_KEY)
+
+judge = client.chat.completions.create(
+    model="meta/llama-3.1-70b-instruct",
+    messages=[{"role": "user",
+               "content": f"Nilai jawaban: {ans}"}])
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Juri lokal $=$ cepat \& gratis; juri cloud $=$ lebih tajam untuk kasus sulit.}
+  \end{center}
+\end{frame}
+
+% ============================================================
+% Ringkasan & Lanjutan
+% ============================================================
+\acttitle{8}{Ringkasan \& Lanjutan}{Lima notebook, satu perjalanan}
+
+% Slide — Ringkasan 5 notebook
+\begin{frame}{Ringkasan: 5 Notebook Modul 04}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.35}
+  {\scriptsize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}p{0.04\linewidth}p{0.16\linewidth}p{0.22\linewidth}p{0.46\linewidth}@{}}
+    \toprule
+    \rowcolor{nvcard!50}
+    \textbf{\#} & \textbf{Tahap} & \textbf{Model} & \textbf{Yang dipelajari} \\
+    \midrule
+    00 & \textbf{BANGUN} & TinyGPT ($\sim$0,8M) & Attention, causal mask, multi-head, block --- rakit dari nol \\
+    01 & \textbf{PAKAI} & Qwen2.5-3B-Instruct & Chat template, parameter generasi, prompt eng., klasifikasi \\
+    02 & \textbf{PRODUKSIKAN} & Mistral-7B-Instruct & 4-bit NF4, profiling, batching, streaming \\
+    03 & \textbf{ADAPT} & Qwen2.5-1.5B & QLoRA: 4-bit $+$ sticky-note, latih $\sim$1\%, $\sim$2 menit \\
+    04 & \textbf{UKUR} & Qwen3B $+$ NIM cloud & ROUGE/BLEU/BERTScore, p-value, LLM-as-judge \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \end{center}
+  \vspace{0.4em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Semua gratis di Colab \textbf{Tesla T4 16GB}, semua model \textbf{non-gated}.}
+  \end{center}
+\end{frame}
+
+% Slide — Setup & guardrails & next
+\begin{frame}[fragile]{Setup T4 \& Lanjut ke Module 05}
+  \framesubtitle{Aturan main agar tidak crash --- dan kenapa kita butuh RAG}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \footnotesize
+      \textbf{Aturan aman di T4:}
+      \begin{itemize}
+        \item Pin \texttt{transformers>=4.44,<5}
+        \item 4-bit \texttt{compute\_dtype=float16} (\textcolor{nvred}{bf16 crash})
+        \item \texttt{apply\_chat\_template(..., return\_dict=True)} lalu \texttt{generate(**inputs)}
+        \item Cek GPU dengan \texttt{!nvidia-smi}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{lstlisting}[language=bash]
+!pip install "transformers>=4.44,<5" \
+             bitsandbytes accelerate peft
+!nvidia-smi
+      \end{lstlisting}
+    \end{column}
+  \end{columns}
+  \vspace{0.3em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
+    \centering\small\color{nvlightgreen}
+    LLM bisa \textbf{mengarang} (halusinasi) \& punya \textbf{batas pengetahuan} $\to$ \textbf{Module 05 (RAG)} memberi LLM ``buku contekan''.
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide — Thank You
 \begin{frame}[plain]
   \vspace{2cm}
   \begin{center}
@@ -635,6 +1242,7 @@ model = AutoModelForCausalLM\
     \begin{beamercolorbox}[rounded=true,shadow=false,sep=8pt,wd=10cm]{block body}
       \centering\color{white}
       \textbf{LLM Fundamentals} \quad $\cdot$ \quad Modul 04 \\
+      Bangun $\to$ Pakai $\to$ Produksikan $\to$ Adapt $\to$ Ukur \\
       Navasena Gen-ML Course
     \end{beamercolorbox}
   \end{center}
