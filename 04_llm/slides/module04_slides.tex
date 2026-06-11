@@ -950,65 +950,91 @@
 \end{frame}
 
 % Slide — 4-bit NF4 quantization code
-\begin{frame}[fragile]{4-bit NF4 Quantization}
-  \framesubtitle{BitsAndBytesConfig --- dan jebakan T4}
+\begin{frame}{4-bit NF4 Quantization}
+  \framesubtitle{Satu bobot, dari 16-bit ke 4-bit --- dan jebakan T4}
   \begin{columns}[T]
-    \begin{column}{0.42\textwidth}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        % full 16-bit weight bar
+        \fill[nvblue] (0,0) rectangle (5.2,0.9);
+        \draw[nvgray] (0,0) rectangle (5.2,0.9);
+        \node[nvwhite, font=\small\bfseries] at (2.6,0.45) {1 bobot 16-bit};
+        \node[nvgray, font=\scriptsize, anchor=west] at (5.4,0.45) {2 byte};
+        % shrink arrow
+        \draw[->, very thick, nvgreen] (2.6,-0.2) -- (2.6,-1.1)
+          node[midway, right, font=\scriptsize, text=nvlightgreen]{NF4};
+        % quarter 4-bit weight bar
+        \fill[nvgreen] (0,-2.4) rectangle (1.3,-1.5);
+        \draw[nvgray] (0,-2.4) rectangle (1.3,-1.5);
+        \node[nvwhite, font=\scriptsize\bfseries] at (0.65,-1.95) {4-bit};
+        \node[nvgray, font=\scriptsize, anchor=west] at (1.5,-1.95) {0,5 byte};
+        % annotation 4x smaller
+        \node[nvlightgreen, font=\small\bfseries, anchor=west] at (2.6,-1.95)
+          {$4\times$ lebih kecil};
+      \end{tikzpicture}%
+      }
+    \end{column}
+    \begin{column}{0.48\textwidth}
       \begin{itemize}
         \footnotesize
-        \item \textbf{NF4} $=$ format 4-bit yang pintar untuk menyimpan bobot model
-        \item \texttt{compute\_dtype=float16} \textbf{WAJIB} di T4
-        \item \textcolor{nvred}{\textbf{bf16 membuat crash}} di T4
-        \item Hasil: 7B muat di $\sim$\textbf{5,5GB} memori
+        \item \textbf{NF4} menyimpan bobot dalam \textbf{4 bit} $\to$ model 7B muat di T4
+        \item Hasil: 7B turun ke $\sim$\textbf{5,5GB} memori
       \end{itemize}
-    \end{column}
-    \begin{column}{0.56\textwidth}
-      \begin{lstlisting}[language=Python]
-from transformers import BitsAndBytesConfig
-import torch
-
-bnb = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_quant_type="nf4",
-    bnb_4bit_compute_dtype=torch.float16,  # bukan bf16!
-)
-model = AutoModelForCausalLM.from_pretrained(
-    "mistralai/Mistral-7B-Instruct-v0.3",
-    quantization_config=bnb, device_map="auto")
-      \end{lstlisting}
+      \vspace{0.3em}
+      \begin{tikzpicture}
+        \node[draw=nvred, line width=1.2pt, fill=nvdarkcard, rounded corners=5pt,
+              text=nvwhite, font=\scriptsize, align=left, inner sep=7pt,
+              text width=0.92\linewidth] {%
+          \textcolor{nvorange}{\textbf{Jebakan T4}}\\[3pt]
+          \texttt{compute\_dtype} \textbf{WAJIB} \texttt{float16}\\[2pt]
+          \textcolor{nvred}{\texttt{bfloat16} crash di T4}
+          \textcolor{nvgray}{(compute 7.5 $<$ 8.0)}};
+      \end{tikzpicture}
     \end{column}
   \end{columns}
   \vspace{0.2em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
-    \centering\small\color{white}
-    Ingat: di T4, \texttt{compute\_dtype} harus \texttt{float16}. \texttt{bfloat16} membuat kernel crash.
-  \end{beamercolorbox}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Bobot mengecil $4\times$ --- tapi di T4, \texttt{compute\_dtype} harus \texttt{float16}.}
+  \end{center}
 \end{frame}
 
 % Slide — profiling, batching, streaming
-\begin{frame}[fragile]{Profiling, Batching \& Streaming}
+\begin{frame}{Profiling, Batching \& Streaming}
   \framesubtitle{Trik agar layanan model hemat \& terasa cepat}
   \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
+    \begin{column}{0.58\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[font=\scriptsize]
+        % --- timeline 1: tunggu penuh ---
+        \node[text=nvred, font=\scriptsize\bfseries, anchor=west] at (0,1.9) {Tunggu penuh};
+        \draw[nvgray, ->] (0,1.4) -- (9.6,1.4) node[right,nvgray,font=\tiny]{waktu};
+        \fill[nvdarkcard] (0,1.25) rectangle (6.0,1.55);
+        \draw[nvgray] (0,1.25) rectangle (6.0,1.55);
+        % whole answer pops at end
+        \node[fill=nvgreen, rounded corners=2pt, text=nvwhite, font=\tiny,
+              minimum height=0.3cm, anchor=west] at (6.1,1.4) {jawaban penuh};
+        \node[nvgray, font=\tiny] at (3.0,1.0) {layar kosong... lalu muncul sekaligus};
+        % --- timeline 2: streaming ---
+        \node[text=nvgreen, font=\scriptsize\bfseries, anchor=west] at (0,0.3) {Streaming};
+        \draw[nvgray, ->] (0,-0.2) -- (9.6,-0.2) node[right,nvgray,font=\tiny]{waktu};
+        \foreach \i/\t in {0/token, 1.05/demi, 2.1/token, 3.15/muncul, 4.2/satu, 5.25/per, 6.3/satu} {
+          \node[fill=nvgreen, rounded corners=2pt, text=nvwhite, font=\tiny,
+                minimum height=0.3cm, minimum width=0.95cm, anchor=west] at (\i,-0.35) {\t};
+        }
+      \end{tikzpicture}%
+      }
+    \end{column}
+    \begin{column}{0.4\textwidth}
       \begin{itemize}
         \footnotesize
-        \item \textbf{Profiling}: pantau pemakaian memori GPU
-        \item \textbf{Batching}: olah banyak prompt sekaligus (set \texttt{padding\_side='left'})
-        \item \textbf{Streaming}: tampilkan token sambil dibuat $\to$ terasa responsif
+        \item \textbf{Batching} $=$ proses banyak prompt sekaligus
+          \begin{itemize}\scriptsize\item decoder-only $\to$ \textbf{padding kiri}\end{itemize}
+        \item \textbf{Streaming} $=$ tampilkan token saat diproduksi
+          \begin{itemize}\scriptsize\item UX lebih enak\end{itemize}
       \end{itemize}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-      \begin{lstlisting}[language=Python]
-from transformers import TextStreamer
-
-streamer = TextStreamer(tokenizer,
-                        skip_prompt=True)
-model.generate(**inputs,
-               max_new_tokens=200,
-               streamer=streamer)  # token muncul live
-
-tokenizer.padding_side = "left"  # untuk batching
-      \end{lstlisting}
     \end{column}
   \end{columns}
   \vspace{0.2em}
