@@ -606,54 +606,92 @@
 \end{frame}
 
 % Slide — self-attention code
-\begin{frame}[fragile]{Self-Attention dalam Beberapa Baris}
-  \framesubtitle{Inilah ``diskusi kelompok'' tadi, ditulis sebagai kode}
-  \begin{lstlisting}[language=Python]
-# x: (batch, seq, dim) -> hitung Q, K, V lewat layer linear
-Q, K, V = self.q(x), self.k(x), self.v(x)
-
-scores = (Q @ K.transpose(-2, -1)) / (d ** 0.5)   # skor kecocokan Q vs K
-scores = scores.masked_fill(causal_mask == 0, float('-inf'))  # causal mask
-weights = torch.softmax(scores, dim=-1)            # ubah jadi bobot (0..1)
-out = weights @ V                                  # campuran berbobot dari V
-  \end{lstlisting}
+\begin{frame}{Self-Attention dalam Beberapa Baris}
+  \framesubtitle{Inilah ``diskusi kelompok'' tadi --- sebagai bobot, bukan kode}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \resizebox{0.96\linewidth}{!}{%
+      \begin{tikzpicture}[
+          cell/.style={draw=nvdarkcard, minimum width=1.35cm, minimum height=0.9cm},
+          lbl/.style={text=nvgray, font=\scriptsize}]
+        % column labels (Key = kata yang dilihat)
+        \foreach \x/\t in {0/Ibu, 1/kota, 2/Indonesia, 3/adalah} {
+          \node[lbl, rotate=35, anchor=west] at (\x*1.35+0.1, 3.7) {\t};
+        }
+        % row labels (Query = kata yang sedang diolah)
+        \foreach \y/\t in {0/Ibu, 1/kota, 2/Indonesia, 3/adalah} {
+          \node[lbl, anchor=east] at (-0.1, 3.15-\y*0.9) {\t};
+        }
+        % grid: weights (row attends to col); diagonal & below = allowed
+        % opacity ~ plausible weight; above diagonal = masked (X)
+        % triples: row / col / weight  (only diagonal+lower triangle)
+        \foreach \r/\c/\w in {%
+            0/0/0.90,
+            1/0/0.35, 1/1/0.65,
+            2/0/0.20, 2/1/0.30, 2/2/0.55,
+            3/0/0.10, 3/1/0.15, 3/2/0.80, 3/3/0.30} {
+          \node[cell, fill=nvgreen, fill opacity=\w, text opacity=1, text=nvwhite, font=\tiny]
+            at (\c*1.35+0.675, 3.15-\r*0.9) {\w};
+        }
+        % masked cells: strictly upper triangle
+        \foreach \r/\c in {0/1, 0/2, 0/3, 1/2, 1/3, 2/3} {
+          \node[cell, fill=nvdarkcard, text=nvgray, font=\small]
+            at (\c*1.35+0.675, 3.15-\r*0.9) {$\times$};
+        }
+      \end{tikzpicture}%
+      }
+      \\[0.3em]
+      {\tiny\color{nvgray}baris $=$ kata yang bertanya $\cdot$ kolom $=$ kata yang dilihat $\cdot$ hijau pekat $=$ bobot besar}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \footnotesize
+      \begin{itemize}
+        \item Tiap kata membuat \textcolor{nvorange}{\textbf{Query}}; tiap kata punya \textcolor{nvblue}{\textbf{Key}} $+$ \textcolor{nvgreen}{\textbf{Value}}
+        \item \textbf{Skor} $=$ Q$\cdot$K\textsuperscript{T} $\div\sqrt{\text{dim}}$ $\to$ \emph{softmax} $\to$ \textbf{bobot} (tiap baris)
+        \item \textcolor{nvred}{\textbf{Causal mask}} ($\times$) menutup kata di kanan, supaya model menebak \textbf{kiri-ke-kanan}
+      \end{itemize}
+      \vspace{0.3em}
+      {\scriptsize\color{nvgray}Contoh: ``adalah'' paling memperhatikan ``Indonesia''.}
+    \end{column}
+  \end{columns}
   \vspace{0.2em}
   \begin{center}
-    \textcolor{nvlightgreen}{\small Empat baris: cocokkan Q dengan K $\to$ tutup masa depan $\to$ jadikan bobot $\to$ campur V.}
+    \textcolor{nvlightgreen}{\small Inilah ``diskusi kelompok'' dari Act 2 --- sekarang sebagai bobot, bukan kode.}
   \end{center}
 \end{frame}
 
 % Slide — train & generate
-\begin{frame}[fragile]{Latih \& Hasilkan Teks}
+\begin{frame}{Latih TinyGPT: dari Acak ke Kalimat}
   \framesubtitle{Korpus Indonesia kecil $\to$ model bisa melanjutkan kalimat}
   \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Latih di \textbf{korpus Indonesia kecil}
-        \item Angka \emph{loss} turun $\to$ tebakan huruf makin tepat
-        \item \textbf{Generate}: beri awalan, model lanjutkan huruf demi huruf
-        \item Hasil belum sempurna --- tapi sudah ``berbau'' Indonesia
-      \end{itemize}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{tikzpicture}[
+          panel/.style={rounded corners=5pt, fill=nvcard, text=nvwhite,
+                        font=\small\ttfamily, minimum width=6.0cm, minimum height=1.3cm,
+                        align=center, inner sep=6pt}]
+        \node[panel, draw=nvred, line width=1pt] (before) at (0,0)
+          {kMKhcrvwf qzx\\jpl wggh tnz};
+        \node[font=\scriptsize\bfseries, text=nvred, anchor=west] at (-3.0,0.95)
+          {Sebelum latih (step 0)};
+        \node[panel, draw=nvgreen, line width=1pt] (after) at (0,-2.6)
+          {saya suka belajar\\jaringan saraf tiruan};
+        \node[font=\scriptsize\bfseries, text=nvgreen, anchor=west] at (-3.0,-1.55)
+          {Sesudah latih (step 3000)};
+        \draw[->, very thick, nvgreen] (before) -- (after)
+          node[pos=0.42, right, font=\scriptsize, text=nvlightgreen]{3000 langkah};
+      \end{tikzpicture}
     \end{column}
-    \begin{column}{0.52\textwidth}
-      \begin{lstlisting}[language=Python]
-for step in range(n_steps):
-    logits = model(xb)
-    loss = F.cross_entropy(
-        logits.view(-1, vocab), yb.view(-1))
-    loss.backward(); opt.step(); opt.zero_grad()
-
-# lanjutkan dari awalan "saya "
-print(model.generate("saya ", n=80))
-      \end{lstlisting}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=0.92\linewidth]{figures/nb00_loss.pdf}
+      \\[0.2em]
+      {\scriptsize\color{nvlightgreen}Tugasnya cuma: tebak token berikutnya. Loss turun $=$ model makin paham.}
+      \\[0.15em]
+      {\tiny\color{nvgray}TinyGPT $\sim$0,81 juta parameter --- prinsip sama dengan GPT raksasa, beda skala.}
     \end{column}
   \end{columns}
-  \vspace{0.2em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
-    \centering\small\color{white}
-    Dengan $\approx$ 0,8M parameter kamu sudah membangun GPT mini --- konsep yang sama dipakai model raksasa.
-  \end{beamercolorbox}
 \end{frame}
 
 % ============================================================
