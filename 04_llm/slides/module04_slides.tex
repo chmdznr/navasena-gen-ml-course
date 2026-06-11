@@ -700,31 +700,44 @@
 \acttitle{4}{PAKAI: Model Instruct}{Notebook 01 --- Qwen2.5-3B-Instruct di Colab T4}
 
 % Slide — Chat template & system prompt
-\begin{frame}[fragile]{Chat Template \& System Prompt}
+\begin{frame}{Chat Template \& System Prompt}
   \framesubtitle{Cara yang benar untuk ``berbicara'' dengan model instruct}
   \begin{columns}[T]
-    \begin{column}{0.44\textwidth}
+    \begin{column}{0.42\textwidth}
       \begin{itemize}
         \footnotesize
-        \item Model instruct mengenal format chat dengan peran: \emph{system}, \emph{user}, \emph{assistant}
+        \item Model chat dilatih dengan \textbf{format khusus} (\textbf{ChatML})
+        \item \texttt{apply\_chat\_template} menyusun peran \emph{system}/\emph{user} \textbf{persis} seperti saat training
         \item \textbf{system prompt} $=$ mengatur ``kepribadian'' \& aturan model
-        \item \texttt{apply\_chat\_template} merakit format itu otomatis
-        \item Pakai \texttt{return\_dict=True} lalu \texttt{generate(**inputs)}
+        \item Jangan rangkai string \texttt{"User: ..."} manual
       \end{itemize}
     \end{column}
     \begin{column}{0.56\textwidth}
-      \begin{lstlisting}[language=Python]
-msgs = [
-  {"role": "system",
-   "content": "Kamu asisten yang ramah."},
-  {"role": "user", "content": "Halo!"},
-]
-inputs = tokenizer.apply_chat_template(
-    msgs, add_generation_prompt=True,
-    return_tensors="pt", return_dict=True
-).to(model.device)
-out = model.generate(**inputs, max_new_tokens=128)
-      \end{lstlisting}
+      \centering
+      \resizebox{0.78\linewidth}{!}{%
+      \begin{tikzpicture}[node distance=3mm,
+          rolecard/.style={draw, rounded corners=4pt, fill=nvcard, text=nvwhite,
+                    font=\scriptsize, minimum width=4.4cm, minimum height=0.65cm, align=left, inner sep=4pt},
+          stage/.style={draw, rounded corners=5pt, fill=nvdarkcard,
+                    font=\scriptsize, minimum width=4.4cm, align=center, inner sep=4pt}]
+        \node[font=\tiny, text=nvgray] (lbl) {\{role, content\}};
+        % role cards (list of {role, content})
+        \node[rolecard, draw=nvgray, below=1.5mm of lbl] (sys)
+          {\textcolor{nvgray}{\textbf{system}}: ``Kamu asisten ramah.''};
+        \node[rolecard, draw=nvgreen, below=of sys] (usr)
+          {\textcolor{nvgreen}{\textbf{user}}: ``Halo!''};
+        % ChatML box
+        \node[stage, draw=nvblue, text=nvwhite, below=4mm of usr] (chatml)
+          {\textbf{\textcolor{nvblue}{kotak ChatML}}\\[1pt]
+           \ttfamily\textcolor{nvgray}{<|im\_start|>}system ...\textcolor{nvgray}{<|im\_end|>}};
+        % model
+        \node[stage, draw=nvgreen, text=nvgreen, below=4mm of chatml, minimum width=2.6cm] (model)
+          {\textbf{model}};
+        \draw[->, thick, nvgreen] (usr) -- (chatml)
+          node[midway, right, font=\tiny, text=nvgray]{bungkus};
+        \draw[->, thick, nvgreen] (chatml) -- (model);
+      \end{tikzpicture}%
+      }
     \end{column}
   \end{columns}
   \vspace{0.2em}
@@ -761,32 +774,48 @@ out = model.generate(**inputs, max_new_tokens=128)
 \end{frame}
 
 % Slide — Prompt engineering zero/few-shot
-\begin{frame}[fragile]{Prompt Engineering: Zero-shot \& Few-shot}
+\begin{frame}{Prompt Engineering: Zero-shot \& Few-shot}
   \framesubtitle{Mengarahkan model lewat cara bertanya}
   \begin{columns}[T]
-    \begin{column}{0.44\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Zero-shot}: langsung minta, tanpa contoh
-        \item \textbf{Few-shot}: beri beberapa \textbf{contoh} dulu di dalam prompt
-        \item Tanpa melatih ulang, model meniru pola dari contoh itu
-        \item Tunjukkan pola lewat contoh --- sering lebih ampuh daripada sekadar memerintah
-      \end{itemize}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        \node[draw=nvblue, fill=nvcard, rounded corners=6pt, line width=1pt,
+              text=nvwhite, font=\scriptsize, minimum width=5.2cm, minimum height=2.8cm,
+              align=left, inner sep=8pt] (z) {%
+          \textcolor{nvblue}{\textbf{Zero-shot}}\\[4pt]
+          \ttfamily Teks: ``Kopinya enak\\\ttfamily sekali.''\\[2pt]
+          \ttfamily Label?\\[6pt]
+          \textcolor{nvgray}{\itshape (langsung tanya,}\\
+          \textcolor{nvgray}{\itshape tanpa contoh)}};
+      \end{tikzpicture}%
+      }
+      \\[0.2em]
+      {\scriptsize\color{nvblue}cuma pertanyaan}
     \end{column}
-    \begin{column}{0.54\textwidth}
-      \begin{lstlisting}[language=Python]
-# few-shot di dalam prompt
-Teks: "Filmnya bagus!"       -> Positif
-Teks: "Pelayanan lambat."    -> Negatif
-Teks: "Kopinya enak sekali." ->
-      <- model melanjutkan: Positif
-      \end{lstlisting}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        \node[draw=nvgreen, fill=nvcard, rounded corners=6pt, line width=1pt,
+              text=nvwhite, font=\scriptsize, minimum width=5.2cm, minimum height=2.8cm,
+              align=left, inner sep=8pt] (f) {%
+          \textcolor{nvgreen}{\textbf{Few-shot}}\\[4pt]
+          \ttfamily Teks: ``Filmnya bagus!''\\\ttfamily $\to$ \textcolor{nvlightgreen}{Positif}\\[2pt]
+          \ttfamily Teks: ``Pelayanan lambat.''\\\ttfamily $\to$ \textcolor{nvred}{Negatif}\\[4pt]
+          \ttfamily Teks: ``Kopinya enak sekali.''\\\ttfamily $\to$ \textcolor{nvgray}{?}};
+      \end{tikzpicture}%
+      }
+      \\[0.2em]
+      {\scriptsize\color{nvgreen}2 contoh dulu, lalu item baru}
     \end{column}
   \end{columns}
-  \vspace{0.2em}
-  \begin{center}
-    \textcolor{nvlightgreen}{\small Prompt yang baik $=$ separuh dari hasil yang baik.}
-  \end{center}
+  \vspace{0.4em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \centering\small\color{white}
+    \textbf{Few-shot} $=$ kasih contoh di prompt; model meniru pola tanpa training ulang (\emph{in-context learning}).
+  \end{beamercolorbox}
 \end{frame}
 
 % Slide — Text classification
@@ -828,31 +857,53 @@ Teks: "Kopinya enak sekali." ->
 \end{frame}
 
 % Slide — Gradio chatbot
-\begin{frame}[fragile]{Chatbot dengan Gradio}
-  \framesubtitle{Antarmuka chat dalam beberapa baris kode}
+\begin{frame}{Chatbot dengan Gradio}
+  \framesubtitle{Antarmuka chat siap pakai, tanpa bikin UI dari nol}
   \begin{columns}[T]
-    \begin{column}{0.42\textwidth}
+    \begin{column}{0.44\textwidth}
       \begin{itemize}
         \footnotesize
-        \item \textbf{gr.ChatInterface} membuat tampilan chat siap pakai
-        \item Fungsi kita merakit pesan lalu memanggil \texttt{generate}
-        \item Parameter \textbf{history} disediakan Gradio otomatis
-        \item \texttt{launch(share=True)} memberi tautan publik
+        \item Bungkus model jadi fungsi \texttt{reply(pesan, riwayat)}
+        \item Gradio \textbf{ChatInterface} bikin UI chat instan yang bisa di-\emph{share}
+        \item \texttt{history} (riwayat) disediakan otomatis
+        \item Satu tautan publik $\to$ orang lain bisa langsung coba
       \end{itemize}
     \end{column}
-    \begin{column}{0.56\textwidth}
-      \begin{lstlisting}[language=Python]
-def reply(message, history):
-    msgs = [{"role": "user", "content": message}]
-    inputs = tokenizer.apply_chat_template(
-        msgs, add_generation_prompt=True,
-        return_tensors="pt", return_dict=True
-    ).to(model.device)
-    out = model.generate(**inputs, max_new_tokens=128)
-    return tokenizer.decode(out[0])
-
-gr.ChatInterface(reply).launch(share=True)
-      \end{lstlisting}
+    \begin{column}{0.54\textwidth}
+      \centering
+      \resizebox{0.88\linewidth}{!}{%
+      \begin{tikzpicture}
+        % window frame
+        \node[draw=nvgray, fill=nvdarkcard, rounded corners=6pt, line width=1pt,
+              minimum width=7.0cm, minimum height=5.2cm] (win) at (0,0) {};
+        % header bar
+        \node[fill=nvcard, rounded corners=4pt, text=nvwhite, font=\scriptsize\bfseries,
+              minimum width=6.6cm, minimum height=0.6cm, anchor=north] at (0,2.45)
+              {Asisten Navasena};
+        % user bubble 1 (right, green)
+        \node[fill=nvgreen, rounded corners=6pt, text=nvwhite, font=\scriptsize,
+              align=left, inner sep=4pt, minimum width=2.4cm, anchor=north east] at (3.1,1.55)
+              {Halo!};
+        % assistant bubble 1 (left, card)
+        \node[fill=nvcard, rounded corners=6pt, text=nvwhite, font=\scriptsize,
+              align=left, inner sep=4pt, minimum width=3.4cm, anchor=north west] at (-3.1,0.85)
+              {Hai! Ada yang bisa\\dibantu?};
+        % user bubble 2 (right, green)
+        \node[fill=nvgreen, rounded corners=6pt, text=nvwhite, font=\scriptsize,
+              align=left, inner sep=4pt, minimum width=3.0cm, anchor=north east] at (3.1,-0.15)
+              {Apa itu LLM?};
+        % assistant bubble 2 (left, card)
+        \node[fill=nvcard, rounded corners=6pt, text=nvwhite, font=\scriptsize,
+              align=left, inner sep=4pt, minimum width=3.8cm, anchor=north west] at (-3.1,-0.95)
+              {Model yang menebak\\kata berikutnya...};
+        % input box bottom
+        \node[draw=nvgray, fill=nvcard, rounded corners=4pt, text=nvgray, font=\scriptsize,
+              align=left, inner sep=4pt, minimum width=5.2cm, minimum height=0.55cm, anchor=south west]
+              at (-3.1,-2.35) {Ketik pesan...};
+        \node[fill=nvgreen, rounded corners=4pt, text=nvwhite, font=\scriptsize\bfseries,
+              minimum width=1.2cm, minimum height=0.55cm, anchor=south east] at (3.1,-2.35) {Kirim};
+      \end{tikzpicture}%
+      }
     \end{column}
   \end{columns}
 \end{frame}
