@@ -1324,9 +1324,119 @@
 \end{frame}
 
 % ============================================================
+% ACT 8 — SPESIALISASI (Notebook 05 & 06)
+% ============================================================
+\acttitle{8}{SPESIALISASI}{SLM: kecil tapi cakap (Notebook 05 \& 06)}
+
+% Slide 8a — SLM = specialist, bukan model bodoh
+\begin{frame}{SLM: Spesialis, Bukan Model Bodoh}
+  \framesubtitle{Kecil bukan berarti bodoh --- ia cuma fokus}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}
+        \node[draw=nvgray, fill=nvcard, rounded corners=5pt, text=nvwhite,
+              font=\small, minimum width=3.0cm, minimum height=2.4cm, align=center]
+              (teacher) at (0,0) {Model raksasa\\(guru)\\[2pt]\scriptsize miliaran parameter};
+        \node[draw=nvgreen, fill=nvdarkcard, rounded corners=4pt, text=nvgreen,
+              font=\scriptsize\bfseries, minimum width=1.9cm, minimum height=1.3cm, align=center]
+              (student) at (4.6,0) {SLM\\(murid)\\[2pt]\tiny kecil \& fokus};
+        \draw[->, nvlightgreen, line width=1.2pt] (teacher) -- (student)
+              node[midway, above, font=\scriptsize, text=nvlightgreen]{distillation}
+              node[midway, below, font=\tiny, text=nvgray]{tiru output guru};
+      \end{tikzpicture}%
+      }
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \footnotesize
+        \item \textbf{SLM} $=$ ``sempit tapi dalam'' --- fokus \textbf{satu tugas}, bukan tahu segalanya
+        \item \textcolor{nvgreen}{\textbf{Distillation}}: model kecil belajar dari output model raksasa $\to$ SLM sekarang bisa \textbf{lebih pintar} dari raksasa zaman dulu
+        \item Lebih \textbf{murah}, hemat memory, bisa jalan \textbf{on-device} (data tak keluar)
+        \item Cocok untuk masa depan \textbf{agentic}: banyak sub-tugas kecil, tiap sub-tugas pegang satu specialist
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Bukan model bodoh --- model yang sengaja dibuat ahli di satu hal.}
+  \end{center}
+\end{frame}
+
+% Slide 8b — Kecil mengalahkan besar (nb05)
+\begin{frame}{Kecil Mengalahkan Besar}
+  \framesubtitle{Notebook 05 --- specialist 0.6B vs generalist 3B}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=0.96\linewidth]{figures/slm_accuracy.pdf}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=0.96\linewidth]{figures/slm_quadrant.pdf}
+    \end{column}
+  \end{columns}
+  \vspace{0.1em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Specialist 0.6B (95\%) mengalahkan generalist 3B (72\%) di tugas ekstraksi JSON --- 5$\times$ lebih kecil.}
+  \end{center}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
+    \centering\scriptsize\color{white}
+    \textcolor{nvorange}{\textbf{Catatan jujur}}: kemenangan paling andal $=$ \textbf{memory} (3,7$\times$ lebih hemat VRAM). Throughput di T4 $\sim$sama --- kita jujur soal ini.
+  \end{beamercolorbox}
+\end{frame}
+
+% Slide 8c — Satu resep, banyak specialist (nb06)
+\begin{frame}{Satu Resep, Banyak Specialist}
+  \framesubtitle{Notebook 06 --- sekali kuasai resep QLoRA, cetak specialist sendiri}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[font=\scriptsize,
+          ds/.style={draw=nvblue, fill=nvcard, rounded corners=3pt, text=nvblue,
+                     font=\tiny, minimum width=1.7cm, minimum height=0.6cm, align=center},
+          sp/.style={draw=nvgreen, fill=nvdarkcard, rounded corners=3pt, text=nvgreen,
+                     font=\tiny\bfseries, minimum width=1.7cm, minimum height=0.6cm, align=center}]
+        % center recipe box
+        \node[draw=nvlightgreen, fill=nvcard, rounded corners=5pt, text=nvlightgreen,
+              font=\scriptsize\bfseries, minimum width=2.0cm, minimum height=1.6cm, align=center]
+              (recipe) at (0,0) {Resep\\QLoRA};
+        % three dataset boxes feeding in (left)
+        \node[ds] (d1) at (-3.4,1.3) {Intent};
+        \node[ds] (d2) at (-3.4,0.0) {Sentiment\\+Aspect};
+        \node[ds] (d3) at (-3.4,-1.3) {Domain FAQ};
+        \draw[->, nvblue] (d1) -- (recipe);
+        \draw[->, nvblue] (d2) -- (recipe);
+        \draw[->, nvblue] (d3) -- (recipe);
+        % three specialist outputs (right)
+        \node[sp] (s1) at (3.4,1.3) {Specialist 1};
+        \node[sp] (s2) at (3.4,0.0) {Specialist 2};
+        \node[sp] (s3) at (3.4,-1.3) {Specialist 3};
+        \draw[->, nvgreen, thick] (recipe) -- (s1);
+        \draw[->, nvgreen, thick] (recipe) -- (s2);
+        \draw[->, nvgreen, thick] (recipe) -- (s3);
+        \node[text=nvgray, font=\tiny] at (-3.4,-2.1) {dataset beda};
+        \node[text=nvgray, font=\tiny] at (3.4,-2.1) {tugas beda};
+      \end{tikzpicture}%
+      }
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{figures/slm_gallery.pdf}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Resep sama, dataset beda $\to$ tiap tugas lompat ke 100\%. Sekali kuasai resepnya, kamu bisa cetak specialist sendiri.}
+  \end{center}
+\end{frame}
+
+% ============================================================
 % Ringkasan & Lanjutan
 % ============================================================
-\acttitle{8}{Ringkasan \& Lanjutan}{Lima notebook, satu perjalanan}
+\acttitle{10}{Ringkasan \& Lanjutan}{Lima notebook, satu perjalanan}
 
 % Slide — Ringkasan 5 notebook
 \begin{frame}{Ringkasan: 5 Notebook Modul 04}
