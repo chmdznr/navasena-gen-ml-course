@@ -1434,6 +1434,106 @@
 \end{frame}
 
 % ============================================================
+% ACT 9 — DEPLOY ke Edge (Notebook 07)
+% ============================================================
+\acttitle{9}{DEPLOY}{Kirim specialist ke lapangan (Notebook 07)}
+
+% Slide 9a — Pipeline deployment ke edge
+\begin{frame}{Pipeline Deployment ke Edge}
+  \framesubtitle{Notebook 07 --- dari adapter sampai jalan di device}
+  \begin{center}
+    \resizebox{0.98\linewidth}{!}{%
+    \begin{tikzpicture}[font=\scriptsize, node distance=4mm,
+        pstep/.style={draw=nvgreen, fill=nvcard, rounded corners=4pt, text=nvwhite,
+                     font=\scriptsize, minimum width=1.8cm, minimum height=1.0cm, align=center}]
+      \node[pstep] (a) {adapter};
+      \node[pstep, right=of a] (m) {merge\\fp16};
+      \node[pstep, right=of m] (g) {GGUF};
+      \node[pstep, right=of g] (q) {quantize\\\tiny Q8\_0/Q4\_K\_M};
+      \node[pstep, right=of q] (p) {push\\HuggingFace};
+      \node[pstep, right=of p] (d) {device\\\tiny(Ollama)};
+      \draw[->, nvgreen, thick] (a)--(m);
+      \draw[->, nvgreen, thick] (m)--(g);
+      \draw[->, nvgreen, thick] (g)--(q);
+      \draw[->, nvgreen, thick] (q)--(p);
+      \draw[->, nvgreen, thick] (p)--(d);
+    \end{tikzpicture}%
+    }
+  \end{center}
+  \vspace{0.3em}
+  \begin{columns}[T]
+    \begin{column}{0.62\textwidth}
+      \begin{tikzpicture}
+        \node[draw=nvred, line width=1.2pt, fill=nvdarkcard, rounded corners=5pt,
+              text=nvwhite, font=\scriptsize, align=left, inner sep=7pt,
+              text width=0.95\linewidth] {%
+          \textcolor{nvred}{\textbf{Jebakan \#1: merge ke 4-bit}}\\[3pt]
+          \textcolor{nvred}{SALAH}: merge adapter ke base \textbf{4-bit} $\to$ NaN $\to$ output \texttt{GGGG...}\\[2pt]
+          \textcolor{nvgreen}{BENAR}: reload base \textbf{fp16} dulu, baru \emph{merge}};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \footnotesize
+      \vspace{0.4em}
+      Pilih tingkat \emph{quantize} sesuai kebutuhan ukuran vs kualitas.
+    \end{column}
+  \end{columns}
+  \vspace{0.3em}
+  \begin{center}
+    {\scriptsize\color{nvgray} GGUF: bf16 1,2 GB $\cdot$ Q8\_0 0,6 GB (near-lossless) $\cdot$ Q4\_K\_M 0,4 GB.}
+  \end{center}
+\end{frame}
+
+% Slide 9b — Satu kode, banyak target
+\begin{frame}{Satu Kode, Banyak Target}
+  \framesubtitle{Notebook 07 --- tulis sekali, jalankan di mana saja}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[font=\scriptsize,
+          tgt/.style={draw=nvgreen, fill=nvdarkcard, rounded corners=3pt, text=nvgreen,
+                      font=\tiny\bfseries, minimum width=2.4cm, minimum height=0.7cm, align=center}]
+        \node[draw=nvblue, fill=nvcard, rounded corners=5pt, text=nvwhite,
+              font=\scriptsize, minimum width=3.2cm, minimum height=1.2cm, align=center]
+              (app) at (0,0) {app\\[2pt]\ttfamily\tiny client = OpenAI(base\_url=...)};
+        \node[tgt] (t1) at (4.6,1.3) {Ollama\\\tiny lokal/edge};
+        \node[tgt] (t2) at (4.6,0.0) {vLLM\\\tiny cloud};
+        \node[tgt] (t3) at (4.6,-1.3) {NVIDIA NIM};
+        \draw[->, nvgreen, thick] (app) -- (t1);
+        \draw[->, nvgreen, thick] (app) -- (t2);
+        \draw[->, nvgreen, thick] (app) -- (t3);
+      \end{tikzpicture}%
+      }
+      \\[0.3em]
+      {\scriptsize\color{nvlightgreen} Semua \textbf{OpenAI-compatible} $\to$ pindah target cukup ganti \texttt{base\_url}.}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[font=\scriptsize, node distance=2.4mm,
+          q/.style={draw=nvgray, fill=nvcard, rounded corners=3pt, text=nvwhite,
+                    font=\tiny, minimum width=4.2cm, minimum height=0.6cm, align=left},
+          ans/.style={draw=nvgreen, fill=nvdarkcard, rounded corners=3pt, text=nvgreen,
+                      font=\tiny\bfseries, minimum width=4.2cm, minimum height=0.6cm, align=left}]
+        \node[q] (q1) {1 user / edge?};
+        \node[ans, below=of q1] (a1) {$\to$ Ollama / llama.cpp / TensorRT};
+        \node[q, below=of a1] (q2) {banyak user / cloud?};
+        \node[ans, below=of q2] (a2) {$\to$ vLLM / NIM};
+        \draw[->, nvgreen] (q1)--(a1);
+        \draw[->, nvgreen] (q2)--(a2);
+      \end{tikzpicture}%
+      }
+      \\[0.2em]
+      {\tiny\color{nvgray} pohon keputusan: pilih runtime sesuai skala}
+    \end{column}
+  \end{columns}
+  \begin{center}
+    \textcolor{nvlightgreen}{\small Langkah hands-on lengkap ada di Runbook Deployment (PDF terpisah).}
+  \end{center}
+\end{frame}
+
+% ============================================================
 % Ringkasan & Lanjutan
 % ============================================================
 \acttitle{10}{Ringkasan \& Lanjutan}{Lima notebook, satu perjalanan}
