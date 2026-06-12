@@ -679,7 +679,7 @@
           {saya suka belajar\\jaringan saraf tiruan};
         \node[font=\scriptsize\bfseries, text=nvgreen, anchor=west] at (-3.0,-1.55)
           {Sesudah latih (step 3000)};
-        \draw[->, very thick, nvgreen] (before) -- (after)
+        \draw[->, very thick, color=nvgreen] (before) -- (after)
           node[pos=0.42, right, font=\scriptsize, text=nvlightgreen]{3000 langkah};
       \end{tikzpicture}
     \end{column}
@@ -782,13 +782,13 @@
       \resizebox{\linewidth}{!}{%
       \begin{tikzpicture}
         \node[draw=nvblue, fill=nvcard, rounded corners=6pt, line width=1pt,
-              text=nvwhite, font=\scriptsize, minimum width=5.2cm, minimum height=2.8cm,
+              text=nvwhite, font=\ttfamily\scriptsize, minimum width=5.2cm, minimum height=2.8cm,
               align=left, inner sep=8pt] (z) {%
-          \textcolor{nvblue}{\textbf{Zero-shot}}\\[4pt]
-          \ttfamily Teks: ``Kopinya enak\\\ttfamily sekali.''\\[2pt]
-          \ttfamily Label?\\[6pt]
-          \textcolor{nvgray}{\itshape (langsung tanya,}\\
-          \textcolor{nvgray}{\itshape tanpa contoh)}};
+          \textcolor{nvblue}{\textbf{\normalfont Zero-shot}}\\[4pt]
+          Teks: ``Kopinya enak\\sekali.''\\[2pt]
+          Label?\\[6pt]
+          \textcolor{nvgray}{\normalfont\itshape (langsung tanya,}\\
+          \textcolor{nvgray}{\normalfont\itshape tanpa contoh)}};
       \end{tikzpicture}%
       }
       \\[0.2em]
@@ -799,12 +799,12 @@
       \resizebox{\linewidth}{!}{%
       \begin{tikzpicture}
         \node[draw=nvgreen, fill=nvcard, rounded corners=6pt, line width=1pt,
-              text=nvwhite, font=\scriptsize, minimum width=5.2cm, minimum height=2.8cm,
+              text=nvwhite, font=\ttfamily\scriptsize, minimum width=5.2cm, minimum height=2.8cm,
               align=left, inner sep=8pt] (f) {%
-          \textcolor{nvgreen}{\textbf{Few-shot}}\\[4pt]
-          \ttfamily Teks: ``Filmnya bagus!''\\\ttfamily $\to$ \textcolor{nvlightgreen}{Positif}\\[2pt]
-          \ttfamily Teks: ``Pelayanan lambat.''\\\ttfamily $\to$ \textcolor{nvred}{Negatif}\\[4pt]
-          \ttfamily Teks: ``Kopinya enak sekali.''\\\ttfamily $\to$ \textcolor{nvgray}{?}};
+          \textcolor{nvgreen}{\textbf{\normalfont Few-shot}}\\[4pt]
+          Teks: ``Filmnya bagus!''\\$\to$ \textcolor{nvlightgreen}{Positif}\\[2pt]
+          Teks: ``Pelayanan lambat.''\\$\to$ \textcolor{nvred}{Negatif}\\[4pt]
+          Teks: ``Kopinya enak sekali.''\\$\to$ \textcolor{nvgray}{?}};
       \end{tikzpicture}%
       }
       \\[0.2em]
