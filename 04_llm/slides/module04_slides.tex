@@ -105,17 +105,6 @@
   \end{frame}%
 }
 
-% Section divider
-\newcommand{\sectiontitle}[2]{%
-  \begin{frame}[plain]
-    \vspace{2cm}
-    \begin{center}
-      {\color{nvgreen}\Huge\bfseries #1}\\[1em]
-      {\color{nvgray}\Large #2}
-    \end{center}
-  \end{frame}%
-}
-
 % Title page
 \title{LLM Fundamentals}
 \subtitle{Navasena Gen-ML Course}
@@ -135,7 +124,7 @@
   \begin{center}
     {\color{nvgreen}\Huge\bfseries Module 04}\\[1.2em]
     {\color{nvwhite}\Huge\bfseries LLM Fundamentals}\\[0.6em]
-    {\color{nvgray}\Large Bangun $\to$ Pakai $\to$ Produksikan $\to$ Adapt $\to$ Ukur}\\[2.0em]
+    {\color{nvgray}\Large Bangun $\to$ Pakai $\to$ Produksikan $\to$ Adapt $\to$ Ukur $\to$ Spesialisasi $\to$ Deploy}\\[2.0em]
 
     \begin{tikzpicture}[scale=0.82]
       \node[draw=nvgreen, fill=nvcard, rounded corners=6pt, line width=1.5pt,
@@ -153,7 +142,7 @@
     \end{tikzpicture}
 
     \vspace{0.7em}
-    {\color{nvgray}\small 5 notebook $\cdot$ gratis di Colab Tesla T4 16GB $\cdot$ Navasena AI $\cdot$ 2026}
+    {\color{nvgray}\small 8 notebook $\cdot$ gratis di Colab Tesla T4 16GB $\cdot$ Navasena AI $\cdot$ 2026}
   \end{center}
 \end{frame}
 
@@ -1536,61 +1525,59 @@
 % ============================================================
 % Ringkasan & Lanjutan
 % ============================================================
-\acttitle{10}{Ringkasan \& Lanjutan}{Lima notebook, satu perjalanan}
+\acttitle{10}{Ringkasan \& Lanjutan}{Delapan notebook, satu perjalanan}
 
-% Slide — Ringkasan 5 notebook
-\begin{frame}{Ringkasan: 5 Notebook Modul 04}
+% Slide — Ringkasan 8 notebook
+\begin{frame}{Ringkasan: 8 Notebook Modul 04}
   \begin{center}
-  \renewcommand{\arraystretch}{1.35}
-  {\scriptsize
+  \renewcommand{\arraystretch}{1.15}
+  {\footnotesize
   \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{@{}p{0.04\linewidth}p{0.16\linewidth}p{0.22\linewidth}p{0.46\linewidth}@{}}
+  \begin{tabular}{@{}p{0.04\linewidth}p{0.18\linewidth}p{0.26\linewidth}p{0.42\linewidth}@{}}
     \toprule
     \rowcolor{nvcard!50}
     \textbf{\#} & \textbf{Tahap} & \textbf{Model} & \textbf{Yang dipelajari} \\
     \midrule
-    00 & \textbf{BANGUN} & TinyGPT ($\sim$0,8M) & Attention, causal mask, multi-head, block --- rakit dari nol \\
-    01 & \textbf{PAKAI} & Qwen2.5-3B-Instruct & Chat template, parameter generasi, prompt eng., klasifikasi \\
-    02 & \textbf{PRODUKSIKAN} & Mistral-7B-Instruct & 4-bit NF4, profiling, batching, streaming \\
-    03 & \textbf{ADAPT} & Qwen2.5-1.5B & QLoRA: 4-bit $+$ sticky-note, latih $\sim$1\%, $\sim$2 menit \\
-    04 & \textbf{UKUR} & Qwen3B $+$ NIM cloud & ROUGE/BLEU/BERTScore, p-value, LLM-as-judge \\
+    00 & \textbf{BANGUN} & TinyGPT (PyTorch) & transformer dari nol \\
+    01 & \textbf{PAKAI} & Qwen2.5-3B-Instruct & chat template, prompt, klasifikasi \\
+    02 & \textbf{PRODUKSIKAN} & Mistral-7B (4-bit) & quantization, batching, streaming \\
+    03 & \textbf{ADAPT} & Qwen2.5-1.5B (QLoRA) & fine-tune adapter $\sim$1\% \\
+    04 & \textbf{UKUR} & Qwen2.5 1.5B vs 3B & metrik, signifikansi, LLM-as-judge \\
+    05 & \textbf{SPESIALISASI} & Qwen3-0.6B vs SmolLM3-3B & specialist kalahkan generalist \\
+    06 & \textbf{GALLERY} & Qwen3-0.6B & satu resep, banyak specialist \\
+    07 & \textbf{DEPLOY} & Qwen3-0.6B (GGUF) & merge, quantize, Ollama di edge \\
     \bottomrule
   \end{tabular}%
   }
   \end{center}
-  \vspace{0.4em}
+  \vspace{0.3em}
   \begin{center}
     \textcolor{nvlightgreen}{\small Semua gratis di Colab \textbf{Tesla T4 16GB}, semua model \textbf{non-gated}.}
   \end{center}
 \end{frame}
 
 % Slide — Setup & guardrails & next
-\begin{frame}[fragile]{Setup T4 \& Lanjut ke Module 05}
+\begin{frame}{Setup T4 \& Lanjut ke Module 05}
   \framesubtitle{Aturan main agar tidak crash --- dan kenapa kita butuh RAG}
   \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.52\textwidth}
       \footnotesize
       \textbf{Aturan aman di T4:}
       \begin{itemize}
-        \item Pin \texttt{transformers>=4.44,<5}
-        \item 4-bit \texttt{compute\_dtype=float16} (\textcolor{nvred}{bf16 crash})
-        \item \texttt{apply\_chat\_template(..., return\_dict=True)} lalu \texttt{generate(**inputs)}
-        \item Cek GPU dengan \texttt{!nvidia-smi}
+        \item[\textcolor{nvgreen}{\checkmark}] \texttt{transformers>=4.53,<5} --- Qwen3/SmolLM3 butuh $\geq$4.53; v5 bikin \texttt{apply\_chat\_template} rusak
+        \item[\textcolor{nvgreen}{\checkmark}] 4-bit di T4: \texttt{compute\_dtype=float16} (\textcolor{nvred}{\texttt{bfloat16} crash}, compute 7.5 $<$ 8.0)
+        \item[\textcolor{nvgreen}{\checkmark}] \texttt{apply\_chat\_template(..., return\_dict=True)} lalu \texttt{generate(**inputs)}
+        \item[\textcolor{nvgreen}{\checkmark}] batching decoder-only: \texttt{padding\_side=``left''}
+        \item[\textcolor{nvgreen}{\checkmark}] pakai model non-gated; cek GPU dengan \texttt{nvidia-smi}
       \end{itemize}
     \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{lstlisting}[language=bash]
-!pip install "transformers>=4.44,<5" \
-             bitsandbytes accelerate peft
-!nvidia-smi
-      \end{lstlisting}
+    \begin{column}{0.46\textwidth}
+      \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
+        \centering\small\color{nvlightgreen}
+        LLM bisa \textbf{mengarang} (halusinasi) \& punya \textbf{batas pengetahuan} $\to$ \textbf{Module 05 (RAG)} memberi LLM ``buku contekan''.
+      \end{beamercolorbox}
     \end{column}
   \end{columns}
-  \vspace{0.3em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
-    \centering\small\color{nvlightgreen}
-    LLM bisa \textbf{mengarang} (halusinasi) \& punya \textbf{batas pengetahuan} $\to$ \textbf{Module 05 (RAG)} memberi LLM ``buku contekan''.
-  \end{beamercolorbox}
 \end{frame}
 
 % Slide — Thank You
@@ -1602,7 +1589,7 @@
     \begin{beamercolorbox}[rounded=true,shadow=false,sep=8pt,wd=10cm]{block body}
       \centering\color{white}
       \textbf{LLM Fundamentals} \quad $\cdot$ \quad Modul 04 \\
-      Bangun $\to$ Pakai $\to$ Produksikan $\to$ Adapt $\to$ Ukur \\
+      Bangun $\to$ Pakai $\to$ Produksikan $\to$ Adapt $\to$ Ukur $\to$ Spesialisasi $\to$ Deploy \\
       Navasena Gen-ML Course
     \end{beamercolorbox}
   \end{center}
