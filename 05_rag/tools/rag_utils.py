@@ -4,6 +4,9 @@
 GPU/model-free so they can be unit-tested locally (CPU) and imported by the
 Colab notebooks. This file is the SOURCE OF TRUTH — notebooks import these
 helpers and must not re-implement them.
+
+Note on offsets: Chunk.start/end are approximate char offsets into the
+space-normalised text and are not currently used to slice the original document.
 """
 from __future__ import annotations
 
@@ -44,23 +47,29 @@ def split_sentences(text: str) -> List[str]:
 @dataclass
 class Chunk:
     text: str
-    start: int  # char offset into the source text
+    start: int  # approximate char offset into the space-normalized text (not for slicing the raw source)
     end: int
     n_tokens: int
 
 
 class TextChunker:
-    """Three chunking strategies, all token-budgeted via a TokenCounter."""
+    """Three chunking strategies, all token-budgeted via a TokenCounter.
 
-    def __init__(self, counter: TokenCounter, max_tokens: int = 128, overlap_tokens: int = 24):
-        if overlap_tokens >= max_tokens:
-            raise ValueError("overlap_tokens must be < max_tokens")
+    Offsets (Chunk.start/end) are approximate and not currently used to slice
+    the original document — they index the space-normalized (joined) text.
+    """
+
+    def __init__(self, counter: TokenCounter, max_tokens: int = 128, overlap_words: int = 24):
+        # overlap_words is measured in WORDS, not subword tokens; with a subword
+        # tokenizer the actual token overlap will be larger than this value.
+        if not (0 <= overlap_words < max_tokens):
+            raise ValueError("overlap_words must satisfy 0 <= overlap_words < max_tokens")
         self.counter = counter
         self.max_tokens = max_tokens
-        self.overlap_tokens = overlap_tokens
+        self.overlap_words = overlap_words
 
-    def _emit(self, words: List[str], cursor: int) -> Chunk:
-        text = " ".join(words)
+    def _emit(self, segments: List[str], cursor: int) -> Chunk:
+        text = " ".join(segments)
         return Chunk(text=text, start=cursor, end=cursor + len(text), n_tokens=self.counter.count(text))
 
     def fixed(self, text: str) -> List[Chunk]:
@@ -82,15 +91,18 @@ class TextChunker:
             chunks.append(self._emit(window, cursor))
             if j >= len(words):
                 break
-            # step back `overlap_tokens` words for the next window
-            step = max(1, len(window) - self.overlap_tokens)
+            # step back `overlap_words` words for the next window
+            step = max(1, len(window) - self.overlap_words)
             consumed = " ".join(words[i:i + step])
             cursor += len(consumed) + 1
             i += step
         return chunks
 
     def sentence(self, text: str) -> List[Chunk]:
-        """Greedily pack whole sentences until the token budget is reached."""
+        """Greedily pack whole sentences until the token budget is reached.
+
+        A sentence that alone exceeds max_tokens is emitted as a single oversized chunk (no sub-word splitting).
+        """
         sents = split_sentences(text)
         chunks: List[Chunk] = []
         buf: List[str] = []
@@ -125,7 +137,7 @@ class TextChunker:
             else:
                 chunks.append(Chunk(text=p, start=cursor, end=cursor + len(p),
                                     n_tokens=self.counter.count(p)))
-            cursor += len(p) + 2  # +2 for the blank-line separator
+            cursor += len(p) + 2  # +2 approximates the blank-line separator; offsets may drift for non-standard gaps
         return chunks
 
 

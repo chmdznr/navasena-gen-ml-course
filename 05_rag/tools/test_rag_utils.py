@@ -25,7 +25,7 @@ def test_split_sentences_empty():
 
 def test_sentence_chunks_respect_token_budget():
     counter = TokenCounter(tokenize_fn=word_tok)
-    chunker = TextChunker(counter, max_tokens=5, overlap_tokens=0)
+    chunker = TextChunker(counter, max_tokens=5, overlap_words=0)
     text = "satu dua tiga. empat lima enam. tujuh delapan."
     chunks = chunker.sentence(text)
     assert all(c.n_tokens <= 5 for c in chunks)
@@ -33,18 +33,18 @@ def test_sentence_chunks_respect_token_budget():
 
 def test_fixed_chunks_have_overlap():
     counter = TokenCounter(tokenize_fn=word_tok)
-    chunker = TextChunker(counter, max_tokens=4, overlap_tokens=2)
+    chunker = TextChunker(counter, max_tokens=4, overlap_words=2)
     text = " ".join(f"w{i}" for i in range(10))  # 10 words
     chunks = chunker.fixed(text)
     assert len(chunks) >= 3
-    # consecutive chunks share overlap_tokens words
+    # consecutive chunks share overlap_words words
     first_words = chunks[0].text.split()
     second_words = chunks[1].text.split()
     assert first_words[-2:] == second_words[:2]
 
 def test_semantic_chunks_split_on_blank_lines():
     counter = TokenCounter(tokenize_fn=word_tok)
-    chunker = TextChunker(counter, max_tokens=100, overlap_tokens=0)
+    chunker = TextChunker(counter, max_tokens=100, overlap_words=0)
     text = "para satu kalimat.\n\npara dua kalimat lain."
     chunks = chunker.semantic(text)
     assert len(chunks) == 2
@@ -63,3 +63,27 @@ def test_chunk_quality_score_oversized_penalized():
 
 def test_chunk_quality_score_empty_is_zero():
     assert chunk_quality_score([], max_tokens=4, original_len=10) == 0.0
+
+def test_chunker_raises_on_bad_overlap():
+    counter = TokenCounter(tokenize_fn=word_tok)
+    with pytest.raises(ValueError):
+        TextChunker(counter, max_tokens=4, overlap_words=4)   # overlap == max
+    with pytest.raises(ValueError):
+        TextChunker(counter, max_tokens=4, overlap_words=-1)  # negative
+
+def test_sentence_oversized_single_sentence_passthrough():
+    # a single sentence longer than the budget is emitted intact (documented behavior)
+    counter = TokenCounter(tokenize_fn=word_tok)
+    chunker = TextChunker(counter, max_tokens=3, overlap_words=0)
+    chunks = chunker.sentence("satu dua tiga empat lima enam.")  # 6 words, one sentence
+    assert len(chunks) == 1
+    assert chunks[0].n_tokens > 3
+
+def test_semantic_subchunks_oversized_paragraph():
+    # a paragraph exceeding the budget falls back to sentence packing -> multiple chunks
+    counter = TokenCounter(tokenize_fn=word_tok)
+    chunker = TextChunker(counter, max_tokens=5, overlap_words=0)
+    text = "satu dua tiga empat. lima enam tujuh delapan."  # one paragraph, 2 sentences, 8 words
+    chunks = chunker.semantic(text)
+    assert len(chunks) == 2
+    assert all(c.n_tokens <= 5 for c in chunks)
