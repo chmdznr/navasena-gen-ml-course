@@ -38,6 +38,8 @@ REGISTRY = {
             "chunk_quality_score",          # quality scoring shown
             ".sentence(", ".fixed(", ".semantic(",  # all three strategies compared
             "sample_id_document.pdf",       # baked-in fallback wired
+            "PdfPipelineOptions",           # Docling pipeline made explicit (OCR/TableFormer config)
+            "iterate_items",                # DoclingDocument structure is surfaced (labels/tables)
         ],
         "forbidden": [],
     },
