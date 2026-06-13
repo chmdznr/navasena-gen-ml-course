@@ -20,7 +20,7 @@ REGISTRY = {
             "apply_chat_template",                    # robust prompting
             "max_new_tokens",                         # not max_length
             "load_in_4bit",                           # T4-safe Qwen
-            "do_sample=False",                        # deterministic factual QA
+            "do_sample=False",                        # deterministic factual QA — must be written without spaces around = (exact spelling)
             "Cocos",                                  # out-of-corpus probe is actually run
         ],
         "forbidden": [
@@ -32,7 +32,7 @@ REGISTRY = {
     },
     "02_ingest_and_chunk.ipynb": {
         "markers": [
-            "from tools.rag_utils import",  # DRY: imports the tested helpers
+            "from tools.rag_utils import",  # DRY: imports the tested helpers — must be a single-line import (not parenthesized/multi-line)
             "DocumentConverter",            # Docling primary path
             "pdfplumber",                   # lightweight fallback path
             "chunk_quality_score",          # quality scoring shown
@@ -49,12 +49,14 @@ def load_source(nb_path: Path) -> str:
     nb = json.loads(nb_path.read_text(encoding="utf-8"))
     parts = []
     for cell in nb.get("cells", []):
-        parts.append("".join(cell.get("source", [])))
+        src = cell.get("source", [])
+        parts.append(src if isinstance(src, str) else "".join(src))
     return "\n".join(parts)
 
 
 def check(nb_name: str) -> list[str]:
-    path = HERE / nb_name
+    nb_basename = Path(nb_name).name  # normalize so "05_rag/foo.ipynb" → "foo.ipynb"
+    path = HERE / nb_basename
     errors: list[str] = []
     if not path.exists():
         return [f"{nb_name}: file not found"]
@@ -62,7 +64,7 @@ def check(nb_name: str) -> list[str]:
         src = load_source(path)
     except json.JSONDecodeError as e:
         return [f"{nb_name}: invalid notebook JSON — {e}"]
-    spec = REGISTRY.get(nb_name, {"markers": [], "forbidden": []})
+    spec = REGISTRY.get(nb_basename, {"markers": [], "forbidden": []})
     for m in spec["markers"]:
         if m not in src:
             errors.append(f"{nb_name}: MISSING required marker {m!r}")
