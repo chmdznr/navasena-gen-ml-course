@@ -59,7 +59,7 @@ def build_table_pdf(out: Path) -> None:
 def build_scanned_pdf(out: Path) -> None:
     # Render Indonesian text onto a white image (A4 @ ~150 dpi), then embed the
     # image into a PDF so the document has NO selectable text layer.
-    W, H = 1240, 1754
+    W, H = 1240, 1754  # A4 at ~150 dpi
     img = Image.new("RGB", (W, H), "white")
     draw = ImageDraw.Draw(img)
     try:
@@ -80,17 +80,19 @@ def build_scanned_pdf(out: Path) -> None:
         "Dokumen ini sengaja dibuat sebagai gambar (hasil",
         "scan) sehingga tidak memiliki text layer.",
     ]
+    LINE_HEIGHT = 70  # line spacing in px for the chosen font size
     y = 120
     for line in lines:
         draw.text((110, y), line, fill="black", font=font)
-        y += 70
+        y += LINE_HEIGHT
     png_path = HERE / "_scan_tmp.png"
-    img.save(png_path)
-
-    c = canvas.Canvas(str(out), pagesize=A4)
-    c.drawImage(str(png_path), 0, 0, width=A4[0], height=A4[1])
-    c.save()
-    png_path.unlink(missing_ok=True)  # keep only the PDF
+    try:
+        img.save(png_path)
+        c = canvas.Canvas(str(out), pagesize=A4)
+        c.drawImage(str(png_path), 0, 0, width=A4[0], height=A4[1])
+        c.save()
+    finally:
+        png_path.unlink(missing_ok=True)  # always remove temp PNG
     print(f"wrote {out} ({out.stat().st_size} bytes)")
 
 
