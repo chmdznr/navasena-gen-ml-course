@@ -161,3 +161,36 @@ def chunk_quality_score(chunks: List[Chunk], max_tokens: int, original_len: int)
     coverage = min(1.0, total_chars / original_len) if original_len > 0 else 0.0
     score = (0.4 * budget_adherence + 0.3 * size_consistency + 0.3 * coverage) * 100.0
     return round(score, 1)
+
+
+def rank_change_table(candidate_ids, bi_scores, rerank_scores, top_k):
+    """Build a bi-encoder -> cross-encoder rank-change table.
+
+    candidate_ids: doc ids in BI-ENCODER order (best first), length N, unique.
+    bi_scores:     bi-encoder scores parallel to candidate_ids.
+    rerank_scores: cross-encoder scores parallel to candidate_ids.
+    top_k:         number kept after reranking.
+
+    Returns a list of dicts, one per candidate, SORTED by rerank rank (best first):
+      {doc_id, bi_rank, rerank_rank, delta, bi_score, rerank_score, kept}
+    where ranks are 1-based, delta = bi_rank - rerank_rank (>0 = promoted),
+    kept = rerank_rank <= top_k.
+    """
+    n = len(candidate_ids)
+    if not (len(bi_scores) == len(rerank_scores) == n):
+        raise ValueError("candidate_ids, bi_scores, rerank_scores must be the same length")
+    bi_rank = {cid: i + 1 for i, cid in enumerate(candidate_ids)}
+    order = sorted(range(n), key=lambda i: rerank_scores[i], reverse=True)
+    rows = []
+    for rerank_pos, i in enumerate(order, start=1):
+        cid = candidate_ids[i]
+        rows.append({
+            "doc_id": cid,
+            "bi_rank": bi_rank[cid],
+            "rerank_rank": rerank_pos,
+            "delta": bi_rank[cid] - rerank_pos,
+            "bi_score": bi_scores[i],
+            "rerank_score": rerank_scores[i],
+            "kept": rerank_pos <= top_k,
+        })
+    return rows

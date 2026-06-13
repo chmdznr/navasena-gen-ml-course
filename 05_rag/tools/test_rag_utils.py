@@ -2,7 +2,7 @@
 import pytest
 from rag_utils import (
     simple_token_count, TokenCounter, split_sentences, Chunk,
-    TextChunker, chunk_quality_score,
+    TextChunker, chunk_quality_score, rank_change_table,
 )
 
 # Deterministic fake tokenizer: 1 token per whitespace word (hermetic, no downloads)
@@ -87,3 +87,23 @@ def test_semantic_subchunks_oversized_paragraph():
     chunks = chunker.semantic(text)
     assert len(chunks) == 2
     assert all(c.n_tokens <= 5 for c in chunks)
+
+
+def test_rank_change_promotion_and_kept():
+    # bi-encoder order [10,20,30]; reranker prefers 30 (worst in bi) then 10 then 20
+    rows = rank_change_table([10, 20, 30], [0.9, 0.8, 0.7], [0.10, 0.05, 0.99], top_k=2)
+    assert [r["doc_id"] for r in rows] == [30, 10, 20]          # sorted by rerank rank
+    assert rows[0] == {"doc_id": 30, "bi_rank": 3, "rerank_rank": 1, "delta": 2,
+                       "bi_score": 0.7, "rerank_score": 0.99, "kept": True}
+    assert rows[1]["doc_id"] == 10 and rows[1]["rerank_rank"] == 2 and rows[1]["kept"] is True
+    assert rows[2]["doc_id"] == 20 and rows[2]["rerank_rank"] == 3 and rows[2]["kept"] is False
+    assert rows[2]["delta"] == -1                               # bi_rank 2 -> rerank 3
+
+def test_rank_change_no_reorder_all_zero_delta():
+    rows = rank_change_table([1, 2, 3], [0.9, 0.8, 0.7], [0.9, 0.8, 0.7], top_k=3)
+    assert all(r["delta"] == 0 for r in rows)
+    assert all(r["kept"] for r in rows)
+
+def test_rank_change_length_mismatch_raises():
+    with pytest.raises(ValueError):
+        rank_change_table([1, 2], [0.1], [0.2, 0.3], top_k=1)
