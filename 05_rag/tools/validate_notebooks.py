@@ -43,7 +43,16 @@ REGISTRY = {
         ],
         "forbidden": [],
     },
-    # later plans extend this registry for nb03..nb08
+    "03_retrieve_better_rerank.ipynb": {
+        "markers": [
+            "paraphrase-multilingual-MiniLM-L12-v2",  # bi-encoder (stage 1)
+            "bge-reranker-v2-m3",                     # cross-encoder reranker (stage 2)
+            "rank_change_table",                      # tested rank-change helper
+            "apply_chat_template",                    # grounded generation
+        ],
+        "forbidden": [],
+    },
+    # later plans extend this registry for nb04..nb08
 }
 
 
