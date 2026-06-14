@@ -213,6 +213,51 @@ def recall_at_k(approx_ids, gt_ids):
     return sum(recalls) / len(recalls) if recalls else 0.0
 
 
+def format_pages(pages) -> str:
+    """Render page numbers as a compact citation string.
+
+    [] -> "?"; [6] -> "6"; [6,7,8] -> "6–8"; [3,5] -> "3, 5"; [6,7,9] -> "6–7, 9".
+    Consecutive runs collapse with an en-dash. Input need not be sorted/unique.
+    """
+    nums = sorted({int(p) for p in pages})
+    if not nums:
+        return "?"
+    runs = []
+    start = prev = nums[0]
+    for n in nums[1:]:
+        if n == prev + 1:
+            prev = n
+        else:
+            runs.append((start, prev))
+            start = prev = n
+    runs.append((start, prev))
+    return ", ".join(str(a) if a == b else f"{a}–{b}" for a, b in runs)
+
+
+def source_label(n: int, pages, heading=None) -> str:
+    """Build a citation label, e.g. '[S1] hlm 6–7 — Multi-Head Attention'.
+
+    n: 1-based source number; pages: page ints; heading: section title or None.
+    """
+    label = f"[S{n}] hlm {format_pages(pages)}"
+    if heading:
+        label += f" — {heading}"
+    return label
+
+
+def cited_labels(answer: str, n_sources: int):
+    """Parse [S#] citation labels an LLM emitted in its answer.
+
+    Returns (valid, invalid): sorted-unique label numbers within 1..n_sources,
+    and any out-of-range labels (hallucinated citations). Used to verify the model
+    cited real, in-range sources instead of trusting it blindly.
+    """
+    nums = sorted({int(m) for m in re.findall(r"\[S(\d+)\]", answer)})
+    valid = [n for n in nums if 1 <= n <= n_sources]
+    invalid = [n for n in nums if not (1 <= n <= n_sources)]
+    return valid, invalid
+
+
 class ConversationalMemoryManager:
     """Window + summary conversational memory. GPU-free: the summarizer is INJECTED.
 

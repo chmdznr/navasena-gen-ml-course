@@ -3,7 +3,7 @@ import pytest
 from rag_utils import (
     simple_token_count, TokenCounter, split_sentences, Chunk,
     TextChunker, chunk_quality_score, rank_change_table, recall_at_k,
-    ConversationalMemoryManager,
+    ConversationalMemoryManager, format_pages, source_label, cited_labels,
 )
 
 # Deterministic fake tokenizer: 1 token per whitespace word (hermetic, no downloads)
@@ -150,3 +150,47 @@ def test_memory_clear_resets():
     m = ConversationalMemoryManager(_fake_sum, window=2)
     m.add_turn("x", "y"); m.clear()
     assert m.turns == [] and m.summary == "" and m.stats()["turns_kept"] == 0
+
+
+def test_format_pages_single():
+    assert format_pages([6]) == "6"
+
+def test_format_pages_consecutive_run_collapses():
+    assert format_pages([6, 7, 8]) == "6–8"
+
+def test_format_pages_gap_then_run():
+    assert format_pages([6, 7, 9]) == "6–7, 9"
+
+def test_format_pages_unsorted_and_deduped():
+    assert format_pages([9, 6, 7, 6]) == "6–7, 9"
+
+def test_format_pages_non_consecutive():
+    assert format_pages([3, 5]) == "3, 5"
+
+def test_format_pages_empty_is_placeholder():
+    assert format_pages([]) == "?"
+
+def test_source_label_with_pages_and_heading():
+    assert source_label(1, [6, 7], "Multi-Head Attention") == "[S1] hlm 6–7 — Multi-Head Attention"
+
+def test_source_label_without_heading():
+    assert source_label(2, [3]) == "[S2] hlm 3"
+
+def test_source_label_empty_pages():
+    assert source_label(3, [], None) == "[S3] hlm ?"
+
+
+def test_cited_labels_valid_in_range():
+    assert cited_labels("Self-attention lebih cepat [S1] dan paralel [S3].", 4) == ([1, 3], [])
+
+def test_cited_labels_flags_out_of_range():
+    assert cited_labels("Klaim mengada-ada [S5].", 4) == ([], [5])
+
+def test_cited_labels_dedups_and_sorts():
+    assert cited_labels("[S2][S2][S1] lalu [S2]", 3) == ([1, 2], [])
+
+def test_cited_labels_none_present():
+    assert cited_labels("Tidak ada sitasi sama sekali.", 4) == ([], [])
+
+def test_cited_labels_mixed_valid_invalid():
+    assert cited_labels("[S1] benar, [S9] salah.", 4) == ([1], [9])
