@@ -52,7 +52,20 @@ REGISTRY = {
         ],
         "forbidden": [],
     },
-    # later plans extend this registry for nb04..nb08
+    "04_measure_ragas.ipynb": {
+        "markers": [
+            "EvaluationDataset",                     # modern RAGAS dataset (not legacy HF-Dataset)
+            "LangchainLLMWrapper",                   # cloud judge wrapped for RAGAS
+            "LLMContextPrecisionWithReference",      # rerank-sensitive headline metric
+            "Faithfulness",                          # grounding metric
+            "NVIDIA_API_KEY",                        # key read from Colab Secrets, not hardcoded
+            "paraphrase-multilingual-MiniLM-L12-v2", # local RAGAS embeddings + bi-encoder
+        ],
+        "forbidden": [
+            "ragas.metrics import context_precision",  # guard against legacy 0.1 lowercase API
+        ],
+    },
+    # later plans extend this registry for nb05..nb08
 }
 
 
