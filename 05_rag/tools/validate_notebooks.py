@@ -60,6 +60,8 @@ REGISTRY = {
             "Faithfulness",                          # grounding metric
             "NVIDIA_API_KEY",                        # key read from Colab Secrets, not hardcoded
             "paraphrase-multilingual-MiniLM-L12-v2", # local RAGAS embeddings + bi-encoder
+            "ragas==0.4.3",                          # pin to avoid the vertexai ImportError, ragas issue #2753
+            "langchain-community>=0.3.0,<0.4.0",    # pin to avoid the vertexai ImportError, ragas issue #2753
         ],
         "forbidden": [
             "ragas.metrics import context_precision",  # guard against legacy 0.1 lowercase API
