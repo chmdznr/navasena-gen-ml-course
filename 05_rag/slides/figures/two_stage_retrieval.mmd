@@ -1,13 +1,10 @@
 %%{init: {'theme':'dark','flowchart':{'htmlLabels':true,'curve':'basis'}}}%%
 flowchart LR
-    Q["Pertanyaan"] --> E["Embedding"]
-    E --> S["FAISS Search"]
-    S --> K["Konteks Relevan"]
-    K --> P["Prompt + Konteks"]
-    P --> L["LLM Generator"]
-    L --> A["Jawaban"]
+    Q["Pertanyaan"] --> B["Bi-encoder + FAISS<br/>cepat, ambil 20 kandidat"]
+    B --> R["Cross-encoder rerank<br/>akurat, nilai ulang"]
+    R --> T["Top-4 konteks<br/>paling relevan"]
 
     classDef key fill:#76B900,stroke:#5a8c00,stroke-width:2px,color:#0a0a0a;
     classDef plain fill:#2b2b2b,stroke:#76B900,stroke-width:1px,color:#f0f0f0;
-    class S,L key;
-    class Q,E,K,P,A plain;
+    class B,R key;
+    class Q,T plain;
