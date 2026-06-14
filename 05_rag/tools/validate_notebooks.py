@@ -114,7 +114,22 @@ REGISTRY = {
         ],
         "forbidden": [],
     },
-    # later plans extend this registry for nb08
+    "08_rag_deployment.ipynb": {
+        "markers": [
+            "from tools.rag_utils import",   # DRY: reuse the tested citation verifier
+            "cited_labels",                  # citation verification in the served pipeline
+            "FastAPI",                       # the web framework
+            "BaseModel",                     # Pydantic request/response schemas
+            "response_model",                # typed response contract
+            "/ask",                          # the serving endpoint
+            "/health",                       # health check endpoint
+            "TestClient",                    # in-process smoke test (Colab-safe, no server)
+            "uvicorn",                       # runbook: how to serve for real
+            "GENERATOR",                     # nim default / qwen toggle (matches nb06/07)
+            "integrate.api.nvidia.com",      # NVIDIA NIM hosted generator (no GPU needed)
+        ],
+        "forbidden": [],
+    },
 }
 
 
