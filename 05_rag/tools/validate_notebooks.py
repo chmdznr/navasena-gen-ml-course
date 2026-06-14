@@ -84,10 +84,13 @@ REGISTRY = {
     "06_conversational_rag.ipynb": {
         "markers": [
             "ConversationalMemoryManager",     # tested hand-rolled memory (window+summary)
-            "apply_chat_template",             # Qwen generation
+            "apply_chat_template",             # local Qwen generation path (toggle)
             "bge-reranker-v2-m3",              # reranked retriever (from nb03)
             "rewrite_followup",                # history-aware query rewriting
-            "create_history_aware_retriever",  # honest LangChain reference (read-only)
+            "create_history_aware_retriever",  # runnable LangChain reference (ChatNVIDIA)
+            "GENERATOR",                       # switchable generator (nim default / qwen toggle)
+            "integrate.api.nvidia.com",        # NVIDIA NIM cloud generator (default)
+            "NVIDIA_API_KEY",                  # key read from Colab Secrets, never hardcoded
         ],
         "forbidden": [
             "ConversationBufferMemory",        # deprecated LangChain memory; we hand-roll
