@@ -1,0 +1,11 @@
+%%{init: {'theme':'dark','flowchart':{'htmlLabels':true,'curve':'basis'}}}%%
+flowchart LR
+    C["Klien<br/>(web / mobile / skrip)"] -->|POST /ask| API["FastAPI"]
+    API --> ENG["RagEngine<br/>retrieve → rerank → generate → verifikasi sitasi"]
+    ENG --> J["JSON<br/>jawaban + sumber [S#]"]
+    J -->|HTTP 200| C
+
+    classDef key fill:#76B900,stroke:#5a8c00,stroke-width:2px,color:#0a0a0a;
+    classDef plain fill:#2b2b2b,stroke:#76B900,stroke-width:1px,color:#f0f0f0;
+    class API,ENG key;
+    class C,J plain;
