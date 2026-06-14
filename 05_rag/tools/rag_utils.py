@@ -211,3 +211,41 @@ def recall_at_k(approx_ids, gt_ids):
         hits = sum(1 for x in approx if int(x) in gset)
         recalls.append(hits / len(gset))
     return sum(recalls) / len(recalls) if recalls else 0.0
+
+
+class ConversationalMemoryManager:
+    """Window + summary conversational memory. GPU-free: the summarizer is INJECTED.
+
+    Keeps the last `window` turns verbatim; older turns are folded into a running
+    `summary` via summarize_fn(old_summary, (user, assistant)) -> new_summary.
+    In notebooks, summarize_fn wraps a local LLM (Qwen). Pure-logic + testable here.
+    """
+    def __init__(self, summarize_fn, window=4):
+        if window < 1:
+            raise ValueError("window must be >= 1")
+        self.summarize_fn = summarize_fn
+        self.window = window
+        self.turns = []      # list of (user, assistant)
+        self.summary = ""
+
+    def add_turn(self, user, assistant):
+        self.turns.append((user, assistant))
+        while len(self.turns) > self.window:
+            old = self.turns.pop(0)
+            self.summary = self.summarize_fn(self.summary, old)
+
+    def context(self):
+        parts = []
+        if self.summary:
+            parts.append(f"Ringkasan percakapan sebelumnya: {self.summary}")
+        for u, a in self.turns:
+            parts.append(f"User: {u}")
+            parts.append(f"Asisten: {a}")
+        return "\n".join(parts)
+
+    def stats(self):
+        return {"turns_kept": len(self.turns), "has_summary": bool(self.summary)}
+
+    def clear(self):
+        self.turns = []
+        self.summary = ""

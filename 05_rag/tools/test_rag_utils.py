@@ -3,6 +3,7 @@ import pytest
 from rag_utils import (
     simple_token_count, TokenCounter, split_sentences, Chunk,
     TextChunker, chunk_quality_score, rank_change_table, recall_at_k,
+    ConversationalMemoryManager,
 )
 
 # Deterministic fake tokenizer: 1 token per whitespace word (hermetic, no downloads)
@@ -121,3 +122,31 @@ def test_recall_at_k_mean_over_queries():
 
 def test_recall_at_k_empty():
     assert recall_at_k([], []) == 0.0
+
+
+def _fake_sum(old, turn):
+    u, a = turn
+    return (old + " | " if old else "") + f"{u}=>{a}"
+
+def test_memory_window_keeps_last_n():
+    m = ConversationalMemoryManager(_fake_sum, window=2)
+    for i in range(4):
+        m.add_turn(f"q{i}", f"a{i}")
+    assert len(m.turns) == 2 and m.turns[0] == ("q2", "a2")
+
+def test_memory_summarizes_evicted_turns():
+    m = ConversationalMemoryManager(_fake_sum, window=2)
+    for i in range(3):
+        m.add_turn(f"q{i}", f"a{i}")          # q0 evicted -> summary
+    assert "q0=>a0" in m.summary and len(m.turns) == 2
+
+def test_memory_context_has_summary_and_window():
+    m = ConversationalMemoryManager(_fake_sum, window=1)
+    m.add_turn("a", "1"); m.add_turn("b", "2")  # 'a' evicted to summary, 'b' in window
+    ctx = m.context()
+    assert "Ringkasan" in ctx and "User: b" in ctx and "Asisten: 2" in ctx
+
+def test_memory_clear_resets():
+    m = ConversationalMemoryManager(_fake_sum, window=2)
+    m.add_turn("x", "y"); m.clear()
+    assert m.turns == [] and m.summary == "" and m.stats()["turns_kept"] == 0
