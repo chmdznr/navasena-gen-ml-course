@@ -81,7 +81,19 @@ REGISTRY = {
             "client.persist()",        # removed in chromadb 0.4+ (AttributeError); auto-persist now
         ],
     },
-    # later plans extend this registry for nb06..nb08
+    "06_conversational_rag.ipynb": {
+        "markers": [
+            "ConversationalMemoryManager",     # tested hand-rolled memory (window+summary)
+            "apply_chat_template",             # Qwen generation
+            "bge-reranker-v2-m3",              # reranked retriever (from nb03)
+            "rewrite_followup",                # history-aware query rewriting
+            "create_history_aware_retriever",  # honest LangChain reference (read-only)
+        ],
+        "forbidden": [
+            "ConversationBufferMemory",        # deprecated LangChain memory; we hand-roll
+        ],
+    },
+    # later plans extend this registry for nb07..nb08
 }
 
 
