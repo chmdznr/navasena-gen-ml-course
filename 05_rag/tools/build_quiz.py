@@ -31,7 +31,7 @@ Q = [
       "Cukup menambah dokumen ke knowledge base — tanpa latih ulang model",
       "Mengganti arsitektur transformer",
       "Menaikkan temperature generator"], 1,
-     "Keunggulan RAG: pengetahuan ada di knowledge base eksternal, jadi update info cukup dengan menamb/mengubah dokumen — bobot LLM tidak perlu diubah."),
+     "Keunggulan RAG: pengetahuan ada di knowledge base eksternal, jadi update info cukup dengan menambah/mengubah dokumen — bobot LLM tidak perlu diubah."),
 
     # ── 2. Embeddings & semantic search ─────────────────────────────
     ("Apa itu 'embedding' dalam konteks RAG?",

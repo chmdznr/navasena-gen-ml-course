@@ -62,7 +62,7 @@ tr:nth-child(even) td { background:#f6f8ef; }
 
 <div class="card"><h3>② Ingest &amp; Chunk</h3><ul>
 <li><b>Docling</b>: PDF → struktur (heading, tabel) + OCR</li>
-<li><b>HybridChunker</b>: potong sadar-struktur, muat ≤ batas token</li>
+<li><b>HybridChunker</b>: potong sesuai struktur, tiap chunk ≤ batas token</li>
 <li>Simpan <b>halaman + heading</b> tiap chunk → bahan sitasi</li>
 <li>Embed versi <i>contextualize</i> (heading + teks), bukan teks polos</li>
 </ul><div class="when">▸ ingest baik = retrieval baik</div></div>
@@ -71,7 +71,7 @@ tr:nth-child(even) td { background:#f6f8ef; }
 <li><b>Bi-encoder</b> + FAISS: cepat, ambil 20 kandidat</li>
 <li><b>Cross-encoder</b> rerank: akurat, urutkan ulang → top-4</li>
 <li>Model: <b>bge-reranker-v2-m3</b> (multilingual)</li>
-<li>Reranker menilai <i>relevansi topik</i>, bukan jaminan jawaban ada</li>
+<li>Reranker menilai <i>relevansi topik</i>, bukan menjamin jawaban ada di konteks</li>
 </ul><div class="when">▸ presisi konteks naik</div></div>
 
 <div class="card"><h3>④ Ukur (RAGAS)</h3><ul>
@@ -129,7 +129,7 @@ tr:nth-child(even) td { background:#f6f8ef; }
 <div><b>Chunk</b> — Potongan dokumen (unit retrieval); HybridChunker memotong sadar-struktur.</div>
 <div><b>Reranker</b> — Cross-encoder (bge-reranker-v2-m3) yang menilai ulang relevansi kandidat dengan teliti.</div>
 <div><b>RAGAS</b> — Framework evaluasi RAG: Faithfulness, Answer Relevancy, Context Precision, Context Recall.</div>
-<div><b>FAISS</b> — Pencari vektor terdekat cepat; Flat (exact) vs IVF/HNSW (perkiraan).</div>
+<div><b>FAISS</b> — Pencari vektor terdekat yang cepat; Flat (exact) vs IVF/HNSW (perkiraan).</div>
 <div><b>Sitasi [S#]</b> — Label sumber pada klaim; diverifikasi agar tak mengada-ada (cited_labels).</div>
 <div><b>NIM</b> — NVIDIA Inference Microservice; LLM cloud (Llama-3.3-70B) andal tanpa GPU lokal.</div>
 </div></div>
