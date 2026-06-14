@@ -67,7 +67,21 @@ REGISTRY = {
             "ragas.metrics import context_precision",  # guard against legacy 0.1 lowercase API
         ],
     },
-    # later plans extend this registry for nb05..nb08
+    "05_scale_the_index.ipynb": {
+        "markers": [
+            "IndexFlatIP",             # cosine via inner product
+            "normalize_L2",            # L2-normalize for cosine
+            "write_index",             # FAISS persistence
+            "IndexHNSWFlat",           # approximate-index taxonomy
+            "recall_at_k",             # tested benchmark helper
+            "PersistentClient",        # ChromaDB persistence
+            "embedding_function=None", # bring-your-own-vectors (avoids ONNX auto-download)
+        ],
+        "forbidden": [
+            "client.persist()",        # removed in chromadb 0.4+ (AttributeError); auto-persist now
+        ],
+    },
+    # later plans extend this registry for nb06..nb08
 }
 
 
