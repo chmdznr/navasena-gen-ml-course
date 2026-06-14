@@ -96,7 +96,25 @@ REGISTRY = {
             "ConversationBufferMemory",        # deprecated LangChain memory; we hand-roll
         ],
     },
-    # later plans extend this registry for nb07..nb08
+    "07_capstone_ask_my_document.ipynb": {
+        "markers": [
+            "from tools.rag_utils import",            # DRY: imports tested helpers
+            "DocumentConverter",                      # Docling ingest (nb02)
+            "HybridChunker",                          # structure-aware chunking (nb02)
+            "contextualize",                          # embed the heading breadcrumb, not bare text
+            "bge-reranker-v2-m3",                     # two-stage rerank (nb03)
+            "ConversationalMemoryManager",            # conversational memory (nb06)
+            "apply_chat_template",                    # local Qwen generation path (toggle)
+            "source_label", "format_pages", "cited_labels",  # tested citation + verification helpers
+            "files.upload",                           # upload-your-own option present
+            "arxiv.org/pdf/1706.03762",               # default public sample doc (no upload needed)
+            "sample_id_document.pdf",                 # offline fallback so it always runs
+            "GENERATOR",                              # switchable generator (nim default / qwen toggle)
+            "integrate.api.nvidia.com",               # NVIDIA NIM cloud generator (default)
+        ],
+        "forbidden": [],
+    },
+    # later plans extend this registry for nb08
 }
 
 
