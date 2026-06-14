@@ -1,0 +1,329 @@
+#!/usr/bin/env python3
+"""Build the reworked Module 05 RAG quiz HTML — 30 pure-concept questions (code=null),
+covering the 8-notebook concept arc. Mirrors 04_llm pure-concept style.
+Run: python build_quiz.py  ->  ../rag-fundamentals-quiz.html
+"""
+import json, pathlib
+
+# Each: (question, [4 options], answer_index, explanation). All pure-concept (code=null).
+Q = [
+    # ── 1. Kenapa RAG ───────────────────────────────────────────────
+    ("Apa kepanjangan RAG dan dua komponen utamanya?",
+     ["Retrieval-Augmented Generation: Retrieval + Generation",
+      "Random Access Generation: pencarian acak + generasi",
+      "Recurrent Augmented Gradient: optimasi training LLM",
+      "Retrieval-Aware Gradient: fine-tuning bobot LLM"], 0,
+     "RAG = Retrieval-Augmented Generation: Retrieval (cari konteks relevan) + Generation (LLM menyusun jawaban dari konteks itu)."),
+    ("Dua masalah LLM polos yang ingin diatasi RAG adalah?",
+     ["Lambat dan boros memori",
+      "Halusinasi dan knowledge cutoff",
+      "Tidak bisa berbahasa Indonesia dan terlalu kecil",
+      "Tidak punya tokenizer dan tidak bisa di-GPU"], 1,
+     "LLM polos menjawab dari ingatan beku: ia bisa berhalusinasi (mengarang) dan punya knowledge cutoff (tak tahu kejadian setelah training)."),
+    ("Pernyataan paling tepat tentang batas RAG adalah?",
+     ["RAG menjamin jawaban 100% benar karena memakai dokumen",
+      "RAG menghapus seluruh halusinasi secara permanen",
+      "RAG mengurangi (bukan menghapus) halusinasi; jawaban hanya sebaik konteks yang ditemukan",
+      "RAG melatih ulang LLM tiap dokumen baru ditambahkan"], 2,
+     "RAG bukan sihir: kalau konteks yang diambil salah, jawaban tetap meleset. Ia mengurangi halusinasi, tidak menghapusnya."),
+    ("Bagaimana cara menambah pengetahuan baru ke sistem RAG?",
+     ["Melatih ulang (fine-tune) seluruh LLM",
+      "Cukup menambah dokumen ke knowledge base — tanpa latih ulang model",
+      "Mengganti arsitektur transformer",
+      "Menaikkan temperature generator"], 1,
+     "Keunggulan RAG: pengetahuan ada di knowledge base eksternal, jadi update info cukup dengan menamb/mengubah dokumen — bobot LLM tidak perlu diubah."),
+
+    # ── 2. Embeddings & semantic search ─────────────────────────────
+    ("Apa itu 'embedding' dalam konteks RAG?",
+     ["Proses memampatkan model jadi lebih kecil",
+      "Representasi teks sebagai vektor angka; makna mirip → vektor berdekatan",
+      "Teknik menggabungkan dua model jadi satu",
+      "Cara menyimpan teks mentah ke database"], 1,
+     "Embedding mengubah teks menjadi vektor (deretan angka). Kalimat yang mirip maknanya dipetakan ke vektor yang berdekatan, sehingga kemiripan bisa diukur sebagai jarak."),
+    ("Beda utama pencarian semantik (embedding) dengan pencarian kata kunci (Ctrl+F)?",
+     ["Semantik mencocokkan makna; keyword mencocokkan kata persis",
+      "Semantik selalu lebih lambat dan kurang akurat",
+      "Keyword bisa memahami sinonim, semantik tidak",
+      "Keduanya sama saja, hanya beda nama"], 0,
+     "Pencarian keyword butuh kata yang persis sama; pencarian semantik membandingkan makna lewat vektor, sehingga 'mobil' dan 'kendaraan' tetap dianggap mirip."),
+    ("Mengapa modul ini memakai embedding model multilingual (paraphrase-multilingual-MiniLM)?",
+     ["Karena ukurannya paling kecil",
+      "Agar pertanyaan Bahasa Indonesia tetap menemukan dokumen Bahasa Inggris (lintas-bahasa)",
+      "Karena hanya model itu yang gratis",
+      "Agar tidak perlu reranker"], 1,
+     "Embedding multilingual memetakan teks berbagai bahasa ke ruang vektor yang sama, sehingga retrieval lintas-bahasa (tanya ID, dokumen EN) tetap bekerja."),
+    ("Untuk mengukur kemiripan dengan cosine similarity di FAISS, langkah yang benar adalah?",
+     ["Langsung pakai IndexFlatL2 tanpa perubahan",
+      "Normalisasi vektor (normalize_L2) lalu pakai inner product (IndexFlatIP)",
+      "Mengubah semua vektor jadi bilangan bulat",
+      "Membalik tanda semua vektor"], 1,
+     "Cosine = inner product dari vektor yang sudah dinormalkan. Maka normalisasi L2 dulu, lalu gunakan IndexFlatIP (inner product)."),
+
+    # ── 3. Ingest & chunking ────────────────────────────────────────
+    ("Kenapa memakai Docling untuk membaca PDF, bukan sekadar copy-paste teks?",
+     ["Docling lebih cepat dari semua tool lain",
+      "Docling memparsing struktur (heading, tabel) + OCR, dan menyimpan halaman/heading untuk sitasi",
+      "Copy-paste tidak bisa dilakukan di Python",
+      "Docling melatih ulang LLM dari PDF"], 1,
+     "PDF itu visual; copy-paste sering berantakan. Docling memahami struktur dokumen (heading, paragraf, tabel), meng-OCR halaman gambar, dan menyimpan nomor halaman + heading sebagai bahan sitasi."),
+    ("Mengapa dokumen dipecah menjadi chunk sebelum di-embed?",
+     ["Agar muat di batas token + retrieval per-potongan lebih presisi",
+      "Agar model belajar lebih cepat",
+      "Karena FAISS hanya menerima satu kata per vektor",
+      "Agar tidak perlu embedding sama sekali"], 0,
+     "Dokumen utuh terlalu besar untuk batas token embedder/LLM, dan retrieval per-potongan jauh lebih presisi daripada per-dokumen besar."),
+    ("Apa keunggulan chunking 'sadar-struktur' (HybridChunker Docling) dibanding potong per-N-kata?",
+     ["Selalu menghasilkan chunk berukuran sama persis",
+      "Mengikuti batas bagian/heading dan menyimpan metadata untuk sitasi",
+      "Tidak membutuhkan tokenizer",
+      "Menghapus semua tabel dan gambar"], 1,
+     "HybridChunker memotong mengikuti struktur dokumen (bagian/heading) alih-alih memutus kalimat sembarang, dan membawa heading sebagai konteks + bahan sitasi."),
+    ("Apa trade-off ukuran chunk?",
+     ["Besar selalu lebih baik daripada kecil",
+      "Terlalu besar → konteks kabur; terlalu kecil → info penting bisa terputus",
+      "Ukuran chunk tidak berpengaruh pada kualitas",
+      "Kecil selalu lebih akurat tanpa kekurangan"], 1,
+     "Chunk terlalu besar membuat konteks kabur dan boros token; terlalu kecil memutus informasi yang seharusnya menyatu. Ukuran disetel ke batas token embedder."),
+
+    # ── 4. Rerank ───────────────────────────────────────────────────
+    ("Beda bi-encoder dan cross-encoder dalam retrieval?",
+     ["Bi-encoder meng-embed query & dokumen terpisah (cepat); cross-encoder membacanya bersama (akurat, lambat)",
+      "Bi-encoder selalu lebih akurat dari cross-encoder",
+      "Cross-encoder bisa di-index, bi-encoder tidak",
+      "Keduanya identik, beda nama saja"], 0,
+     "Bi-encoder meng-embed query dan dokumen terpisah sehingga bisa di-index dan cepat. Cross-encoder membaca pasangan query+dokumen bersama → lebih akurat tapi lambat dan tak bisa di-index."),
+    ("Bagaimana pola pencarian dua tahap (two-stage retrieval) bekerja?",
+     ["Cross-encoder dulu untuk semua dokumen, lalu bi-encoder",
+      "Bi-encoder over-fetch banyak kandidat (cepat), lalu cross-encoder rerank ambil top-k terbaik",
+      "Dua bi-encoder berbeda dijalankan paralel",
+      "Dokumen diacak lalu diambil k pertama"], 1,
+     "Tahap 1: bi-encoder + FAISS mengambil banyak kandidat dengan cepat (mis. 20). Tahap 2: cross-encoder (bge-reranker-v2-m3) menilai ulang dengan teliti dan menyisakan top-k terbaik."),
+    ("Pernyataan paling jujur tentang apa yang dinilai reranker?",
+     ["Reranker menjamin jawaban pasti ada di dokumen teratas",
+      "Reranker menilai relevansi topik, bukan jaminan jawaban ada di sana",
+      "Reranker menulis ulang jawaban LLM",
+      "Reranker menghapus dokumen yang salah secara permanen"], 1,
+     "Reranker menilai seberapa relevan sebuah chunk dengan query (relevansi topik). Itu meningkatkan presisi konteks, tapi bukan jaminan bahwa jawaban persisnya ada di chunk teratas."),
+    ("Mengapa reranking biasanya meningkatkan kualitas RAG?",
+     ["Karena membuat LLM lebih besar",
+      "Karena konteks yang lebih relevan → jawaban lebih grounded (faithful)",
+      "Karena mempercepat setiap query",
+      "Karena menghapus kebutuhan akan embedding"], 1,
+     "Dengan konteks yang lebih tepat di urutan teratas, LLM punya bahan yang lebih relevan → jawaban lebih grounded. Biayanya: sedikit lebih lambat per-query."),
+
+    # ── 5. RAGAS / evaluation ───────────────────────────────────────
+    ("Empat metrik inti RAGAS menilai dua hal. Apa saja?",
+     ["Kecepatan dan biaya",
+      "Kualitas retrieval (context precision/recall) dan kualitas jawaban (faithfulness/answer relevancy)",
+      "Ukuran model dan jumlah parameter",
+      "Panjang prompt dan jumlah token"], 1,
+     "RAGAS: Context Precision & Context Recall menilai retrieval; Faithfulness & Answer Relevancy menilai jawaban. Dua sisi: apakah konteksnya benar, dan apakah jawabannya benar."),
+    ("Metrik 'Faithfulness' mengukur apa?",
+     ["Apakah jawaban setia pada konteks (tidak mengarang di luar konteks)",
+      "Apakah jawaban ditulis dengan tata bahasa yang benar",
+      "Seberapa cepat jawaban dihasilkan",
+      "Berapa banyak dokumen di knowledge base"], 0,
+     "Faithfulness mengecek apakah klaim dalam jawaban benar-benar didukung oleh konteks yang diambil — metrik anti-halusinasi."),
+    ("Beda Context Precision dan Context Recall?",
+     ["Precision: apakah konteks yang diambil relevan; Recall: apakah semua info yang dibutuhkan terambil",
+      "Keduanya mengukur kecepatan retrieval",
+      "Precision untuk jawaban, Recall untuk prompt",
+      "Tidak ada bedanya"], 0,
+     "Context Precision menanyakan 'apakah yang diambil relevan?' (sedikit sampah), Context Recall menanyakan 'apakah semua yang dibutuhkan terambil?' (tidak ada yang ketinggalan)."),
+    ("Kenapa LLM judge untuk RAGAS sebaiknya model yang kuat (mis. NVIDIA NIM 70B)?",
+     ["Agar lebih murah",
+      "Model kecil sering gagal mengikuti format JSON penilaian → skor jadi NaN/menyesatkan",
+      "Karena model kecil tidak bisa berbahasa Indonesia",
+      "Karena judge harus sama persis dengan generator"], 1,
+     "RAGAS meminta judge menilai dalam format terstruktur. Model kecil sering gagal parsing/format → skor NaN. Judge kuat (NIM Llama-3.3-70B) memberi penilaian yang andal tanpa GPU lokal."),
+
+    # ── 6. Scale the index ──────────────────────────────────────────
+    ("Beda IndexFlat, IVF, dan HNSW di FAISS?",
+     ["Flat = bandingkan ke semua (recall 100%, lambat saat besar); IVF/HNSW = perkiraan, lebih cepat",
+      "Flat paling cepat untuk data besar",
+      "IVF selalu lebih akurat daripada Flat",
+      "HNSW hanya untuk data teks, bukan vektor"], 0,
+     "Flat mencari persis ke semua vektor (recall 100% tapi lambat saat data besar). IVF (sel + nprobe) dan HNSW (graf) adalah index perkiraan: jauh lebih cepat dengan recall sedikit menurun."),
+    ("Apa trade-off utama index perkiraan (IVF/HNSW)?",
+     ["Menukar sedikit recall (akurasi) untuk kecepatan jauh lebih tinggi",
+      "Menukar kecepatan untuk akurasi sempurna",
+      "Tidak ada trade-off, selalu lebih baik",
+      "Menghapus kebutuhan embedding"], 0,
+     "Index perkiraan mempercepat pencarian secara dramatis pada data besar dengan mengorbankan sedikit recall. Parameter seperti nprobe menggeser keseimbangan recall vs kecepatan."),
+    ("Kenapa index sebaiknya di-persist (write_index / ChromaDB PersistentClient)?",
+     ["Agar tidak perlu membangun ulang index tiap kali aplikasi start",
+      "Agar model embedding ikut terlatih",
+      "Karena FAISS tidak bisa mencari tanpa disk",
+      "Agar jawaban lebih kreatif"], 0,
+     "Membangun index dari nol tiap start itu boros. Menyimpannya ke disk (write_index / Chroma persistence) memungkinkan dimuat sekali saat start lalu dipakai melayani banyak query."),
+
+    # ── 7. Conversational RAG ───────────────────────────────────────
+    ("Kenapa pertanyaan lanjutan seperti 'Kalau cuti sakit?' sulit di-retrieve langsung?",
+     ["Karena terlalu panjang",
+      "Karena elipsis/kata ganti membuatnya ambigu tanpa konteks giliran sebelumnya",
+      "Karena FAISS tidak menerima Bahasa Indonesia",
+      "Karena tidak ada tanda tanya"], 1,
+     "Pertanyaan lanjutan sering memuat elipsis ('kalau...') atau kata ganti ('-nya', 'itu') yang hanya bermakna dengan riwayat. Di-embed apa adanya, ia terlalu ambigu sehingga retrieval meleset."),
+    ("Apa fungsi 'history-aware rewriting' dalam conversational RAG?",
+     ["Menulis ulang jawaban akhir agar lebih sopan",
+      "Menulis ulang pertanyaan lanjutan menjadi pertanyaan mandiri sebelum retrieve",
+      "Menghapus riwayat percakapan",
+      "Menerjemahkan pertanyaan ke Bahasa Inggris"], 1,
+     "Sebelum retrieve, sistem memakai riwayat untuk menulis ulang pertanyaan lanjutan menjadi pertanyaan mandiri (mis. 'Kalau cuti sakit?' → 'Berapa hari cuti sakit?'), sehingga embedding-nya cocok dengan dokumen."),
+    ("Bagaimana memori percakapan window + summary bekerja?",
+     ["Menyimpan semua giliran secara verbatim selamanya",
+      "Menyimpan beberapa giliran terbaru verbatim (window); giliran lama diringkas (summary)",
+      "Hanya menyimpan giliran pertama",
+      "Tidak menyimpan apa pun"], 1,
+     "Window menyimpan N giliran terbaru apa adanya (presisi); giliran yang lebih lama diringkas oleh model agar konteks tetap ringkas namun temanya tidak hilang."),
+
+    # ── 8. Citations & deploy ───────────────────────────────────────
+    ("Apa fungsi label sitasi [S1], [S2] pada jawaban RAG?",
+     ["Menandai urutan kata dalam jawaban",
+      "Menunjuk sumber (chunk + halaman/heading) tiap klaim agar bisa ditelusuri",
+      "Menyatakan tingkat kepercayaan diri model",
+      "Memberi nomor versi model"], 1,
+     "Tiap konteks diberi label [S#] beserta halaman/heading; LLM membubuhkannya pada klaim, sehingga pembaca bisa menelusuri tiap klaim ke dokumen asli ('Lihat sumber')."),
+    ("Kenapa label sitasi yang ditulis model perlu DIVERIFIKASI?",
+     ["Karena label selalu salah",
+      "Karena model (apalagi yang kecil) bisa mengarang label di luar rentang (mis. [S5] padahal hanya 4 sumber)",
+      "Karena verifikasi mempercepat jawaban",
+      "Karena FAISS membutuhkannya"], 1,
+     "Model bisa menulis label yang tidak ada (mis. [S5] padahal hanya [S1]-[S4]). Verifikasi mem-parse label dari jawaban dan menandai yang di luar rentang sebagai tak valid → 'trust, but verify'."),
+    ("Pada layanan FastAPI /ask, apa peran Pydantic?",
+     ["Mempercepat model",
+      "Memvalidasi bentuk request & response; input cacat ditolak dengan HTTP 422",
+      "Menyimpan vektor ke disk",
+      "Menjalankan reranker"], 1,
+     "Pydantic mendefinisikan skema request/response. FastAPI memvalidasi otomatis: pertanyaan yang formatnya salah ditolak dengan HTTP 422, dan response dijamin sesuai skema (answer + sources + cited)."),
+    ("Kenapa generator default di deploy memakai NVIDIA NIM (cloud), bukan model lokal?",
+     ["Karena lokal selalu salah",
+      "NIM andal tanpa butuh GPU lokal — cocok untuk server; kualitas naik seiring kapasitas model",
+      "Karena NIM tidak butuh API key",
+      "Karena model lokal tidak bisa bahasa Indonesia"], 1,
+     "Server biasanya tak ber-GPU. NIM (Llama-3.3-70B cloud) memberi jawaban + rewriting yang andal tanpa GPU lokal. Toggle ke Qwen lokal tersedia untuk on-prem ber-GPU."),
+    ("Kenapa server RAG memuat model 'sekali saat start', bukan tiap permintaan?",
+     ["Agar setiap request tidak menanggung waktu muat model yang berat (latensi & boros)",
+      "Agar model belajar dari tiap request",
+      "Karena Pydantic mengharuskannya",
+      "Agar index tidak perlu dibuat"], 0,
+     "Memuat embedder/reranker/index itu berat. Memuatnya sekali saat start (mis. di __init__ RagEngine) lalu melayani banyak /ask membuat tiap permintaan cepat dan hemat sumber daya."),
+]
+
+questions = [{"q": q, "code": None, "options": opts, "answer": a, "explanation": e} for (q, opts, a, e) in Q]
+payload = {"module": "05", "title": "RAG Fundamentals", "questions": questions}
+N = len(questions)
+assert all(len(x["options"]) == 4 for x in questions), "every question needs 4 options"
+assert all(0 <= x["answer"] <= 3 for x in questions)
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+SKEL_HEAD = """<!doctype html><html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAG Fundamentals — Quiz</title>
+<style>
+:root{--bg:#1A1A2E;--card:#2D2D44;--green:#76B900;--lgreen:#A3D944;--white:#fff;
+--gray:#AAAACC;--red:#EF5350;--dark:#23233A;}
+*{box-sizing:border-box;}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+margin:0;background:var(--bg);color:var(--white);line-height:1.45;}
+.wrap{max-width:820px;margin:0 auto;padding:18px 16px 60px;}
+header{background:linear-gradient(135deg,var(--green),#5a8c00);border-radius:12px;
+padding:16px 20px;margin-bottom:14px;}
+header .mod{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.9;}
+header h1{margin:2px 0 0;font-size:24px;}
+header p{margin:4px 0 0;font-size:13px;opacity:.95;}
+.scorebar{position:sticky;top:0;z-index:5;background:var(--dark);border:1px solid var(--card);
+border-radius:10px;padding:8px 14px;margin-bottom:14px;display:flex;justify-content:space-between;
+align-items:center;font-size:13px;}
+.scorebar b{color:var(--lgreen);}
+.q{background:var(--card);border-radius:10px;padding:14px 16px;margin-bottom:12px;
+border-left:4px solid var(--green);}
+.q .num{color:var(--green);font-weight:700;font-size:12px;}
+.q .text{font-size:15px;font-weight:600;margin:4px 0 8px;}
+.opt{display:block;width:100%;text-align:left;background:var(--dark);color:var(--white);
+border:1.5px solid #3a3a55;border-radius:8px;padding:9px 12px;margin:6px 0;font-size:14px;
+cursor:pointer;transition:.12s;}
+.opt:hover:not(.locked){border-color:var(--green);}
+.opt .lab{display:inline-block;width:20px;font-weight:700;color:var(--gray);}
+.opt.correct{background:rgba(118,185,0,.18);border-color:var(--green);}
+.opt.correct .lab{color:var(--green);}
+.opt.wrong{background:rgba(239,83,80,.16);border-color:var(--red);}
+.opt.wrong .lab{color:var(--red);}
+.opt.locked{cursor:default;}
+.expl{display:none;font-size:13px;color:var(--gray);background:var(--bg);
+border-radius:6px;padding:8px 11px;margin-top:8px;border-left:3px solid var(--lgreen);}
+.expl.show{display:block;}
+.expl b{color:var(--lgreen);}
+.summary{display:none;background:var(--card);border-radius:12px;padding:20px;text-align:center;
+margin-top:8px;border:2px solid var(--green);}
+.summary.show{display:block;}
+.summary .big{font-size:34px;font-weight:800;color:var(--green);}
+.summary .msg{font-size:15px;color:var(--gray);margin:6px 0 14px;}
+.btn{background:var(--green);color:#0d0d0d;border:none;border-radius:8px;padding:10px 22px;
+font-size:14px;font-weight:700;cursor:pointer;}
+.btn:hover{background:var(--lgreen);}
+footer{text-align:center;color:var(--gray);font-size:11px;margin-top:18px;opacity:.7;}
+</style></head>
+<body><div class="wrap">
+<header><div class="mod">Module 05 · Quiz Latihan</div><h1>RAG Fundamentals</h1>
+<p>__N__ soal pilihan ganda · murni konsep · pilih satu jawaban</p></header>
+<div class="scorebar"><span>Terjawab: <b id="answered">0</b> / __N__</span>
+<span>Benar: <b id="correct">0</b></span></div>
+<div id="quiz"></div>
+<div class="summary" id="summary"><div class="big" id="finalscore"></div>
+<div class="msg" id="finalmsg"></div><button class="btn" onclick="location.reload()">Ulangi Quiz</button></div>
+<footer>Navasena Gen-ML Course · Module 05 RAG Fundamentals — Quiz</footer>
+</div>
+<script>
+const QUIZ = __JSON__;
+window.QUIZ = QUIZ;
+const LAB = ["A","B","C","D"];
+let answered = 0, correct = 0;
+const total = QUIZ.questions.length;
+const quizEl = document.getElementById("quiz");
+QUIZ.questions.forEach((item, qi) => {
+  const card = document.createElement("div"); card.className = "q";
+  const num = document.createElement("div"); num.className = "num"; num.textContent = "Soal " + (qi+1);
+  card.appendChild(num);
+  const text = document.createElement("div"); text.className = "text"; text.textContent = item.q;
+  card.appendChild(text);
+  if (item.code) { const pre = document.createElement("pre"); pre.textContent = item.code; card.appendChild(pre); }
+  const expl = document.createElement("div"); expl.className = "expl";
+  item.options.forEach((opt, oi) => {
+    const b = document.createElement("button"); b.className = "opt";
+    const lab = document.createElement("span"); lab.className = "lab"; lab.textContent = LAB[oi] + ".";
+    b.appendChild(lab); b.appendChild(document.createTextNode(" " + opt));
+    b.onclick = () => {
+      if (card.dataset.locked) return;
+      card.dataset.locked = "1";
+      const opts = card.querySelectorAll(".opt");
+      opts.forEach(o => o.classList.add("locked"));
+      opts[item.answer].classList.add("correct");
+      if (oi === item.answer) { correct++; } else { b.classList.add("wrong"); }
+      answered++;
+      document.getElementById("answered").textContent = answered;
+      document.getElementById("correct").textContent = correct;
+      expl.classList.add("show");
+      if (answered === total) showSummary();
+    };
+    card.appendChild(b);
+  });
+  const eb = document.createElement("b"); eb.textContent = "Penjelasan: ";
+  expl.appendChild(eb); expl.appendChild(document.createTextNode(item.explanation));
+  card.appendChild(expl);
+  quizEl.appendChild(card);
+});
+function showSummary(){
+  const pct = Math.round(correct/total*100);
+  const s = document.getElementById("summary"); s.classList.add("show");
+  document.getElementById("finalscore").textContent = "Skor: " + correct + " / " + total + " (" + pct + "%)";
+  let msg = pct>=80 ? "Hebat! Pemahaman kamu solid." : pct>=60 ? "Lumayan — ulas lagi materi yang masih salah." : "Ayo pelajari lagi modulnya, lalu coba ulangi.";
+  document.getElementById("finalmsg").textContent = msg;
+  s.scrollIntoView({behavior:"smooth"});
+}
+</script></body></html>"""
+
+html = SKEL_HEAD.replace("__N__", str(N)).replace("__JSON__", json.dumps(payload, ensure_ascii=False))
+out = ROOT / "rag-fundamentals-quiz.html"
+out.write_text(html, encoding="utf-8")
+print(f"wrote {out} with {N} pure-concept questions")
