@@ -194,3 +194,20 @@ def rank_change_table(candidate_ids, bi_scores, rerank_scores, top_k):
             "kept": rerank_pos <= top_k,
         })
     return rows
+
+
+def recall_at_k(approx_ids, gt_ids):
+    """Mean recall@k of approximate retrieval vs exact ground truth.
+
+    approx_ids, gt_ids: parallel sequences (n_queries x k) of retrieved row ids
+    (lists or numpy rows). For each query, recall = |approx ∩ gt| / |gt|.
+    Returns the mean over queries, or 0.0 if there are no queries.
+    """
+    recalls = []
+    for approx, gt in zip(approx_ids, gt_ids):
+        gset = set(int(x) for x in gt)
+        if not gset:
+            continue
+        hits = sum(1 for x in approx if int(x) in gset)
+        recalls.append(hits / len(gset))
+    return sum(recalls) / len(recalls) if recalls else 0.0

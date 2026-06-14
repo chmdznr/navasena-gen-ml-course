@@ -2,7 +2,7 @@
 import pytest
 from rag_utils import (
     simple_token_count, TokenCounter, split_sentences, Chunk,
-    TextChunker, chunk_quality_score, rank_change_table,
+    TextChunker, chunk_quality_score, rank_change_table, recall_at_k,
 )
 
 # Deterministic fake tokenizer: 1 token per whitespace word (hermetic, no downloads)
@@ -107,3 +107,17 @@ def test_rank_change_no_reorder_all_zero_delta():
 def test_rank_change_length_mismatch_raises():
     with pytest.raises(ValueError):
         rank_change_table([1, 2], [0.1], [0.2, 0.3], top_k=1)
+
+
+def test_recall_at_k_perfect():
+    assert recall_at_k([[1, 2, 3]], [[1, 2, 3]]) == 1.0
+
+def test_recall_at_k_partial():
+    assert recall_at_k([[1, 2, 9]], [[1, 2, 3]]) == 2 / 3   # 2 of 3 ground-truth found
+
+def test_recall_at_k_mean_over_queries():
+    # q1 perfect (1.0), q2 finds 1 of 2 (0.5) -> mean 0.75
+    assert recall_at_k([[1, 2], [5, 6]], [[1, 2], [5, 9]]) == 0.75
+
+def test_recall_at_k_empty():
+    assert recall_at_k([], []) == 0.0
