@@ -1,5 +1,6 @@
 import re
-from nvidia_utils import detect_pii_id, mask_pii_id, summarize_activated_rails
+import pytest
+from nvidia_utils import detect_pii_id, mask_pii_id, summarize_activated_rails, nim_client
 
 
 def test_detect_nik_16_digits():
@@ -56,3 +57,10 @@ def test_summarize_activated_rails_from_loglike():
 
 def test_summarize_handles_no_log():
     assert summarize_activated_rails(object()) == []
+
+
+def test_nim_client_raises_without_key(monkeypatch):
+    monkeypatch.delenv("NVIDIA_API_KEY", raising=False)
+    pytest.importorskip("openai")
+    with pytest.raises(RuntimeError):
+        nim_client()

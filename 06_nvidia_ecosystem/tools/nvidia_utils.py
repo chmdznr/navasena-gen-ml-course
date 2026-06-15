@@ -52,3 +52,24 @@ def summarize_activated_rails(generation_response) -> list[str]:
         blocked = bool(getattr(r, "stop", False))
         out.append(f"{name} ({'BLOCKED' if blocked else 'passed'})")
     return out
+
+
+def nim_client(api_key_env: str = "NVIDIA_API_KEY",
+               base_url: str = "https://integrate.api.nvidia.com/v1"):
+    """openai.OpenAI client pointed at NVIDIA NIM. Reads the key from env (Colab Secrets)."""
+    import os
+    from openai import OpenAI
+    key = os.environ.get(api_key_env)
+    if not key:
+        raise RuntimeError(f"{api_key_env} not set — add it to Colab Secrets, then os.environ.")
+    return OpenAI(base_url=base_url, api_key=key)
+
+
+def build_rails(yaml_content: str, colang_content: str = ""):
+    """nest_asyncio.apply() + RailsConfig.from_content -> LLMRails. One-call Colab helper."""
+    import nest_asyncio
+    nest_asyncio.apply()
+    from nemoguardrails import RailsConfig, LLMRails
+    config = RailsConfig.from_content(yaml_content=yaml_content,
+                                      colang_content=colang_content or None)
+    return LLMRails(config)
