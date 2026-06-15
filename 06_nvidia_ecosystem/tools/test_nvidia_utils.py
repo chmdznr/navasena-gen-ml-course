@@ -81,3 +81,40 @@ def test_nim_client_raises_without_key(monkeypatch):
     pytest.importorskip("openai")
     with pytest.raises(RuntimeError):
         nim_client()
+
+
+class _FakeNIM:
+    """Minimal stand-in for an OpenAI client to test nim_chat hermetically."""
+    def __init__(self, content):
+        self.captured = {}
+        outer = self
+
+        class _Completions:
+            def create(self, **kw):
+                outer.captured = kw
+                msg = type("M", (), {"content": content})()
+                choice = type("C", (), {"message": msg})()
+                return type("R", (), {"choices": [choice]})()
+
+        self.chat = type("Chat", (), {"completions": _Completions()})()
+
+
+def test_nim_chat_disables_reasoning_and_strips():
+    from nvidia_utils import nim_chat, NEMOTRON_NO_THINK
+    fake = _FakeNIM("  Halo  ")
+    out = nim_chat(fake, "nvidia/nemotron-3-nano-30b-a3b", [{"role": "user", "content": "hi"}])
+    assert out == "Halo"
+    assert fake.captured["extra_body"] == NEMOTRON_NO_THINK
+    assert fake.captured["model"] == "nvidia/nemotron-3-nano-30b-a3b"
+
+
+def test_nim_chat_handles_none_content():
+    from nvidia_utils import nim_chat
+    assert nim_chat(_FakeNIM(None), "m", [{"role": "user", "content": "x"}]) == ""
+
+
+def test_nim_chat_no_think_false_omits_extra_body():
+    from nvidia_utils import nim_chat
+    fake = _FakeNIM("ok")
+    nim_chat(fake, "m", [{"role": "user", "content": "x"}], no_think=False)
+    assert "extra_body" not in fake.captured

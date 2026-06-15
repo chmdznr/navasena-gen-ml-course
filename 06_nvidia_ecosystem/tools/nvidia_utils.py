@@ -65,6 +65,22 @@ def nim_client(api_key_env: str = "NVIDIA_API_KEY",
     return OpenAI(base_url=base_url, api_key=key)
 
 
+# NVIDIA Nemotron is a reasoning model; on the NIM endpoint the `/no_think` prompt token
+# is IGNORED — reasoning is controlled by this request parameter. enable_thinking:false ->
+# zero reasoning tokens, fast, and message.content is the clean final answer.
+NEMOTRON_NO_THINK = {"chat_template_kwargs": {"enable_thinking": False}}
+
+
+def nim_chat(client, model, messages, max_tokens=256, temperature=0.0, no_think=True):
+    """Chat completion helper. For Nemotron (reasoning model), no_think=True disables the
+    reasoning trace via extra_body so output is fast + clean. Returns the content string."""
+    kwargs = dict(model=model, messages=messages, temperature=temperature, max_tokens=max_tokens)
+    if no_think:
+        kwargs["extra_body"] = NEMOTRON_NO_THINK
+    r = client.chat.completions.create(**kwargs)
+    return (r.choices[0].message.content or "").strip()
+
+
 def build_rails(yaml_content: str, colang_content: str = ""):
     """nest_asyncio.apply() + RailsConfig.from_content -> LLMRails. One-call Colab helper."""
     import nest_asyncio
