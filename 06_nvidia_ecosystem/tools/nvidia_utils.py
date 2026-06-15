@@ -1,0 +1,39 @@
+"""Shared helpers for Module 06 (NVIDIA ecosystem + Trustworthy AI).
+
+Pure helpers (PII, activation-log) are unit-tested in test_nvidia_utils.py.
+NIM/rails wrappers are thin and require external libs at runtime (Colab).
+"""
+import re
+
+# Order matters: most-specific/longest patterns first so a 16-digit NIK
+# is not also captured as a generic account number.
+_PII_PATTERNS = [
+    ("NIK", re.compile(r"\b\d{16}\b")),                      # KTP: exactly 16 digits
+    ("PHONE", re.compile(r"(?:\+62|62|0)8\d{8,12}\b")),      # Indonesian mobile
+    ("ACCOUNT", re.compile(r"\b\d{10,15}\b")),               # bank account (10-15 digits)
+]
+_PLACEHOLDER = {"NIK": "[NIK]", "PHONE": "[PHONE]", "ACCOUNT": "[ACCOUNT]"}
+
+
+def detect_pii_id(text: str) -> list[dict]:
+    """Return [{type, value, start, end}] for Indonesian PII, non-overlapping,
+    most-specific pattern winning a span."""
+    claimed = []  # (start, end)
+    found = []
+    for ptype, pat in _PII_PATTERNS:
+        for m in pat.finditer(text):
+            s, e = m.start(), m.end()
+            if any(not (e <= cs or s >= ce) for cs, ce in claimed):
+                continue  # overlaps an already-claimed (more specific) span
+            claimed.append((s, e))
+            found.append({"type": ptype, "value": m.group(), "start": s, "end": e})
+    found.sort(key=lambda f: f["start"])
+    return found
+
+
+def mask_pii_id(text: str) -> str:
+    """Replace detected PII with [NIK]/[PHONE]/[ACCOUNT] placeholders."""
+    spans = detect_pii_id(text)
+    for f in sorted(spans, key=lambda f: f["start"], reverse=True):
+        text = text[: f["start"]] + _PLACEHOLDER[f["type"]] + text[f["end"] :]
+    return text
