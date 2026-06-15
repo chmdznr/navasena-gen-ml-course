@@ -84,7 +84,7 @@
 \textbf{Tiga jebakan yang sudah dibuktikan} (baca dulu):
 \begin{enumerate}[leftmargin=1.6em]
   \item Menjalankan \texttt{ollama run hf.co/...} langsung (tanpa Modelfile) \textbf{menghilangkan system prompt} $\to$ spesialis kembali berperilaku seperti chatbot biasa. \textbf{Wajib pakai \texttt{ollama create} dengan Modelfile yang memuat SYSTEM prompt.}
-  \item \textbf{Ollama versi \textless\ 0.30.7 menyisakan tag \texttt{<think></think>} kosong} (thinking-token Qwen3). \textbf{Upgrade ke $\geq$ 0.30.7} $\to$ output bersih.
+  \item \textbf{Tag \texttt{<think></think>} kosong masih bisa muncul} (thinking-token Qwen3). Upgrade ke $\geq$ 0.30.7 memperbaiki token think yang \emph{rusak/setengah jadi}, \textbf{tetapi} karena Modelfile kita memakai TEMPLATE ChatML sendiri, Ollama tidak mengenali model ini sebagai thinking-model $\to$ blok \texttt{<think></think>} kosong ikut tercetak sebagai teks (bahkan dengan \texttt{--think=false}). \textbf{Tidak merusak JSON}; bersihkan di sisi klien (Bagian D).
   \item \textbf{Pakai Q8\_0} untuk spesialis kecil ini ($\sim$0.6 GB) --- near-lossless \& aman dari bug memori L4T.
 \end{enumerate}
 \end{warn}
@@ -172,6 +172,7 @@ SYSTEM Ekstrak pesanan ke JSON dengan key produk, jumlah, harga_satuan, total; a
 \section*{\color{nvgreen}Bagian D\quad Pola Client Universal (OpenAI-compatible)}
 Inti deployment: \textbf{kode aplikasi portabel.} Ollama (lokal/edge), vLLM (cloud), NVIDIA NIM --- semua OpenAI-compatible. Pindah target cukup ganti \texttt{base\_url}.
 \begin{lstlisting}[style=nvpy]
+import re
 from openai import OpenAI
 client = OpenAI(base_url="http://localhost:11434/v1/", api_key="ollama")  # Ollama lokal (Mac)
 # Jetson di LAN :  base_url="http://<jetson-ip>:11434/v1"
@@ -180,7 +181,9 @@ client = OpenAI(base_url="http://localhost:11434/v1/", api_key="ollama")  # Olla
 MODEL = "navasena-spesialis"
 r = client.chat.completions.create(model=MODEL,
     messages=[{"role":"user","content":"Pesan 5 kopi, harga 25000 per item."}])
-print(r.choices[0].message.content)
+out = r.choices[0].message.content
+out = re.sub(r"<think>.*?</think>", "", out, flags=re.DOTALL).strip()  # buang blok think Qwen3 (kebal versi)
+print(out)
 \end{lstlisting}
 
 \section*{\color{nvgreen}Bagian E\quad Perbandingan \& Kerangka Keputusan}
@@ -208,7 +211,7 @@ NVIDIA NIM & cloud & API & \textcolor{nvgreen}{\checkmark} & model besar via API
 \rowcolor{nvgreen}\color{white}\textbf{Gejala} & \color{white}\textbf{Sebab} & \color{white}\textbf{Fix} \\
 \midrule
 Jawaban percakapan, bukan JSON & \texttt{ollama run hf.co/...} langsung $\to$ SYSTEM hilang & \texttt{ollama create} dengan Modelfile + SYSTEM (Bagian C) \\
-\rowcolor{nvbg}Output \texttt{<think></think>\{json\}} & Ollama \textless\ 0.30.7 tidak parse thinking-token & upgrade ke $\geq$ 0.30.7; atau parse JSON di sisi klien (regex) tetap valid \\
+\rowcolor{nvbg}Output \texttt{<think></think>\{json\}} & TEMPLATE ChatML custom $\to$ Ollama tidak parse thinking-token Qwen3 (flag \texttt{--think} pun no-op) & blok kosong \textbf{tidak merusak JSON}; strip regex di sisi klien (Bagian D) \\
 Output \texttt{GGGG...} / gibberish & merge adapter ke base 4-bit (NaN) & merge dari base fp16 lalu re-export GGUF \\
 \rowcolor{nvbg}\texttt{sudo: a terminal is required} & cache sudo tidak dihormati installer & \texttt{sudo bash -c "curl ... | sh"} (jalankan script sebagai root) \\
 Installer minta \texttt{zstd} & paket zstd belum terpasang & \texttt{sudo apt-get install -y zstd} \\
