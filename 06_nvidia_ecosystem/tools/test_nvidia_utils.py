@@ -1,5 +1,5 @@
 import re
-from nvidia_utils import detect_pii_id, mask_pii_id
+from nvidia_utils import detect_pii_id, mask_pii_id, summarize_activated_rails
 
 
 def test_detect_nik_16_digits():
@@ -36,3 +36,23 @@ def test_mask_replaces_with_placeholders():
 def test_mask_is_idempotent_on_clean_text():
     clean = "Berapa harga produk ini?"
     assert mask_pii_id(clean) == clean
+
+
+def test_summarize_activated_rails_from_loglike():
+    class _Rail:
+        def __init__(self, name, stop):
+            self.type = name
+            self.stop = stop
+
+    class _Log:
+        activated_rails = [_Rail("self check input", True), _Rail("self check output", False)]
+
+    class _Resp:
+        log = _Log()
+
+    out = summarize_activated_rails(_Resp())
+    assert out == ["self check input (BLOCKED)", "self check output (passed)"]
+
+
+def test_summarize_handles_no_log():
+    assert summarize_activated_rails(object()) == []

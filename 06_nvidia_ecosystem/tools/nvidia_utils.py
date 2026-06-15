@@ -37,3 +37,18 @@ def mask_pii_id(text: str) -> str:
     for f in sorted(spans, key=lambda f: f["start"], reverse=True):
         text = text[: f["start"]] + _PLACEHOLDER[f["type"]] + text[f["end"] :]
     return text
+
+
+def summarize_activated_rails(generation_response) -> list[str]:
+    """Turn rails.generate(..., options={'log':{'activated_rails':True}}) into a
+    readable list like ['self check input (BLOCKED)', ...]. Safe on objects with no log."""
+    log = getattr(generation_response, "log", None)
+    rails = getattr(log, "activated_rails", None) if log is not None else None
+    if not rails:
+        return []
+    out = []
+    for r in rails:
+        name = getattr(r, "type", None) or getattr(r, "name", "rail")
+        blocked = bool(getattr(r, "stop", False))
+        out.append(f"{name} ({'BLOCKED' if blocked else 'passed'})")
+    return out
