@@ -59,6 +59,23 @@ def test_summarize_handles_no_log():
     assert summarize_activated_rails(object()) == []
 
 
+def test_summarize_prefers_name_over_type():
+    # Real NeMo Guardrails ActivatedRail has BOTH .name ("self check input") and
+    # .type ("input"); the readable summary should use the more specific .name.
+    class _Rail:
+        name = "self check input"
+        type = "input"
+        stop = True
+
+    class _Log:
+        activated_rails = [_Rail()]
+
+    class _Resp:
+        log = _Log()
+
+    assert summarize_activated_rails(_Resp()) == ["self check input (BLOCKED)"]
+
+
 def test_nim_client_raises_without_key(monkeypatch):
     monkeypatch.delenv("NVIDIA_API_KEY", raising=False)
     pytest.importorskip("openai")

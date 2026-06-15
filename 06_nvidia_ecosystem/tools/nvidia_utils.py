@@ -48,7 +48,7 @@ def summarize_activated_rails(generation_response) -> list[str]:
         return []
     out = []
     for r in rails:
-        name = getattr(r, "type", None) or getattr(r, "name", "rail")
+        name = getattr(r, "name", None) or getattr(r, "type", None) or "rail"
         blocked = bool(getattr(r, "stop", False))
         out.append(f"{name} ({'BLOCKED' if blocked else 'passed'})")
     return out
