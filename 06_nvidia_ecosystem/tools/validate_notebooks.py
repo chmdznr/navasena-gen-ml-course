@@ -121,7 +121,10 @@ REGISTRY = {
     },
 }
 
-EXPECTED = list(REGISTRY.keys())  # exactly the 5 v2 notebooks
+EXPECTED = list(REGISTRY.keys())  # exactly the 5 v2 Colab notebooks
+# The off-Colab Jetson lab (nb06) is a real deliverable, but it is a hardware runbook
+# (bash cells run on a Jetson, not Colab) -- allowed alongside the 5, not a stray stub.
+OFFCOLAB_LAB = "06_jetson_edge_deploy.ipynb"
 
 
 def load_source(nb_path: Path) -> tuple[str, int, int]:
@@ -182,8 +185,8 @@ def main(argv: list[str]) -> int:
         # Exactly 5 notebooks present -- no more, no fewer.
         # Sweep ALL numeric-prefixed notebooks (0[0-9]_*) so a resurrected v1 stub
         # (00_*, 06_*-08_*) is flagged as 'unexpected', not silently ignored by a
-        # narrow 0[1-5] glob. The 06_ Jetson lab is off-Colab and not part of this set.
-        present = sorted(p.name for p in HERE.glob("[0-9][0-9]_*.ipynb"))
+        # narrow 0[1-5] glob. The 06_ Jetson lab is off-Colab and allowed (excluded here).
+        present = sorted(p.name for p in HERE.glob("[0-9][0-9]_*.ipynb") if p.name != OFFCOLAB_LAB)
         if present != sorted(EXPECTED):
             all_errors.append(
                 f"notebook set mismatch: found {present}, expected exactly the 5 v2 notebooks {sorted(EXPECTED)}"
