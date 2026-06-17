@@ -762,7 +762,66 @@
 \end{frame}
 
 % ════════════════════════════════════════════════════════
-\acttitle{7}{Penutup}{Apa yang sudah dibangun, dan kapan memakai apa}
+\acttitle{7}{Edge Deploy (Jetson)}{Dari NIM \emph{hosted} ke NVIDIA-native di perangkat --- TensorRT Edge-LLM}
+
+% ── ONNX portabel vs engine terikat-hardware ─────────────
+\begin{frame}{Deploy ke Edge: Apa yang Portabel, Apa yang Tidak}
+  \framesubtitle{Spesialis M04 (\texttt{qwen3-0.6b}) jalan \emph{offline} di Jetson Orin via TensorRT Edge-LLM}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.85, every node/.style={transform shape},
+      b/.style={draw=nvgreen, fill=nvcard, rounded corners=5pt, text=white, font=\scriptsize, minimum width=2.0cm, minimum height=0.9cm, align=center}]
+    \node[b] (hf) {safetensors\\\tiny (HF)};
+    \node[b, right=0.5cm of hf, draw=nvlightgreen] (onnx) {ONNX\\\tiny PORTABEL};
+    \node[b, right=0.5cm of onnx, draw=nvorange] (eng) {engine TRT\\\tiny terikat GPU};
+    \node[b, right=0.5cm of eng, draw=nvblue] (inf) {inference\\\tiny C++ di Orin};
+    \draw[->,thick,color=nvlightgreen] (hf)--(onnx);
+    \draw[->,thick,color=nvorange] (onnx)--(eng);
+    \draw[->,thick,color=nvblue] (eng)--(inf);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}\footnotesize
+        \item[\textcolor{nvlightgreen}{\checkmark}] \textbf{Export ONNX} portabel (graph$+$bobot) --- boleh di Colab/x86/venv-CPU
+        \item[\textcolor{nvred}{$\bullet$}] \textbf{Engine TensorRT tak portabel}: embed SASS $+$ taktik untuk \textbf{arch GPU $+$ versi TRT} tertentu
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{itemize}\footnotesize
+        \item Engine T4 (\texttt{sm\_75}) \textbf{ditolak} di Orin (\texttt{sm\_87}) --- bukan lambat, \emph{tak jalan}
+        \item Maka build engine \& inference \textbf{wajib di perangkat target}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \takeaway{ONNX di mana saja; \textbf{engine \& inference selalu di GPU target}. Itulah alasan ``compile di tempat deploy''.}
+\end{frame}
+
+% ── Worth the effort? TRT vs Ollama ──────────────────────
+\begin{frame}{``Worth the Effort?'' --- TensorRT Edge-LLM vs Ollama}
+  \framesubtitle{Model \& prompt sama, Orin Nano 8 GB yang sama --- ukur, jangan berasumsi}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.25}{\footnotesize\setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}p{0.27\linewidth}p{0.34\linewidth}p{0.30\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{Aspek} & \textbf{TensorRT Edge-LLM} & \textbf{Ollama (GGUF)} \\ \midrule
+    tokens/dtk & 42.7 & 40.4 \\
+    Output & JSON benar & \textbf{identik} \\
+    Setup & $\sim$1 jam, 6 gotcha & \textbf{1 perintah} \\
+    Webservice & CLI (perlu dibungkus) & OpenAI \texttt{/v1} bawaan \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.2em}
+  \begin{itemize}\footnotesize
+    \item[\textcolor{nvlightgreen}{$\Rightarrow$}] Model kecil di Orin: kecepatan praktis \textbf{sama} $\to$ \textbf{Ollama menang} (jauh lebih sederhana $+$ webservice gratis)
+    \item[\textcolor{nvorange}{$\bullet$}] TRT Edge-LLM \emph{baru} sepadan di skala produksi: model besar, integrasi C++, NVFP4/FP8, latency super-ketat
+  \end{itemize}
+  \certnote{Software Development (edge deploy)}{``NVIDIA-native'' $\neq$ otomatis lebih baik --- \textbf{ukur dulu}.}
+\end{frame}
+
+% ════════════════════════════════════════════════════════
+\acttitle{8}{Penutup}{Apa yang sudah dibangun, dan kapan memakai apa}
 
 % ── Perjalanan 5 notebook ────────────────────────────────
 \begin{frame}{Perjalanan Modul 06}

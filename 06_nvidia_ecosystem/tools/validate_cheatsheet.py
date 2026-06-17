@@ -33,11 +33,11 @@ def main() -> int:
     for marker in "①②③④⑤":
         if marker not in html:
             errs.append(f"missing card glyph {marker}")
-    # 5-notebook arc: cards ①–⑤ required; an optional ⑥ is allowed (nb04 safety+guardrails+
-    # privacy+grounding is dense enough to split). A 7th+ glyph signals leftover from the old arc.
-    for stale_glyph in "⑦⑧⑨":
+    # 5-notebook arc + off-Colab edge lab: cards ①–⑤ required; ⑥ (nb04 split) and ⑦ (nb06
+    # edge deploy) allowed. An ⑧/⑨ glyph signals leftover from the old 8/9-notebook arc.
+    for stale_glyph in "⑧⑨":
         if stale_glyph in html:
-            errs.append(f"stale card glyph {stale_glyph} present (5-notebook arc -> ①–⑤, optional ⑥)")
+            errs.append(f"stale card glyph {stale_glyph} present (cards ①–⑦ max)")
 
     # 3. Stale stub content removed (deleted v1/old-companion + cross-module leakage).
     #    Note: NIM / TensorRT / NeMo are LEGIT M06 topics -- never blanket-forbid them.

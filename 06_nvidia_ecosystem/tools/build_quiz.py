@@ -206,6 +206,25 @@ Q = [
       "Trustworthy AI hanya relevan untuk model di atas 70B parameter",
       "Trustworthy AI menggantikan kebutuhan akan serving dan optimasi"], 1,
      "Capstone membuktikan 'AI yang bisa dipercaya' bukan fitur tambahan, melainkan lapisan runtime yang membungkus model — input rails + RAG + output rails — yang berjalan di SETIAP permintaan dan keputusannya (field rails) bisa diaudit. Inilah titik temu Software Development (deploy/serving) dan Trustworthy AI yang ditanyakan ujian."),
+    # ── nb06 · Edge Deploy di Jetson (TensorRT Edge-LLM) ─────────────
+    ("Kenapa engine TensorRT untuk Jetson harus di-build di perangkat target, bukan di-build di Colab lalu disalin?",
+     ["Karena Jetson tidak punya koneksi internet untuk mengunduh engine",
+      "Karena lisensi NVIDIA melarang menyalin file engine antar mesin",
+      "Karena engine meng-embed machine code + taktik untuk arsitektur GPU + versi TensorRT tertentu, sehingga engine dari GPU lain ditolak saat di-load",
+      "Karena engine TensorRT hanya berjalan jika model di-train di mesin yang sama"], 2,
+     "Engine TensorRT bukan format portabel: ia meng-embed SASS (machine code) + pilihan taktik yang disetel untuk compute-capability GPU spesifik dan versi TensorRT spesifik. Engine yang dibangun di T4 (sm_75) akan ditolak saat di-load di Orin (sm_87). Maka build engine + inference selalu di perangkat target."),
+    ("Dalam alur deploy TensorRT Edge-LLM, bagian mana yang PORTABEL (boleh dikerjakan di Colab/x86) dan mana yang terikat hardware?",
+     ["Export checkpoint → ONNX portabel; build engine + inference terikat ke GPU target",
+      "Semua tahap portabel asalkan versi Python sama",
+      "Export ONNX terikat hardware; build engine portabel",
+      "Tidak ada yang portabel; semua wajib di perangkat target"], 0,
+     "ONNX adalah graph + bobot, tak terikat hardware → export boleh di mana saja (di lab ini kita pakai venv torch-CPU di Orin, tapi Colab/x86 pun bisa). Build engine dan inference terikat ke arsitektur GPU + versi TensorRT, jadi wajib di perangkat target."),
+    ("Benchmark di Orin Nano untuk spesialis 0.6B yang sama: TensorRT Edge-LLM 42.7 tok/dtk vs Ollama (GGUF) 40.4 tok/dtk. Kesimpulan rekayasa yang tepat?",
+     ["TensorRT selalu lebih baik karena NVIDIA-native, jadi Ollama tak perlu dipertimbangkan",
+      "Ollama 3x lebih cepat sehingga TensorRT tak pernah berguna",
+      "Karena beda kecepatan besar, kerumitan setup TensorRT selalu sepadan",
+      "Kecepatan praktis sama; untuk model kecil di edge Ollama menang (jauh lebih sederhana + webservice bawaan), sedangkan TensorRT Edge-LLM baru sepadan di skala produksi (model besar, integrasi C++, NVFP4/FP8)"], 3,
+     "Selisih 42.7 vs 40.4 ada dalam noise — praktis sama, output identik. Tapi Ollama = 1 perintah + OpenAI /v1 bawaan, sedangkan TensorRT Edge-LLM butuh ~1 jam + 6 gotcha + CLI saja. 'NVIDIA-native' tidak otomatis lebih baik: ukur dulu. TensorRT Edge-LLM menonjol di skala produksi (model besar, runtime C++ tanpa Python, NVFP4/FP8), bukan microbench model kecil."),
 ]
 
 questions = [{"q": q, "code": None, "options": opts, "answer": a, "explanation": e} for (q, opts, a, e) in Q]

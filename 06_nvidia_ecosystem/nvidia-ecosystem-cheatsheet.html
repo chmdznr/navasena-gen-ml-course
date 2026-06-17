@@ -93,6 +93,13 @@ tr:nth-child(even) td { background:#f6f8ef; }
 <li>Backend bisa ditukar (NIM→Ollama→TensorRT) tanpa ubah rail; runbook = deliverable</li>
 </ul><div class="when">▸ Trustworthy AI = lapisan runtime</div></div>
 
+<div class="card"><h3>⑦ Edge Deploy (Jetson)</h3><ul>
+<li><b>TensorRT Edge-LLM</b>: safetensors → <b>ONNX</b> (portabel) → <b>engine TRT</b> (terikat GPU) → inference C++ di Orin</li>
+<li><b>Engine tak portabel</b>: embed SASS+taktik per arch (sm_87)+versi TRT → engine T4 ditolak di Orin ⇒ build di perangkat target</li>
+<li>Gotcha: venv <tt>torch-CPU 2.12</tt> (bukan container); <tt>EMBEDDED_TARGET=jetson-orin</tt>; engine OOM → <tt>maxInputLen 256 / KV 512</tt> + drop_caches</li>
+<li><b>Worth it?</b> 42.7 vs Ollama 40.4 tok/dtk (≈ sama) → model kecil: <b>Ollama menang</b>; TRT sepadan di skala produksi</li>
+</ul><div class="when">▸ ukur dulu — NVIDIA-native ≠ otomatis lebih baik</div></div>
+
 </div>
 
 <div class="section"><div class="sectitle">Quick-Ref Ekosistem NVIDIA &amp; Trustworthy AI (5 Notebook)</div>
