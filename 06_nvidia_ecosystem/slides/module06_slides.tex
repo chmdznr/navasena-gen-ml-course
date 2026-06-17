@@ -1,6 +1,6 @@
 % ============================================================
-% Module 06: NVIDIA Ecosystem
-% Custom Navasena Dark Beamer Theme
+% Module 06: NVIDIA Ecosystem & Trustworthy AI — concept-driven, code-free
+% Custom Navasena Dark Beamer Theme (preamble shared with the RAG module)
 % Compiler: xelatex
 % ============================================================
 \documentclass[aspectratio=169,t]{beamer}
@@ -19,7 +19,7 @@
 \usepackage{booktabs}
 \usepackage{colortbl}
 \usepackage{xcolor}
-\usepackage{listings}
+\usepackage{pifont}
 
 % ============================================================
 % COLOR PALETTE (Navasena dark theme)
@@ -35,26 +35,6 @@
 \definecolor{nvred}{HTML}{EF5350}
 \definecolor{nvorange}{HTML}{FF6F00}
 \definecolor{nvblue}{HTML}{42A5F5}
-
-% ============================================================
-% LISTINGS STYLE
-% ============================================================
-\lstset{
-  backgroundcolor=\color{nvcard},
-  basicstyle=\ttfamily\small\color{nvwhite},
-  keywordstyle=\color{nvgreen}\bfseries,
-  stringstyle=\color{nvlightgreen},
-  commentstyle=\color{nvgray}\itshape,
-  numberstyle=\tiny\color{nvgray},
-  numbers=left,
-  numbersep=6pt,
-  frame=none,
-  breaklines=true,
-  showstringspaces=false,
-  tabsize=2,
-  xleftmargin=8pt,
-  xrightmargin=4pt,
-}
 
 % ============================================================
 % BEAMER THEME — NAVASENA DARK
@@ -87,6 +67,7 @@
 % ============================================================
 % CUSTOM COMMANDS
 % ============================================================
+% \acttitle{N}{Title}{Subtitle}
 \newcommand{\acttitle}[3]{%
   \begin{frame}[plain]
     \vspace{1.5cm}
@@ -97,8 +78,23 @@
     \end{center}
   \end{frame}%
 }
+% \takeaway{...}  — green one-line summary box
+\newcommand{\takeaway}[1]{%
+  \vspace{0.3em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
+    \centering\small\color{nvlightgreen}#1
+  \end{beamercolorbox}%
+}
+% \certnote{Domain}{teks} — small certification-domain callout
+\newcommand{\certnote}[2]{%
+  \vspace{0.25em}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=5pt]{block body}
+    {\scriptsize\color{nvblue}\textbf{Sertifikasi NCA-GENL --- #1:}}\,
+    {\scriptsize\color{nvgray}#2}
+  \end{beamercolorbox}%
+}
 
-\title{NVIDIA Ecosystem}
+\title{NVIDIA Ecosystem \& Trustworthy AI}
 \subtitle{Navasena Gen-ML Course}
 \author{Navasena AI}
 \date{}
@@ -106,424 +102,774 @@
 % ============================================================
 \begin{document}
 
-% Slide 1 — Title
+% ── Slide 1 — Title ───────────────────────────────────────
 \begin{frame}[plain]
   \vspace{1.0cm}
   \begin{center}
-    {\color{nvgreen}\Huge\bfseries Module 06}\\[1.0em]
-    {\color{nvwhite}\Huge\bfseries NVIDIA Ecosystem}\\[0.6em]
-    {\color{nvgray}\Large GPU, NeMo, dan RAG yang dipercepat}\\[1.6em]
+    {\color{nvgreen}\Huge\bfseries Module 06}\\[0.9em]
+    {\color{nvwhite}\Huge\bfseries NVIDIA Ecosystem \& Trustworthy AI}\\[0.5em]
+    {\color{nvgray}\Large GPU \& Optimasi $\to$ Serving \& NIM $\to$ Fairness $\to$ Guardrails $\to$ Capstone}\\[1.6em]
 
-    \begin{tikzpicture}[scale=0.8, every node/.style={transform shape},
-        lay/.style={draw=nvgreen, fill=nvcard, text=white, font=\footnotesize, minimum width=5.5cm, minimum height=0.62cm}]
-      \node[lay, fill=nvdarkcard] (h) at (0,0) {Hardware (GPU)};
-      \node[lay] (c) at (0,0.7) {CUDA};
-      \node[lay] (l) at (0,1.4) {Library (cuDNN, TensorRT)};
-      \node[lay] (f) at (0,2.1) {Framework (TF, PyTorch)};
-      \node[lay, draw=nvorange] (t) at (0,2.8) {Tools (NeMo, Triton)};
+    \begin{tikzpicture}[scale=0.85, every node/.style={transform shape},
+        b/.style={draw=nvgreen, fill=nvcard, rounded corners=6pt, text=white, font=\small, minimum width=2.0cm, minimum height=0.9cm, align=center}]
+      \node[b] (g) {GPU \&\\Precision};
+      \node[b, right=0.7cm of g] (s) {Serving\\NIM};
+      \node[b, right=0.7cm of s] (f) {Fairness};
+      \node[b, right=0.7cm of f, draw=nvblue] (r) {NemoGuard\\Rails};
+      \node[b, right=0.7cm of r, draw=nvorange] (a) {Capstone\\\texttt{/ask}};
+      \draw[->,thick,color=nvgreen] (g)--(s);
+      \draw[->,thick,color=nvgreen] (s)--(f);
+      \draw[->,thick,color=nvgreen] (f)--(r);
+      \draw[->,thick,color=nvorange] (r)--(a);
     \end{tikzpicture}
 
-    \vspace{0.7em}
-    {\color{nvgray}\small Navasena AI \quad $\cdot$ \quad 2026}
+    \vspace{0.8em}
+    {\color{nvgray}\small lima notebook $\cdot$ Colab Tesla T4 16GB $+$ NVIDIA NIM gratis $\cdot$ Navasena AI 2026}
   \end{center}
 \end{frame}
 
-% ── Act 1: GPU, CUDA & Optimasi ───────────────────────────
-\acttitle{1}{GPU, CUDA \& Optimasi}{Fondasi hardware \& software NVIDIA}
-
-% Slide 2 — Stack NVIDIA
-\begin{frame}{Stack NVIDIA: Dari Chip ke Tools}
-  \framesubtitle{Lapisan-lapisan yang membuat AI berjalan cepat}
-  \begin{columns}[T]
-    \begin{column}{0.52\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Hardware} $=$ GPU (T4/A100/H100)
-        \item \textbf{CUDA} $=$ jembatan agar GPU bisa untuk komputasi umum
-        \item \textbf{Library} $=$ cuDNN, cuBLAS, TensorRT (rutin matematika siap pakai)
-        \item \textbf{Framework $+$ Tools} $=$ TF/PyTorch $+$ NeMo/Triton (tempat kita menulis kode)
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \begin{center}
-        \includegraphics[height=0.54\textheight]{figures/nvidia_stack.png}
-      \end{center}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small Tiap lapisan berdiri di atas lapisan bawahnya: kita menulis di Framework, GPU yang bekerja keras.}\end{center}
+% ── Slide 2 — Peta perjalanan ─────────────────────────────
+\begin{frame}{Peta Perjalanan}
+  \framesubtitle{Dua paruh: stack NVIDIA (cepat \& murah) lalu Trustworthy AI (aman \& adil)}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.92, every node/.style={transform shape},
+      s/.style={draw=nvgreen, fill=nvcard, rounded corners=4pt, text=white, font=\scriptsize, minimum width=2.3cm, minimum height=0.85cm, align=center},
+      t/.style={draw=nvblue, fill=nvcard, rounded corners=4pt, text=white, font=\scriptsize, minimum width=2.3cm, minimum height=0.85cm, align=center}]
+    \node[s] (a) {01. GPU \&\\Precision};
+    \node[s, right=0.45cm of a] (b) {02. Serving\\Triton$\to$NIM};
+    \node[t, right=0.45cm of b] (c) {03. Fairness\\\& Tata Kelola};
+    \node[t, right=0.45cm of c] (d) {04. Guardrails\\NemoGuard};
+    \node[t, draw=nvorange, right=0.45cm of d] (e) {05. Capstone\\\texttt{/ask}};
+    \draw[->,thick,color=nvgreen] (a)--(b); \draw[->,thick,color=nvgreen] (b)--(c);
+    \draw[->,thick,color=nvblue] (c)--(d); \draw[->,thick,color=nvorange] (d)--(e);
+    \node[text=nvgreen, font=\scriptsize\bfseries, above=0.15cm] at ($(a)!0.5!(b)$) {Track 1 --- NVIDIA Stack};
+    \node[text=nvblue, font=\scriptsize\bfseries, above=0.15cm] at ($(c)!0.5!(d)$) {Track 2 --- Trustworthy AI};
+  \end{tikzpicture}
+  \end{center}
+  \takeaway{Slide ini tersusun per \textbf{konsep}, bukan per-notebook --- tiap balok adalah satu ide besar di lima notebook.}
 \end{frame}
 
-% Slide 3 — Kenapa GPU (recap)
-\begin{frame}{Kenapa GPU? (Recap Module 02)}
-  \framesubtitle{Ribuan core paralel untuk operasi matriks}
-  \begin{itemize}
-    \item \textbf{CPU}: sedikit core, sangat pintar, kerja berurutan
-    \item \textbf{GPU}: ribuan core sederhana, kerja \textbf{paralel} (serentak)
-    \item \textbf{Deep learning} $=$ tumpukan \textbf{matrix operations} (perkalian matriks)
-    \item Perkalian matriks dipecah jadi ribuan operasi kecil $\to$ pas untuk GPU
-  \end{itemize}
-  \vspace{0.5em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
-    \small\color{white}
-    Lihat \textbf{Module 02} untuk dasar arsitektur GPU. Catatan: notebook ini hanya mengukur waktu di GPU --- perbandingan vs CPU adalah pengetahuan umum, bukan benchmark di sini.
-  \end{beamercolorbox}
+% ════════════════════════════════════════════════════════
+\acttitle{1}{Peta \& Sertifikasi}{Lima domain NCA-GENL --- dan dua yang dimiliki Modul 06}
+
+% ── Lima domain NCA-GENL ──────────────────────────────────
+\begin{frame}{Lima Domain Sertifikasi NCA-GENL}
+  \framesubtitle{Modul ini menyasar dua domain secara langsung}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.25}{\footnotesize\setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}p{0.46\linewidth}p{0.18\linewidth}p{0.30\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{Domain} & \textbf{Bobot} & \textbf{Modul} \\ \midrule
+    ML \& AI Fundamentals & $\sim$18\% & M01--M02 \\
+    NLP \& LLM Integration & $\sim$26\% & M03--M04 \\
+    Data Analysis \& Visualization & $\sim$22\% & lintas-modul \\
+    \rowcolor{nvgreen!22}\textbf{Software Development for AI} & \textbf{24\%} & \textbf{M05--M06 (nb01--02)} \\
+    \rowcolor{nvblue!28}\textbf{Trustworthy AI} & \textbf{10\%} & \textbf{M06 (nb03--05)} \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \takeaway{Modul 06 berkaki di \textbf{dua} domain: \emph{Software Development} (serving \& deploy) dan \emph{Trustworthy AI} (domain 10\% tersendiri).}
 \end{frame}
 
-% Slide 4 — Benchmark phi-2
-\begin{frame}[fragile]{Benchmark Model: microsoft/phi-2}
-  \framesubtitle{Mengukur kecepatan inference di GPU}
+% ── Trustworthy AI sebagai domain tersendiri ─────────────
+\begin{frame}{Trustworthy AI --- Domain 10\% Tersendiri}
+  \framesubtitle{Cepat saja tidak cukup; sistem cepat tapi bias justru lebih berbahaya}
   \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Memuat \textbf{microsoft/phi-2} ($\sim$2.7B parameter)
-        \item \texttt{torch\_dtype=float16} (\textbf{FP16}) $\to$ hemat memori GPU
-        \item \texttt{device\_map="auto"} $\to$ taruh di GPU otomatis
-        \item \textbf{Warmup} 1x, lalu \texttt{generate()} 5x, dirata-rata
+    \begin{column}{0.54\textwidth}
+      \begin{itemize}\footnotesize
+        \item \textbf{Trustworthy AI} adalah domain ujian \textbf{terpisah} (10\%) --- bukan tempelan
+        \item Lima pilar NVIDIA: \textbf{Fairness}, Transparency, Accountability, \textbf{Safety}, \textbf{Privacy}
+        \item Modul 06 mengerjakan \textbf{semua}: nb03 (3 pilar audit), nb04 (2 pilar runtime), nb05 (jahit jadi service)
+        \item Pesan ujian: \emph{di mana} rail dipasang dan \emph{bagaimana} keputusannya diaudit
       \end{itemize}
     \end{column}
-    \begin{column}{0.52\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-model = AutoModelForCausalLM.from_pretrained(
-    "microsoft/phi-2",
-    torch_dtype=torch.float16,  # FP16
-    device_map="auto")          # ke GPU
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small Pola load model NVIDIA: \textbf{FP16} $+$ \texttt{device\_map="auto"}. Benchmark $=$ rata-rata waktu generate di GPU (tanpa baseline CPU).}\end{center}
-\end{frame}
-
-% Slide 5 — Half Precision
-\begin{frame}{Half Precision: FP16 vs FP32}
-  \framesubtitle{Angka 16-bit untuk hemat memori dan lebih cepat}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Mixed precision} (campur FP32+FP16): konsep umum pelatihan model
-        \item \textbf{Tensor Cores}: unit GPU NVIDIA super cepat untuk FP16
-        \item Notebook ini memuat phi-2 dalam \textbf{FP16 penuh} (\texttt{torch.float16}), \emph{bukan} mixed precision (tanpa AMP/autocast)
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{center}
-      \renewcommand{\arraystretch}{1.35}
-      {\footnotesize
-      \setlength{\tabcolsep}{4pt}
-      \begin{tabular}{@{}p{0.18\linewidth}p{0.18\linewidth}p{0.54\linewidth}@{}}
-        \toprule
-        \rowcolor{nvcard!50}
-        \textbf{Tipe} & \textbf{Bit} & \textbf{Sifat} \\
-        \midrule
-        FP32 & 32-bit & Presisi penuh, boros memori \\
-        FP16 & 16-bit & Hemat memori $\sim$50\%, cepat di Tensor Cores \\
-        \bottomrule
-      \end{tabular}%
-      }
-      \end{center}
-    \end{column}
-  \end{columns}
-  \vspace{0.3em}
-  \begin{center}\textcolor{nvlightgreen}{\small Yang dipakai notebook: half precision (FP16 penuh). Mixed precision (AMP) dibahas di Module 02, tidak didemokan di sini.}\end{center}
-\end{frame}
-
-% Slide 6 — TensorRT
-\begin{frame}{TensorRT: Optimasi Inference}
-  \framesubtitle{Membuat model berjalan jauh lebih cepat saat dipakai}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{TensorRT}: alat NVIDIA mempercepat \textbf{inference} (saat dipakai)
-        \item \textbf{Layer fusion} $+$ \textbf{kernel auto-tuning}
-        \item \textbf{Precision calibration}: turun ke FP16/INT8, akurasi terjaga
-        \item \textbf{TF-TRT}: tipikal 2--5$\times$ lebih cepat (angka NVIDIA)
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
+    \begin{column}{0.44\textwidth}
       \begin{center}
       \begin{tikzpicture}[scale=0.8, every node/.style={transform shape},
-          b/.style={draw=nvgreen, fill=nvcard, rounded corners=5pt, text=white, font=\scriptsize, minimum width=2.4cm, minimum height=0.8cm, align=center}]
-        \node[b] (m) {Model\\terlatih};
-        \node[b, below=0.5cm of m, draw=nvorange] (o) {Optimasi\\TensorRT};
-        \node[b, below=0.5cm of o, draw=nvgreen] (i) {Inference\\cepat};
-        \draw[->,thick,color=nvgreen] (m)--(o);
-        \draw[->,thick,color=nvorange] (o)--(i);
+          p/.style={draw=nvblue, fill=nvcard, rounded corners=4pt, text=white, font=\scriptsize, minimum width=3.2cm, minimum height=0.6cm, align=center}]
+        \node[p] (a) {Fairness};
+        \node[p, below=0.28cm of a] (b) {Transparency};
+        \node[p, below=0.28cm of b] (c) {Accountability};
+        \node[p, below=0.28cm of c, draw=nvorange] (d) {Safety};
+        \node[p, below=0.28cm of d, draw=nvorange] (e) {Privacy \& Security};
+        \node[text=nvgray, font=\tiny, above=0.12cm of a] {audit \emph{offline}};
+        \node[text=nvgray, font=\tiny, below=0.12cm of e] {rail \emph{runtime}};
       \end{tikzpicture}
       \end{center}
     \end{column}
   \end{columns}
-  \vspace{0.2em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
-    \centering\small\color{white}
-    Di Module 06 TensorRT hanya \textbf{di-install} \& dibahas konseptual --- tidak ada demo (notebook memakai PyTorch).
-  \end{beamercolorbox}
+  \certnote{Trustworthy AI (10\%)}{bias \& fairness, alignment \& transparency, safety/guardrails, privacy \& consent --- inti nb03--nb05.}
 \end{frame}
 
-% ── Act 2: NVIDIA NeMo ────────────────────────────────────
-\acttitle{2}{NVIDIA NeMo}{Toolkit untuk Conversational AI}
+% ════════════════════════════════════════════════════════
+\acttitle{2}{GPU, Precision \& Optimasi}{Kenapa GPU cepat, dan tiga tuas memperkecil model}
 
-% Slide 7 — Apa itu NeMo
-\begin{frame}{Apa itu NeMo?}
-  \framesubtitle{Toolkit conversational AI dari NVIDIA}
-  \begin{itemize}
-    \item \textbf{NeMo} (Neural Modules): toolkit \textbf{open-source} NVIDIA untuk \textbf{conversational AI} (AI percakapan)
-    \item Cakupan: pemahaman teks, terjemahan, sampai sintesis suara
-    \item Kaya \textbf{pre-trained model} (siap pakai) --- tak perlu melatih dari nol
-    \item Modular: komponen dirangkai bebas seperti balok lego
-    \item Skalabel karena dioptimalkan untuk \textbf{GPU} NVIDIA
-  \end{itemize}
-  \vspace{0.5em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
-    \centering\small\color{nvlightgreen}
-    Inti NeMo: unduh model AI canggih, panggil method-nya, langsung pakai --- tanpa training dari awal.
-  \end{beamercolorbox}
+% ── Kenapa GPU ────────────────────────────────────────────
+\begin{frame}{Kenapa GPU untuk LLM?}
+  \framesubtitle{Inti tiap layer transformer adalah perkalian matriks (matmul)}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}\footnotesize
+        \item Matmul itu \textbf{embarrassingly parallel}: tiap elemen hasil dihitung mandiri
+        \item \textbf{CPU}: belasan core ``pintar'' --- logika bercabang, berurutan
+        \item \textbf{GPU}: ribuan core sederhana --- operasi \textbf{sama} pada \textbf{banyak data} serentak
+        \item \textbf{Tensor Core} (sejak Volta): hardware khusus perkalian-akumulasi matriks kecil
+        \item Syaratnya: data \textbf{precision rendah} (FP16/FP8), bukan FP32
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+        \node[draw=nvgray, fill=nvcard, rounded corners=4pt, text=white, font=\scriptsize,
+              minimum width=2.0cm, minimum height=1.4cm, align=center] (cpu) {CPU\\\tiny\color{nvgray}belasan core};
+        \node[draw=nvgreen, fill=nvcard, rounded corners=4pt, text=white, font=\scriptsize,
+              minimum width=2.4cm, minimum height=1.4cm, align=center, right=0.6cm of cpu] (gpu) {GPU\\\tiny\color{nvlightgreen}ribuan core\\+ Tensor Core};
+        \node[text=nvgray, font=\tiny, below=0.15cm of cpu] {beberapa koki ahli};
+        \node[text=nvgray, font=\tiny, below=0.15cm of gpu] {ribuan tangan};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \takeaway{FP16 bukan cuma hemat memori --- ia \textbf{menyalakan Tensor Core}, sehingga matmul jadi berkali lipat lebih cepat.}
 \end{frame}
 
-% Slide 8 — Peta Tugas NeMo
-\begin{frame}{Peta Tugas NeMo}
-  \framesubtitle{6 task conversational AI yang didemokan}
+% ── Benchmark matmul speed ────────────────────────────────
+\begin{frame}{Benchmark: Kecepatan Matmul FP32 vs FP16}
+  \framesubtitle{Matmul 4096$\times$4096 di Colab T4 --- angka diukur, bukan klaim}
+  \begin{columns}[T]
+    \begin{column}{0.40\textwidth}
+      \begin{itemize}\footnotesize
+        \item Ganti \textbf{tipe angka} saja: FP32 $\to$ FP16
+        \item Hasilnya \textbf{5.6$\times$} lebih cepat
+        \item Itu Tensor Core bekerja di precision rendah
+        \item \textbf{warmup} $+$ sinkronisasi CUDA wajib agar angkanya jujur
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \begin{center}
+      \begin{tikzpicture}
+        \begin{axis}[
+          width=6.6cm, height=4.0cm,
+          xbar, xmin=0, xmax=42,
+          axis line style={nvgray}, tick label style={nvwhite, font=\scriptsize},
+          xlabel={\color{nvgray}\scriptsize ms per matmul (lebih kecil lebih baik)},
+          symbolic y coords={FP16, FP32}, ytick=data,
+          nodes near coords, nodes near coords style={nvwhite, font=\scriptsize},
+          enlarge y limits=0.6, bar width=14pt]
+          \addplot[fill=nvgreen, draw=nvgreen] coordinates {(6.23,FP16)};
+          \addplot[fill=nvred, draw=nvred] coordinates {(34.81,FP32)};
+        \end{axis}
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \certnote{Software Development (24\%)}{optimasi inferensi --- precision rendah memicu hardware matmul khusus (Tensor Core).}
+\end{frame}
+
+% ── Tangga precision ──────────────────────────────────────
+\begin{frame}{Tangga Precision: FP32 $\to$ FP16 $\to$ FP8}
+  \framesubtitle{Makin sedikit bit $\to$ makin kecil memori \& makin cepat --- dengan ongkos ketelitian}
   \begin{center}
-    \includegraphics[height=0.6\textheight]{figures/nemo_tasks.png}
+  \renewcommand{\arraystretch}{1.25}{\footnotesize\setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}p{0.14\linewidth}p{0.06\linewidth}p{0.13\linewidth}p{0.22\linewidth}p{0.34\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{Precision} & \textbf{Bit} & \textbf{Memori} & \textbf{Tensor Core} & \textbf{Catatan} \\ \midrule
+    \textbf{FP32} & 32 & 1.0$\times$ & tidak & baseline riset \\
+    \textbf{FP16} & 16 & \textbf{0.5$\times$} & ya (Volta+) & default deploy aman di T4 \\
+    BF16 & 16 & 0.5$\times$ & ya (Ampere+) & \textbf{tidak optimal di T4} \\
+    \textbf{FP8} & 8 & \textbf{0.25$\times$} & ya (Hopper/Ada+) & masa depan; tak jalan di T4 \\
+    \bottomrule
+  \end{tabular}}
   \end{center}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small Satu toolkit, enam task --- semuanya cukup dengan \textbf{pre-trained model} siap pakai.}\end{center}
+  \takeaway{Di T4 selalu \textbf{FP16, bukan BF16}. FP8 dipakai TensorRT-LLM di GPU baru --- di sini dipahami sebagai konsep.}
 \end{frame}
 
-% Slide 9 — NER & QA
-\begin{frame}[fragile]{NER \& Question Answering}
-  \framesubtitle{Memahami dan menjawab dari teks}
+% ── Benchmark memori + quantization ──────────────────────
+\begin{frame}{Quantization 4-bit --- Memuat yang Tak Muat}
+  \framesubtitle{Memori bobot Qwen2.5-1.5B di T4: tiga tingkat kompresi}
   \begin{columns}[T]
-    \begin{column}{0.52\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{NER}: \texttt{TokenClassificationModel} + \texttt{ner\_en\_bert} (berbasis \textbf{BERT})
-        \item \texttt{add\_predictions()} menandai entitas: "NVIDIA" $\to$ ORG, "New York" $\to$ LOC
-        \item \textbf{QA}: \texttt{QAModel} + \texttt{qa\_squadv1.1\_bertbase}
-        \item Model prediksi posisi \texttt{start} \& \texttt{end} jawaban di konteks
+    \begin{column}{0.40\textwidth}
+      \begin{itemize}\footnotesize
+        \item FP32$\to$FP16: \textbf{2.0$\times$} hemat (6.18 $\to$ 3.10 GB)
+        \item FP16$\to$4-bit: \textbf{2.7$\times$} lagi (3.09 $\to$ 1.16 GB)
+        \item Gabungan $\sim$\textbf{5$\times$}: model 7B muat di T4 16 GB
+        \item \textbf{NF4} + compute FP16 + double-quant
+        \item Ini \emph{inference} quant (deploy) --- beda niat dari QLoRA \emph{training} (M04)
       \end{itemize}
     \end{column}
-    \begin{column}{0.46\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-model = TokenClassificationModel \
-    .from_pretrained("ner_en_bert")
-results = model.add_predictions(texts)
-      \end{lstlisting}
+    \begin{column}{0.58\textwidth}
+      \begin{center}
+      \begin{tikzpicture}
+        \begin{axis}[
+          width=6.6cm, height=4.2cm,
+          ybar, ymin=0, ymax=7,
+          axis line style={nvgray}, tick label style={nvwhite, font=\scriptsize},
+          ylabel={\color{nvgray}\scriptsize GB memori bobot},
+          symbolic x coords={FP32, FP16, 4-bit}, xtick=data,
+          nodes near coords, nodes near coords style={nvwhite, font=\scriptsize},
+          enlarge x limits=0.28, bar width=22pt]
+          \addplot[fill=nvred, draw=nvred] coordinates {(FP32,6.18)};
+          \addplot[fill=nvgreen, draw=nvgreen] coordinates {(FP16,3.10)};
+          \addplot[fill=nvlightgreen, draw=nvlightgreen] coordinates {(4-bit,1.16)};
+        \end{axis}
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \takeaway{Quantization: penurunan kualitas kecil, penghematan memori besar --- itulah cara memuat model besar di GPU kecil.}
+\end{frame}
+
+% ── TensorRT vs TensorRT-LLM ─────────────────────────────
+\begin{frame}{Compile: TensorRT vs TensorRT-LLM}
+  \framesubtitle{Tuas ketiga --- ubah model jadi \emph{engine} native GPU}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \textcolor{nvgreen}{\textbf{TensorRT}} --- compiler umum
+      \begin{itemize}\footnotesize
+        \item Model \emph{apa pun}: \texttt{model $\to$ ONNX $\to$ engine}
+        \item Layer/kernel \textbf{fusion}, precision calibration, auto-tuning
+        \item Engine terikat ke satu GPU
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \textcolor{nvorange}{\textbf{TensorRT-LLM}} --- khusus LLM
+      \begin{itemize}\footnotesize
+        \item \textbf{Paged KV-cache} --- tak ada VRAM terbuang
+        \item \textbf{In-flight batching} --- GPU tak menganggur
+        \item \textbf{FP8 / INT4} quant + fused attention
+      \end{itemize}
     \end{column}
   \end{columns}
   \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small NER menandai SIAPA/DI MANA; QA menunjuk potongan teks (start--end) yang menjawab pertanyaan.}\end{center}
+  \begin{center}\textcolor{nvgray}{\scriptsize \texttt{trtllm-serve} mengangkat engine jadi server \textbf{OpenAI \texttt{/v1}} --- kontrak yang sama dengan Ollama (M04) \& NIM.}\end{center}
+  \takeaway{TensorRT $=$ optimizer umum; \textbf{TensorRT-LLM} $=$ optimizer LLM dengan KV-cache \& batching sadar-LLM.}
 \end{frame}
 
-% Slide 10 — Text Classification & Punctuation
-\begin{frame}[fragile]{Text Classification \& Punctuation}
-  \framesubtitle{Mengelompokkan dan merapikan teks}
-  \begin{columns}[T]
-    \begin{column}{0.52\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Text Classification}: \texttt{TextClassificationModel} $\to$ kategori (mis. sentimen)
-        \item \texttt{classifying()} memberi label per kalimat
-        \item \textbf{Punctuation}: \texttt{PunctuationCapitalizationModel} + \texttt{punctuation\_en\_bert}
-        \item Contoh: "nvidia is a company" $\to$ "Nvidia is a company."
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-text = "nvidia is a company"
-model.add_punctuation_capitalization(
-    [text])[0]
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small Klasifikasi memberi label; punctuation mengubah teks polos jadi rapi (berguna untuk hasil transkripsi).}\end{center}
+% ════════════════════════════════════════════════════════
+\acttitle{3}{Serving \& Deploy}{Triton $\to$ Dynamo $\to$ NIM: menyajikan ke banyak pengguna}
+
+% ── Menjalankan != menyajikan ────────────────────────────
+\begin{frame}{Menjalankan Model $\neq$ Menyajikan Model}
+  \framesubtitle{\texttt{model.generate} melayani satu pemakai; serving melayani ratusan}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.25}{\footnotesize\setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}p{0.46\linewidth}p{0.48\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{Tantangan produksi} & \textbf{Yang diselesaikan lapisan serving} \\ \midrule
+    Banyak request datang acak & \textbf{Antre \& gabungkan} (batching) $\to$ GPU penuh \\
+    Tiap request beda panjang & \emph{Continuous batching} --- yang pendek tak menunggu \\
+    Beban naik-turun & \textbf{Skala} replika model otomatis \\
+    Klien beragam & Satu \textbf{API standar} (OpenAI \texttt{/v1}) \\
+    Perlu pantau & Metrics, health-check, logging \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \takeaway{Serving menambah batching, scaling, API standar, \& observability supaya GPU mahal tak menganggur menunggu.}
 \end{frame}
 
-% Slide 11 — MT & TTS
-\begin{frame}[fragile]{Machine Translation \& TTS}
-  \framesubtitle{Lintas bahasa dan teks ke suara}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{MT}: \texttt{MTEncDecModel} + \texttt{nmt\_en\_zh\_transformer24x6} (Inggris $\to$ Mandarin)
-        \item \texttt{translate()} terima daftar kalimat
-        \item \textbf{TTS}: pipeline 2 tahap berurutan
-        \item Tahap 1 \texttt{FastPitch}: teks $\to$ \textbf{spectrogram}
-        \item Tahap 2 \texttt{HiFiGAN} (\textbf{vocoder}): spectrogram $\to$ audio
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny\color{nvwhite}]
-parsed = spec_gen.parse(text)
-spec = spec_gen.generate_spectrogram(
-    tokens=parsed)
-audio = vocoder \
-    .convert_spectrogram_to_audio(spec=spec)
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small TTS $=$ 2 tahap: teks jadi spectrogram (FastPitch), lalu spectrogram jadi audio (HiFiGAN).}\end{center}
-\end{frame}
-
-% Slide 12 — Catatan Penting
-\begin{frame}{Catatan Penting}
-  \framesubtitle{Sebelum menjalankan demo NeMo}
-  \begin{itemize}
-    \item[\textcolor{nvorange}{$\bullet$}] Demo ini \textbf{berat di GPU} --- jangan dijalankan semua sekaligus
-    \item[\textcolor{nvgreen}{\checkmark}] Sifatnya \textbf{konseptual}: fokus memahami ALUR tiap task
-    \item[\textcolor{nvorange}{$\bullet$}] Notebook meng-import model \textbf{ASR} (speech recognition) \& \texttt{MegatronGPTModel}\ldots
-    \item[\textcolor{nvorange}{$\bullet$}] \ldots tetapi keduanya \textbf{TIDAK didemonstrasikan} --- import $\neq$ dipakai
-    \item[\textcolor{nvgreen}{\checkmark}] Lihat \textbf{Module 02} (dasar GPU) \& \textbf{Module 05} (dasar RAG)
-  \end{itemize}
-  \vspace{0.4em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
-    \centering\small\color{white}
-    Baca kode dengan teliti: meng-\textbf{import} model (ASR \& Megatron) tidak sama dengan men-\textbf{demokan}-nya.
-  \end{beamercolorbox}
-\end{frame}
-
-% ── Act 3: NVIDIA-Accelerated RAG ─────────────────────────
-\acttitle{3}{NVIDIA-Accelerated RAG}{RAG dipercepat GPU}
-
-% Slide 13 — RAG di atas Stack NVIDIA
-\begin{frame}{RAG di atas Stack NVIDIA}
-  \framesubtitle{Menjalankan RAG dengan akselerasi GPU}
-  \begin{itemize}
-    \footnotesize
-    \item \textbf{RAG} (\textbf{Retrieval-Augmented Generation}) $=$ pencarian dokumen $+$ \textbf{LLM} agar jawaban berbasis fakta (dasar di \textbf{Module 05})
-    \item Fokus di sini: sudut \textbf{tooling NVIDIA} --- \textbf{embedding} \& LLM dipindah ke \textbf{GPU} (\texttt{.to('cuda')})
-    \item Install \textbf{faiss-gpu} bersama \texttt{nemo\_toolkit}, \texttt{transformers}
-  \end{itemize}
-  \vspace{0.4em}
+% ── Tangga serving ───────────────────────────────────────
+\begin{frame}{Tangga Serving NVIDIA}
+  \framesubtitle{Dari server mentah ke produk siap-pakai}
   \begin{center}
   \begin{tikzpicture}[scale=0.9, every node/.style={transform shape},
-      b/.style={draw=nvgreen, fill=nvcard, rounded corners=4pt, text=white, font=\scriptsize, minimum width=1.7cm, minimum height=0.7cm, align=center}]
-    \node[b] (d) {Dokumen};
-    \node[b, right=0.5cm of d] (e) {Embedding\\\tiny(GPU)};
-    \node[b, right=0.5cm of e] (f) {FAISS};
-    \node[b, right=0.5cm of f] (l) {LLM gpt2\\\tiny(GPU)};
-    \node[b, right=0.5cm of l, draw=nvorange] (a) {Jawaban};
-    \draw[->,thick,color=nvgreen] (d)--(e); \draw[->,thick,color=nvgreen] (e)--(f);
-    \draw[->,thick,color=nvgreen] (f)--(l); \draw[->,thick,color=nvorange] (l)--(a);
+      b/.style={draw=nvgreen, fill=nvcard, rounded corners=6pt, text=white, font=\footnotesize, minimum width=3.3cm, minimum height=1.3cm, align=center}]
+    \node[b] (t) {\textbf{Triton}\\\scriptsize baseline ujian\\\tiny dynamic batching};
+    \node[b, right=0.9cm of t, draw=nvblue] (d) {\textbf{Dynamo}\\\scriptsize flagship GTC 2025\\\tiny disaggregated serving};
+    \node[b, right=0.9cm of d, draw=nvorange] (n) {\textbf{NIM}\\\scriptsize siap-pakai\\\tiny OpenAI \texttt{/v1}};
+    \draw[->,thick,color=nvgreen] (t)--(d);
+    \draw[->,thick,color=nvorange] (d)--(n);
+    \node[text=nvgray, font=\tiny, below=0.2cm of t] {tulis \texttt{config.pbtxt}};
+    \node[text=nvgray, font=\tiny, below=0.2cm of d] {kluster multi-node};
+    \node[text=nvlightgreen, font=\tiny, below=0.2cm of n] {cukup panggil};
   \end{tikzpicture}
   \end{center}
+  \takeaway{Triton $=$ \textbf{baseline} (diuji sertifikasi); Dynamo $=$ \textbf{penerus} LLM-datacenter; NIM $=$ membungkus keduanya jadi layanan.}
 \end{frame}
 
-% Slide 14 — Arsitektur NvidiaRAGSystem
-\begin{frame}[fragile]{Arsitektur NvidiaRAGSystem}
-  \framesubtitle{Empat komponen dalam satu pipeline}
+% ── Triton vs Dynamo detail ──────────────────────────────
+\begin{frame}{Triton \& Dynamo --- Apa Bedanya}
+  \framesubtitle{Cukup ketahui posisinya untuk ujian}
   \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Embedding}: SentenceTransformer (\texttt{all-MiniLM-L6-v2}) di GPU
-        \item \textbf{Index}: \textbf{FAISS} (\texttt{IndexFlatL2})
-        \item \textbf{Generator}: LLM \textbf{gpt2} di GPU
-        \item \textbf{Doc}: \textbf{cudf} (RAPIDS) bungkus dokumen $\to$ pandas
+    \begin{column}{0.49\textwidth}
+      \textcolor{nvgreen}{\textbf{Triton} (baseline)}
+      \begin{itemize}\footnotesize
+        \item \textbf{Dynamic batching} --- gabung request dalam jendela waktu singkat
+        \item \textbf{Concurrent} model execution, ensembles
+        \item Multi-framework: TensorRT, ONNX, PyTorch, vLLM
+        \item Metrics Prometheus; kontrak per-model \texttt{config.pbtxt}
       \end{itemize}
     \end{column}
-    \begin{column}{0.54\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny\color{nvwhite}]
-self.embedding_model = SentenceTransformer(
-    'all-MiniLM-L6-v2').to(self.device)
-self.llm = AutoModelForCausalLM \
-    .from_pretrained("gpt2").to(self.device)
-df = cudf.DataFrame(
-    {'text': documents}).to_pandas()
-      \end{lstlisting}
+    \begin{column}{0.49\textwidth}
+      \textcolor{nvblue}{\textbf{Dynamo} (GTC 2025)}
+      \begin{itemize}\footnotesize
+        \item \textbf{Disaggregated serving} --- pisah \emph{prefill} \& \emph{decode}
+        \item \textbf{KV-cache aware routing} --- hindari hitung ulang
+        \item \textbf{Dynamic GPU scheduling}, multi-node
+        \item Melanjutkan garis Triton $\to$ ``Dynamo-Triton''
+      \end{itemize}
     \end{column}
   \end{columns}
-  \vspace{0.1em}
-  \begin{center}\textcolor{nvlightgreen}{\small \texttt{cudf} hanya membungkus dokumen lalu langsung \texttt{.to\_pandas()} (chunking pakai Python biasa).}\end{center}
+  \certnote{Software Development (24\%)}{\emph{model deployment \& serving} --- Triton baseline yang diuji, Dynamo arah terkini datacenter.}
 \end{frame}
 
-% Slide 15 — Module 05 vs 06
-\begin{frame}{Module 05 vs Module 06: Tooling NVIDIA}
-  \framesubtitle{RAG yang sama, tooling berbeda}
-  \begin{center}
-  \renewcommand{\arraystretch}{1.3}
-  {\scriptsize
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{@{}p{0.24\linewidth}p{0.36\linewidth}p{0.32\linewidth}@{}}
-    \toprule
-    \rowcolor{nvcard!50}
-    \textbf{Aspek} & \textbf{Module 05 (RAG dasar)} & \textbf{Module 06 (NVIDIA)} \\
-    \midrule
-    Penempatan model & \texttt{device\_map="auto"}, float32 & GPU eksplisit (\texttt{.to(cuda)}) \\
-    Embedding & all-MiniLM-L6-v2 & all-MiniLM-L6-v2 \\
-    LLM & TinyLlama (float32) & gpt2 \\
-    FAISS & faiss-cpu & faiss-gpu (install) \\
-    Doc handling & Python biasa & cudf (RAPIDS) $\to$ pandas \\
-    \bottomrule
-  \end{tabular}%
-  }
-  \end{center}
-  \vspace{0.3em}
-  \begin{center}\textcolor{nvlightgreen}{\small Pipeline RAG tetap sama; yang ditukar adalah \textbf{tooling}-nya.}\end{center}
-\end{frame}
-
-% Slide 16 — Alur Demo & Catatan
-\begin{frame}{Alur Demo \& Catatan}
-  \framesubtitle{demonstrate\_rag(): retrieve $\to$ augment $\to$ generate}
-  \begin{itemize}
-    \footnotesize
-    \item \textbf{Retrieve}: \texttt{retrieve\_relevant\_chunks()} cari potongan termirip via FAISS (\texttt{k=3})
-    \item \textbf{Augment}: gabung query $+$ konteks jadi satu \textbf{prompt}
-    \item \textbf{Generate}: \texttt{generate\_response()} pakai gpt2 menulis jawaban
-  \end{itemize}
-  \vspace{0.4em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
-    \small\color{white}
-    \textcolor{nvorange}{\textbf{Catatan akurasi:}} \texttt{MegatronGPTModel} hanya di-\emph{import}; LLM yang dipakai $=$ \textbf{gpt2}. \texttt{faiss-gpu} di-install, tapi \texttt{IndexFlatL2} sebenarnya dibangun di \textbf{CPU}.
-  \end{beamercolorbox}
-\end{frame}
-
-% Slide 17 — Ringkasan & Akhir Course
-\begin{frame}{Ringkasan \& Akhir Course}
-  \framesubtitle{Ekosistem NVIDIA menutup perjalanan kita}
+% ── NIM ──────────────────────────────────────────────────
+\begin{frame}{NVIDIA NIM --- Sudah Di-serve \& Dioptimalkan}
+  \framesubtitle{Model yang membungkus seluruh tumpukan optimasi+serving sebagai microservice}
   \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \textcolor{nvgreen}{\textbf{Module 06:}}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{GPU/CUDA}: fondasi akselerasi
-        \item \textbf{NeMo}: toolkit conversational AI siap pakai
-        \item \textbf{RAG} dipercepat: faiss-gpu, model di GPU
+    \begin{column}{0.54\textwidth}
+      \begin{itemize}\footnotesize
+        \item \textbf{NIM} $=$ NVIDIA Inference Microservices
+        \item Di dalamnya: TensorRT-LLM (paged KV-cache, in-flight batching, FP8/INT4)
+        \item Disajikan lewat kontrak \textbf{OpenAI \texttt{/v1}} --- panggil seperti memanggil OpenAI
+        \item \textbf{Hosted} (\texttt{integrate.api.nvidia.com}, gratis) atau \textbf{self-host} (container)
+        \item Model modul ini: \texttt{nvidia/nemotron-3-nano-30b-a3b}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.8, every node/.style={transform shape},
+          b/.style={draw=nvgreen, fill=nvcard, rounded corners=5pt, text=white, font=\scriptsize, minimum width=3.4cm, minimum height=0.65cm, align=center}]
+        \node[b] (app) {Aplikasimu};
+        \node[b, below=0.3cm of app, draw=nvorange] (cl) {\texttt{OpenAI(base\_url{=}NIM)}};
+        \node[b, below=0.3cm of cl, draw=nvblue] (nim) {Server NVIDIA\\\tiny Nemotron + TensorRT-LLM};
+        \draw[->,thick,color=nvorange] (app)--(cl);
+        \draw[->,thick,color=nvblue] (cl)--(nim);
+        \node[text=nvgray, font=\tiny, below=0.2cm of nim] {tak ada GPU di sisimu};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \takeaway{``One client, many backends'': Ollama, \texttt{trtllm-serve}, Triton, Dynamo, NIM --- semua bicara \texttt{/v1}. Hanya \texttt{base\_url} berubah.}
+\end{frame}
+
+% ── Reasoning-off + streaming + throughput ───────────────
+\begin{frame}{Mekanik NIM \& Perilaku Serving}
+  \framesubtitle{Reasoning-off, streaming, dan throughput lewat konkurensi}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \textcolor{nvorange}{\textbf{Reasoning-off (Nemotron)}}
+      \begin{itemize}\footnotesize
+        \item Nemotron model \emph{reasoning}: default keluar blok \texttt{<think>...</think>}
+        \item Token prompt \texttt{/no\_think} \textbf{diabaikan} NIM
+        \item Satu-satunya cara: \texttt{extra\_body} dengan \texttt{enable\_thinking}$=$\texttt{False}
+        \item Wajib untuk rail yang minta jawaban satu kata
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \textcolor{nvgreen}{\textbf{Perilaku serving}}
+      \begin{itemize}\footnotesize
+        \item \textbf{Streaming} (\texttt{stream=True}) --- token demi token, fitur \emph{server} bukan model
+        \item \textbf{Throughput}: kirim request \textbf{paralel} $\to$ server membatch $\to$ GPU penuh
+        \item Rancang aplikasi \textbf{konkuren}, bukan serial
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \takeaway{\texttt{enable\_thinking=False} adalah mekanik paling NVIDIA-spesifik --- pondasi seluruh Track Trustworthy AI (rail butuh output bersih).}
+\end{frame}
+
+% ════════════════════════════════════════════════════════
+\acttitle{4}{Fairness \& Tata Kelola}{Audit \emph{offline} --- sebelum sistem dipercaya}
+
+% ── Fairness vs akurasi ──────────────────────────────────
+\begin{frame}{Fairness Tak Terlihat dari Akurasi}
+  \framesubtitle{Model bisa akurat 92\% total dan tetap diam-diam tidak adil}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}\footnotesize
+        \item Akurasi total \textbf{menyembunyikan} bias --- ia menjumlahkan semua kelompok jadi satu angka
+        \item Fairness diukur \textbf{per kelompok}, bukan ditebak
+        \item Ini audit \textbf{offline}: di meja kerja, dengan dataset historis, \emph{sebelum} \& berkala \emph{sesudah} deploy
+        \item Tak ada ``rail fairness'' yang menyala tiap pesan --- diuji pada ribuan keputusan sekaligus
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.82, every node/.style={transform shape},
+          b/.style={draw=nvblue, fill=nvcard, rounded corners=5pt, text=white, font=\scriptsize, minimum width=3.4cm, minimum height=0.6cm, align=center}]
+        \node[b, draw=nvred] (a) {Akurasi total: 92\%};
+        \node[text=nvgray, font=\tiny, below=0.15cm of a] {terlihat baik\dots};
+        \node[b, below=0.65cm of a] (g) {Pecah per kelompok};
+        \node[b, below=0.3cm of g, draw=nvorange] (s) {Bias tertangkap};
+        \draw[->,thick,color=nvgreen] (a)--(g);
+        \draw[->,thick,color=nvorange] (g)--(s);
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \takeaway{Fairness, Transparency, Accountability $=$ pekerjaan \textbf{audit offline}; Safety \& Privacy $=$ rail \textbf{runtime} (nb04).}
+\end{frame}
+
+% ── Metrik fairness ──────────────────────────────────────
+\begin{frame}{Dua Metrik Fairness Klasik}
+  \framesubtitle{Skenario: model penilai pinjaman --- ambang ajar disparitas $< 0.1$}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.3}{\footnotesize\setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}p{0.26\linewidth}p{0.66\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{Metrik} & \textbf{Pertanyaannya} \\ \midrule
+    \textbf{Demographic parity} & Apakah \textbf{tingkat persetujuan} sama antar kelompok? Bandingkan P(setuju\,$|$\,Pria) vs P(setuju\,$|$\,Wanita) \\
+    \textbf{Equalized odds} & Lebih ketat: apakah model sama akuratnya tiap kelompok? Bandingkan \textbf{TPR} \& \textbf{FPR} antar kelompok \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.2em}
+  \begin{center}\textcolor{nvgray}{\scriptsize Equalized odds lebih adil: ia bersyarat pada \textbf{kebenaran} --- di antara yang sama-sama \emph{layak}, peluang disetujui harus sama. Demographic parity bisa ditipu.}\end{center}
+  \takeaway{Disparitas $> 0.1$ $=$ lampu kuning $\to$ audit lebih dalam. Gap \textbf{TPR} pada yang sama-sama layak $=$ diskriminasi sejati.}
+\end{frame}
+
+% ── Deterministik vs judge ───────────────────────────────
+\begin{frame}{Metrik Deterministik vs LLM-Judge}
+  \framesubtitle{Dua alat untuk satu tujuan --- kapan memakai yang mana}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.22}{\footnotesize\setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}p{0.20\linewidth}p{0.36\linewidth}p{0.36\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    & \textbf{Fairness metrics} & \textbf{LLM-judge (NIM)} \\ \midrule
+    Input & keputusan terstruktur & teks bebas \\
+    Sifat & \textbf{deterministik} --- input sama, angka sama & probabilistik --- bisa beda \\
+    Bisa salah? & tidak (asal rumus benar) & \textbf{ya} --- judge juga model \\
+    Cocok & credit scoring, rekrutmen & moderasi teks skala besar \\
+    Biaya & nol (numpy) & panggilan API per teks \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \takeaway{Keputusan terstruktur berisiko tinggi $\to$ metrik deterministik (bisa dipertanggungjawabkan). Teks bebas $\to$ judge sebagai \textbf{sinyal}, bukan vonis.}
+\end{frame}
+
+% ── Tata kelola + UU PDP ─────────────────────────────────
+\begin{frame}{Tata Kelola: Model Card \& UU PDP}
+  \framesubtitle{Transparency \& Accountability diwujudkan sebagai dokumen nyata}
+  \begin{columns}[T]
+    \begin{column}{0.50\textwidth}
+      \begin{itemize}\footnotesize
+        \item \textbf{Model Card} --- ``label gizi'' model: data, tujuan, \textbf{batasan} $\to$ Transparency
+        \item \textbf{AI Ethics Checklist} --- ditandatangani sebelum rilis; siapa penanggung jawab $\to$ Accountability
+        \item Keduanya \emph{deliverable} nyata, dinilai di review kelayakan rilis
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \textcolor{nvlightgreen}{\textbf{Perjalanan course:}}
-      \begin{itemize}
-        \footnotesize
-        \item[\textcolor{nvgreen}{\checkmark}] 01 Machine Learning
-        \item[\textcolor{nvgreen}{\checkmark}] 02 Deep Learning
-        \item[\textcolor{nvgreen}{\checkmark}] 03 NLP \quad 04 LLM
-        \item[\textcolor{nvgreen}{\checkmark}] 05 RAG \quad 06 NVIDIA
+      \begin{center}
+      \begin{tikzpicture}[scale=0.82, every node/.style={transform shape},
+          b/.style={draw=nvorange, fill=nvcard, rounded corners=5pt, text=white, font=\scriptsize, minimum width=4.0cm, minimum height=0.65cm, align=center}]
+        \node[b] (a) {Notifikasi kebocoran $\leq$ \textbf{72 jam}};
+        \node[b, below=0.3cm of a] (c) {Denda $\leq$ \textbf{2\%} pendapatan tahunan};
+        \node[b, below=0.3cm of c, draw=nvblue] (d) {Hak keberatan atas\\keputusan otomatis};
+      \end{tikzpicture}
+      \\[0.3em]{\tiny\color{nvgray}UU PDP No. 27/2022 (setara GDPR)}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \certnote{Trustworthy AI (10\%)}{transparency \& accountability $=$ \emph{deliverable}; UU PDP mengikat hukum (72 jam, 2\%, hak keberatan).}
+\end{frame}
+
+% ════════════════════════════════════════════════════════
+\acttitle{5}{Safety, Guardrails \& Privasi}{NemoGuard --- rail \emph{runtime} di tiap pesan}
+
+% ── Kenapa LLM mentah berbahaya ──────────────────────────
+\begin{frame}{Kenapa LLM Mentah Berbahaya Langsung ke Pengguna}
+  \framesubtitle{Model bahasa terlalu patuh --- guardrails adalah satpam masuk \& keluar}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}\footnotesize
+        \item Minta resep peledak $\to$ ia coba bantu
+        \item ``Abaikan semua aturanmu'' $\to$ bisa tergoda (\textbf{jailbreak})
+        \item Tanya di luar lingkup $\to$ tetap menjawab percaya diri (walau salah)
+        \item Dokumen ber-NIK $\to$ model bisa \textbf{mengulanginya} di jawaban
+      \end{itemize}
+      \vspace{0.2em}
+      \textcolor{nvlightgreen}{\footnotesize Solusi: \textbf{guardrails} --- lapisan terpisah di depan \& belakang model.}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.8, every node/.style={transform shape},
+          b/.style={draw=nvgreen, fill=nvcard, rounded corners=4pt, text=white, font=\scriptsize, minimum width=3.2cm, minimum height=0.55cm, align=center}]
+        \node[b, draw=nvblue] (i) {INPUT RAILS};
+        \node[b, below=0.3cm of i, draw=nvorange] (m) {LLM / RAG};
+        \node[b, below=0.3cm of m, draw=nvblue] (o) {OUTPUT RAILS};
+        \draw[->,thick,color=nvgreen] (i)--(m);
+        \draw[->,thick,color=nvgreen] (m)--(o);
+        \node[text=nvgray, font=\tiny, left=0.1cm of i] {satpam};
+        \node[text=nvgray, font=\tiny, left=0.1cm of o] {resepsionis};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \takeaway{Bukan ``berharap modelnya sopan'' --- pasang lapisan penjaga yang \textbf{memeriksa tiap pesan masuk \& jawaban keluar}.}
+\end{frame}
+
+% ── Rails sandwich diagram (PROMINENT) ───────────────────
+\begin{frame}{Arsitektur Rails-Sandwich}
+  \framesubtitle{NemoGuard --- model khusus penjaga, disajikan sebagai NIM di endpoint yang sama}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.92, every node/.style={transform shape},
+      stage/.style={rounded corners=6pt, text=white, font=\footnotesize, minimum width=9.2cm, minimum height=0.95cm, align=center},
+      arrow/.style={->, thick}]
+    \node[stage, draw=nvblue, fill=nvdarkcard] (in)
+      {\textbf{INPUT RAILS}\\\scriptsize \ding{172} self-check jailbreak $\to$ \ding{173} content-safety (Aegis 23 kat.) $\to$ \ding{174} topic-control};
+    \node[stage, draw=nvorange, fill=nvcard, below=0.45cm of in, minimum width=6.0cm] (gen)
+      {\textbf{RAG generate (NIM)}\\\scriptsize retrieve konteks $\to$ jawaban bersitasi \texttt{[n]}};
+    \node[stage, draw=nvblue, fill=nvdarkcard, below=0.45cm of gen] (out)
+      {\textbf{OUTPUT RAILS}\\\scriptsize \ding{175} grounding $\to$ \ding{176} content-safety (jawaban) $\to$ \ding{177} PII masking};
+    \node[font=\scriptsize\bfseries, text=nvgreen, above=0.12cm of in] {pesan pengguna};
+    \node[font=\scriptsize\bfseries, text=nvlightgreen, below=0.12cm of out] {jawaban aman + audit};
+    \draw[arrow, nvgreen] (in)--(gen);
+    \draw[arrow, nvgreen] (gen)--(out);
+    \node[text=nvgray, font=\tiny, right=0.2cm of in] {tolak lebih awal};
+    \node[text=nvgray, font=\tiny, right=0.2cm of out] {tolak/perbaiki};
+  \end{tikzpicture}
+  \end{center}
+  \takeaway{Model $=$ mesin di tengah; rail $=$ satpam (masuk) \& resepsionis (keluar). Tiap rail aktif \textbf{dicatat} untuk audit.}
+\end{frame}
+
+% ── Content safety + topic control ───────────────────────
+\begin{frame}{Content Safety \& Topic Control --- NemoGuard NIM Nyata}
+  \framesubtitle{Dua classifier khusus, dipanggil sungguhan lewat kontrak OpenAI}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.22}{\footnotesize\setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash\scriptsize}p{0.42\linewidth}>{\raggedright\arraybackslash}p{0.32\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{Rail} & {\footnotesize\textbf{Model NIM (free-tier)}} & \textbf{Output} \\ \midrule
+    \textbf{Content Safety} & \texttt{nvidia/\allowbreak llama-3.1-\allowbreak nemoguard-\allowbreak 8b-\allowbreak content-\allowbreak safety} & taksonomi Aegis S1--S23; \texttt{User Safety}: \texttt{safe}/\texttt{unsafe} \\
+    \textbf{Topic Control} & \texttt{nvidia/\allowbreak llama-3.1-\allowbreak nemoguard-\allowbreak 8b-\allowbreak topic-\allowbreak control} & \texttt{on-topic} / \texttt{off-topic} \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.2em}
+  \begin{center}\textcolor{nvgray}{\scriptsize \textbf{Content safety} menjawab ``apakah berbahaya?''; \textbf{topic control} menjawab ``apakah di dalam lingkup?''. System prompt $=$ kebijakan, ditulis sendiri \& utuh.}\end{center}
+  \takeaway{Model-based guardrail \textbf{memahami maksud} (parafrase, bahasa campur) --- tahan variasi kata, beda dari daftar kata terlarang.}
+\end{frame}
+
+% ── Jailbreak self-check ─────────────────────────────────
+\begin{frame}{Jailbreak --- Self-Check Classifier Langsung}
+  \framesubtitle{Direct classifier (produksi, cepat) vs LLM self-check (fleksibel, free-tier)}
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \textcolor{nvgreen}{\textbf{\texttt{nemoguard-jailbreak-detect}}}
+      \begin{itemize}\footnotesize
+        \item \textbf{Bukan} model chat --- Random Forest di atas embedding 768-dim
+        \item Endpoint khusus \texttt{/v1/classify}
+        \item Cepat \& murah di produksi
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \textcolor{nvorange}{\textbf{Self-check LLM (yang kita pakai)}}
+      \begin{itemize}\footnotesize
+        \item Nemotron-nano non-reasoning sebagai juri \texttt{Yes}/\texttt{No}
+        \item Pola sama dengan content-safety/topic
+        \item Jalan di free-tier, transparan untuk belajar
+        \item \emph{Fail fast}: \texttt{BLOCK} $\to$ generator tak pernah dipanggil
       \end{itemize}
     \end{column}
   \end{columns}
-  \vspace{0.4em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{block body}
-    \centering\small\color{white}
-    Dari \textbf{machine learning} klasik hingga \textbf{LLM} \& \textbf{RAG} yang dipercepat GPU --- pondasi lengkap untuk membangun AI modern.
-  \end{beamercolorbox}
+  \takeaway{Untuk juri Yes/No di loop interaktif, \textbf{classifier langsung lebih andal} daripada pipeline reasoning penuh (bisa bocorkan \texttt{<think>}).}
 \end{frame}
 
-% Slide 18 — Thank You
+% ── PII + grounding ──────────────────────────────────────
+\begin{frame}{Privasi (PII Masking) \& Grounding}
+  \framesubtitle{Rail menjaga \emph{data} dan \emph{kejujuran} --- dua rail penutup dari enam}
+  \begin{columns}[T]
+    \begin{column}{0.50\textwidth}
+      \textcolor{nvgreen}{\textbf{PII masking}} (deterministik, regex)
+      \begin{itemize}\footnotesize
+        \item NIK 16 digit $\to$ \texttt{[NIK]}
+        \item nomor HP $\to$ \texttt{[PHONE]}
+        \item rekening $\to$ \texttt{[ACCOUNT]}
+        \item Mask di \textbf{pintu masuk} \& \textbf{keluar} $\to$ data tak pernah ke pihak ketiga / log
+        \item Urutan penting: NIK dicek \emph{sebelum} rekening
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \textcolor{nvblue}{\textbf{Grounding}} (anti-halusinasi)
+      \begin{itemize}\footnotesize
+        \item Jawab \textbf{hanya} dari konteks, tandai klaim dengan sitasi \texttt{[n]}
+        \item Judge NIM: \texttt{grounded} / \texttt{ungrounded}
+        \item Rail \textbf{transparansi} --- klaim bisa ditelusuri ke bukti
+        \item Perilaku ideal: model \textbf{mengaku} ``informasi tidak tersedia''
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \certnote{Trustworthy AI (10\%)}{safety + topic + \textbf{privacy} (PII, \emph{data minimization} UU PDP) + grounding $=$ lingkaran kepercayaan tertutup.}
+\end{frame}
+
+% ════════════════════════════════════════════════════════
+\acttitle{6}{Capstone}{Menjahit semua rail jadi service \texttt{/ask} berpagar}
+
+% ── Capstone arch ────────────────────────────────────────
+\begin{frame}{Service \texttt{/ask} Berpagar --- FastAPI}
+  \framesubtitle{Enam rail menjahit seluruh modul jadi satu endpoint HTTP yang bisa diaudit}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.9, every node/.style={transform shape},
+      b/.style={draw=nvgreen, fill=nvcard, rounded corners=5pt, text=white, font=\scriptsize, minimum width=2.1cm, minimum height=0.9cm, align=center}]
+    \node[b, draw=nvblue] (u) {\texttt{POST}\\\texttt{/ask}};
+    \node[b, right=0.5cm of u, draw=nvblue] (in) {Input rails\\\tiny jailbreak$\to$safety$\to$topic};
+    \node[b, right=0.5cm of in, draw=nvorange] (rag) {RAG (NIM)\\\tiny retrieve+generate};
+    \node[b, right=0.5cm of rag, draw=nvblue] (out) {Output rails\\\tiny ground$\to$safety$\to$PII};
+    \node[b, right=0.5cm of out, draw=nvlightgreen] (j) {JSON\\\tiny answer+sources+rails};
+    \draw[->,thick,color=nvgreen] (u)--(in);
+    \draw[->,thick,color=nvgreen] (in)--(rag);
+    \draw[->,thick,color=nvorange] (rag)--(out);
+    \draw[->,thick,color=nvlightgreen] (out)--(j);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.2em}
+  \begin{center}\textcolor{nvgray}{\scriptsize Dikemas \texttt{ask\_service.py} mandiri; setiap keputusan mengembalikan \texttt{\{answer, sources, rails, blocked\}}.}\end{center}
+  \takeaway{Satu \texttt{POST /ask} mengalir lewat input rails $\to$ RAG $\to$ output rails --- field \texttt{rails} adalah \textbf{jejak audit}.}
+\end{frame}
+
+% ── TestClient smoke tests ───────────────────────────────
+\begin{frame}{Uji Nyata dengan \texttt{TestClient}}
+  \framesubtitle{Empat skenario kunci --- rail benar-benar memanggil NIM, tanpa menyalakan server}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.3}{\footnotesize\setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}p{0.42\linewidth}p{0.52\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{Kasus} & \textbf{Harapan} \\ \midrule
+    Pertanyaan AI valid & \texttt{200} $\cdot$ \textbf{grounded + bersitasi \texttt{[n]}} $\cdot$ \texttt{blocked=False} \\
+    Jailbreak & \texttt{200} $\cdot$ \texttt{blocked=True} $\cdot$ rail \texttt{jailbreak\_blocked} \\
+    Off-topic (saham) & \texttt{200} $\cdot$ \texttt{blocked=True} $\cdot$ rail \texttt{off\_topic} \\
+    Request tanpa \texttt{question} & \textbf{\texttt{422}} (validasi Pydantic, lapis termurah) \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \certnote{Software Development + Trustworthy AI}{deploy/serving FastAPI bertemu guardrails yang \emph{dieksekusi} --- bukan dinarasikan.}
+\end{frame}
+
+% ── Runbook + backend swap ───────────────────────────────
+\begin{frame}{Runbook \& Tukar Backend}
+  \framesubtitle{Dari notebook ke proses HTTP --- dan menukar generator tanpa menyentuh rail}
+  \begin{columns}[T]
+    \begin{column}{0.50\textwidth}
+      \textcolor{nvgreen}{\textbf{Checklist sebelum produksi}}
+      \begin{itemize}\footnotesize
+        \item Auth \& rate-limit di depan \texttt{/ask}
+        \item \textbf{Audit log}: simpan \texttt{rails} + timestamp (UU PDP, Accountability)
+        \item Rail NemoGuard 8B lambat $\to$ jalankan \textbf{paralel} + timeout
+        \item Retry backoff saat NIM rate-limit (429)
+        \item Pantau rasio blokir per rail
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textcolor{nvorange}{\textbf{Tukar backend}}
+      \begin{itemize}\footnotesize
+        \item ``One client, many backends'': ganti \texttt{base\_url} + \texttt{model}
+        \item NIM hosted $\to$ Ollama lokal $\to$ engine TensorRT (Jetson)
+        \item Model spesialis \texttt{qwen3-0.6b} (M04) bisa jadi backend
+        \item \textbf{Keenam rail tetap utuh} --- tiga baris config saja yang berubah
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \takeaway{Service yang sama, model yang ditukar, rail tak berubah --- karena semua backend bicara kontrak \textbf{OpenAI \texttt{/v1}}.}
+\end{frame}
+
+% ════════════════════════════════════════════════════════
+\acttitle{7}{Edge Deploy (Jetson)}{Dari NIM \emph{hosted} ke NVIDIA-native di perangkat --- TensorRT Edge-LLM}
+
+% ── ONNX portabel vs engine terikat-hardware ─────────────
+\begin{frame}{Deploy ke Edge: Apa yang Portabel, Apa yang Tidak}
+  \framesubtitle{Spesialis M04 (\texttt{qwen3-0.6b}) jalan \emph{offline} di Jetson Orin via TensorRT Edge-LLM}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.85, every node/.style={transform shape},
+      b/.style={draw=nvgreen, fill=nvcard, rounded corners=5pt, text=white, font=\scriptsize, minimum width=2.0cm, minimum height=0.9cm, align=center}]
+    \node[b] (hf) {safetensors\\\tiny (HF)};
+    \node[b, right=0.5cm of hf, draw=nvlightgreen] (onnx) {ONNX\\\tiny PORTABEL};
+    \node[b, right=0.5cm of onnx, draw=nvorange] (eng) {engine TRT\\\tiny terikat GPU};
+    \node[b, right=0.5cm of eng, draw=nvblue] (inf) {inference\\\tiny C++ di Orin};
+    \draw[->,thick,color=nvlightgreen] (hf)--(onnx);
+    \draw[->,thick,color=nvorange] (onnx)--(eng);
+    \draw[->,thick,color=nvblue] (eng)--(inf);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}\footnotesize
+        \item[\textcolor{nvlightgreen}{\checkmark}] \textbf{Export ONNX} portabel (graph$+$bobot) --- boleh di Colab/x86/venv-CPU
+        \item[\textcolor{nvred}{$\bullet$}] \textbf{Engine TensorRT tak portabel}: embed SASS $+$ taktik untuk \textbf{arch GPU $+$ versi TRT} tertentu
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{itemize}\footnotesize
+        \item Engine T4 (\texttt{sm\_75}) \textbf{ditolak} di Orin (\texttt{sm\_87}) --- bukan lambat, \emph{tak jalan}
+        \item Maka build engine \& inference \textbf{wajib di perangkat target}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \takeaway{ONNX di mana saja; \textbf{engine \& inference selalu di GPU target}. Itulah alasan ``compile di tempat deploy''.}
+\end{frame}
+
+% ── Worth the effort? TRT vs Ollama ──────────────────────
+\begin{frame}{``Worth the Effort?'' --- TensorRT Edge-LLM vs Ollama}
+  \framesubtitle{Model \& prompt sama, Orin Nano 8 GB yang sama --- ukur, jangan berasumsi}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.25}{\footnotesize\setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}p{0.27\linewidth}p{0.34\linewidth}p{0.30\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{Aspek} & \textbf{TensorRT Edge-LLM} & \textbf{Ollama (GGUF)} \\ \midrule
+    tokens/dtk & 42.7 & 40.4 \\
+    Output & JSON benar & \textbf{identik} \\
+    Setup & $\sim$1 jam, 6 gotcha & \textbf{1 perintah} \\
+    Webservice & CLI (perlu dibungkus) & OpenAI \texttt{/v1} bawaan \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.2em}
+  \begin{itemize}\footnotesize
+    \item[\textcolor{nvlightgreen}{$\Rightarrow$}] Model kecil di Orin: kecepatan praktis \textbf{sama} $\to$ \textbf{Ollama menang} (jauh lebih sederhana $+$ webservice gratis)
+    \item[\textcolor{nvorange}{$\bullet$}] TRT Edge-LLM \emph{baru} sepadan di skala produksi: model besar, integrasi C++, NVFP4/FP8, latency super-ketat
+  \end{itemize}
+  \certnote{Software Development (edge deploy)}{``NVIDIA-native'' $\neq$ otomatis lebih baik --- \textbf{ukur dulu}.}
+\end{frame}
+
+% ════════════════════════════════════════════════════════
+\acttitle{8}{Penutup}{Apa yang sudah dibangun, dan kapan memakai apa}
+
+% ── Perjalanan 5 notebook ────────────────────────────────
+\begin{frame}{Perjalanan Modul 06}
+  \framesubtitle{Lima konsep --- dari stack NVIDIA ke service berpagar yang bisa diaudit}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.25}{\footnotesize\setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}p{0.05\linewidth}p{0.36\linewidth}p{0.52\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{\#} & \textbf{Konsep} & \textbf{Inti} \\ \midrule
+    01 & GPU, precision, optimasi & Tensor Core, FP16 5.6$\times$, quant 4-bit, TensorRT-LLM \\
+    02 & Serving \& deploy & Triton $\to$ Dynamo $\to$ NIM, OpenAI \texttt{/v1} \\
+    03 & Fairness \& tata kelola & demographic parity, equalized odds, Model Card \\
+    04 & Safety \& guardrails & NemoGuard nyata, jailbreak, PII, grounding \\
+    05 & Capstone \texttt{/ask} & enam rail jadi service FastAPI ter-audit \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \takeaway{Track 1 (nb01--02) membuat AI \textbf{cepat \& murah}; Track 2 (nb03--05) membuatnya \textbf{bisa dipercaya}.}
+\end{frame}
+
+% ── Panduan keputusan ────────────────────────────────────
+\begin{frame}{Panduan Keputusan}
+  \framesubtitle{Kapan memakai apa}
+  \begin{center}
+  \renewcommand{\arraystretch}{1.3}{\footnotesize\setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.34\linewidth}>{\raggedright\arraybackslash}p{0.60\linewidth}@{}}
+    \toprule \rowcolor{nvcard!50}
+    \textbf{Pertanyaan} & \textbf{Pegangan} \\ \midrule
+    Precision apa? & Muat nyaman: FP16. Tak muat: 4-bit quantization \\
+    Serving apa? & Baseline ujian: Triton. Datacenter LLM: Dynamo. Siap-pakai: NIM \\
+    Ukur fairness? & Terstruktur: metrik deterministik ($< 0.1$). Teks bebas: LLM-judge (sinyal) \\
+    Pasang rail di mana? & Input (jailbreak/safety/topic) \emph{dan} output (grounding/safety/PII) \\
+    Percaya service? & Hanya bila keputusan \textbf{tercatat} di \texttt{rails} \& bisa diaudit \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \takeaway{Trustworthy AI bukan fitur tambahan --- ia \textbf{jahitan} yang merangkai GPU cepat, serving portabel, \& rail jadi produk yang bisa diaudit.}
+\end{frame}
+
+% ── Thank you ─────────────────────────────────────────────
 \begin{frame}[plain]
   \vspace{2cm}
   \begin{center}
-    {\color{nvgreen}\Huge\bfseries Terima Kasih!}\\[1.2em]
-    {\color{nvwhite}\Large Selamat --- Anda telah menyelesaikan seluruh course!}\\[1.5em]
+    {\color{nvgreen}\Huge\bfseries Terima Kasih!}\\[1.5em]
+    {\color{nvgray}\Large Pertanyaan? Diskusi?}\\[2em]
     \begin{beamercolorbox}[rounded=true,shadow=false,sep=8pt,wd=10cm]{block body}
       \centering\color{white}
-      \textbf{NVIDIA Ecosystem} \quad $\cdot$ \quad Modul 06 \\
+      \textbf{NVIDIA Ecosystem \& Trustworthy AI} \quad $\cdot$ \quad Modul 06 \\
       Navasena Gen-ML Course
     \end{beamercolorbox}
   \end{center}

@@ -3,13 +3,13 @@
 @page { size: A4; margin: 7mm; }
 * { box-sizing: border-box; }
 body { font-family: -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  margin:0; color:#1a1a2e; font-size:8.4px; line-height:1.32; background:#fff; }
+  margin:0; color:#1a1a2e; font-size:8.2px; line-height:1.3; background:#fff; }
 .header { background: linear-gradient(135deg,#76B900,#5a8c00); color:#fff;
   padding:7px 12px; border-radius:8px; display:flex; justify-content:space-between;
   align-items:center; margin-bottom:6px; }
 .header .mod { font-size:8.5px; opacity:.9; letter-spacing:1.5px; text-transform:uppercase; }
 .header h1 { font-size:17px; margin:1px 0; font-weight:800; }
-.header .scope { font-size:8px; opacity:.95; max-width:62%; text-align:right; }
+.header .scope { font-size:8px; opacity:.95; max-width:64%; text-align:right; }
 .pipeline { display:flex; align-items:center; gap:4px; background:#f4f7ec;
   border:1px solid #cfe0a8; border-radius:6px; padding:5px 8px; margin-bottom:6px; flex-wrap:wrap; }
 .pipeline .lbl { font-weight:700; color:#5a8c00; font-size:8px; margin-right:2px; }
@@ -39,10 +39,93 @@ tr:nth-child(even) td { background:#f6f8ef; }
   border-top:1px solid #eee; padding-top:3px; }
 </style></head><body>
 <div class="header"><div><div class="mod">Module 06 · Cheat Sheet</div><h1>NVIDIA Ecosystem</h1></div>
-<div class="scope">Mengenal stack hardware-software NVIDIA (GPU/CUDA), cara mempercepat inference (FP16, TensorRT), toolkit conversational AI NeMo, dan RAG yang dipercepat GPU.</div></div>
-<div class="pipeline"><span class="lbl">Alur:</span><span class="step">Hardware GPU (T4/A100/H100)</span> <span class="arr">→</span> <span class="step">CUDA (jembatan GPU)</span> <span class="arr">→</span> <span class="step">Library (cuDNN, cuBLAS, TensorRT)</span> <span class="arr">→</span> <span class="step">Framework (TF/PyTorch)</span> <span class="arr">→</span> <span class="step">Tools (NeMo, Triton)</span> <span class="arr">→</span> <span class="step">Aplikasi (di atas stack): benchmark, NeMo, RAG</span></div>
-<div class="grid"><div class="card"><h3>NVIDIA Stack (5 lapis)</h3><ul><li>Hardware GPU di paling bawah; Tools di paling atas</li><li>CUDA = jembatan agar GPU bisa komputasi umum</li><li>Kita menulis di Framework, GPU yang kerja keras</li><li>Tiap lapisan berdiri di atas lapisan bawahnya</li></ul><div class="when">▸ Memetakan posisi tiap komponen NVIDIA</div></div><div class="card"><h3>Kenapa GPU (recap M02)</h3><ul><li>CPU: sedikit core pintar, kerja berurutan</li><li>GPU: ribuan core sederhana, kerja paralel</li><li>Deep learning = tumpukan matrix operations</li><li>Notebook hanya ukur waktu di GPU, bukan vs CPU</li></ul><div class="when">▸ Memahami kecocokan GPU untuk DL</div></div><div class="card"><h3>Benchmark phi-2</h3><ul><li>microsoft/phi-2 (~2.7B parameter)</li><li>FP16 + device_map=&#x27;auto&#x27; = pola load NVIDIA</li><li>Warmup dulu, lalu generate() 5x, dirata-rata</li><li>Benchmark = rata-rata waktu generate di GPU</li></ul><div class="codeblock">AutoModelForCausalLM.from_pretrained(&quot;microsoft/phi-2&quot;, torch_dtype=torch.float16, device_map=&quot;auto&quot;)</div><div class="when">▸ Mengukur kecepatan inference di GPU</div></div><div class="card"><h3>Half Precision FP16 vs FP32</h3><ul><li>FP32: 32-bit, presisi penuh, boros memori</li><li>FP16: 16-bit, hemat ~50% memori, cepat di Tensor Cores</li><li>Notebook pakai FP16 PENUH (torch.float16)</li><li>Bukan mixed precision/AMP (itu dibahas di M02)</li></ul><div class="codeblock">torch_dtype=torch.float16</div><div class="when">▸ Hemat memori GPU &amp; inference lebih cepat</div></div><div class="card"><h3>TensorRT (optimasi inference)</h3><ul><li>Alat NVIDIA mempercepat inference (saat dipakai)</li><li>Layer fusion + kernel auto-tuning</li><li>Precision calibration ke FP16/INT8</li><li>TF-TRT tipikal 2-5x lebih cepat (angka NVIDIA)</li></ul><div class="when">▸ Deploy model agar lebih cepat (di M06 hanya konseptual, tanpa demo)</div></div><div class="card"><h3>NeMo (Neural Modules)</h3><ul><li>Toolkit open-source NVIDIA untuk conversational AI</li><li>Kaya pre-trained model siap pakai, tanpa training</li><li>Modular seperti balok lego, dioptimalkan GPU</li><li>Inti: unduh model, panggil method, langsung pakai</li></ul><div class="when">▸ Butuh task AI percakapan siap pakai</div></div><div class="card"><h3>NeMo: NER, QA &amp; Classification</h3><ul><li>NER: TokenClassificationModel + ner_en_bert (BERT)</li><li>NER tandai entitas: NVIDIA-&gt;ORG, New York-&gt;LOC</li><li>QA: QAModel + qa_squadv1.1_bertbase (start-end jawaban)</li><li>Classification: TextClassificationModel -&gt; label kategori</li></ul><div class="codeblock">TokenClassificationModel.from_pretrained(&quot;ner_en_bert&quot;)</div><div class="when">▸ Memahami &amp; mengelompokkan teks</div></div><div class="card"><h3>NeMo: Punctuation, MT &amp; TTS</h3><ul><li>Punctuation: PunctuationCapitalizationModel + punctuation_en_bert</li><li>MT: MTEncDecModel + nmt_en_zh_transformer24x6 (EN-&gt;ZH)</li><li>TTS tahap 1 FastPitch: teks -&gt; spectrogram</li><li>TTS tahap 2 HiFiGAN (vocoder): spectrogram -&gt; audio</li></ul><div class="codeblock">audio = vocoder.convert_spectrogram_to_audio(spec=spec)</div><div class="when">▸ Merapikan teks, terjemah, &amp; sintesis suara</div></div><div class="card"><h3>NVIDIA-Accelerated RAG</h3><ul><li>Pipeline RAG sama (M05), yang ditukar = tooling NVIDIA</li><li>Embedding all-MiniLM-L6-v2 &amp; LLM gpt2 dipindah ke GPU (.to(self.device))</li><li>Index FAISS IndexFlatL2; cudf (RAPIDS) bungkus dokumen -&gt; pandas</li><li>Catatan: MegatronGPT hanya di-import; IndexFlatL2 sebenarnya di CPU</li></ul><div class="codeblock">df = cudf.DataFrame({&#x27;text&#x27;: documents}).to_pandas()</div><div class="when">▸ Menjalankan RAG dengan akselerasi GPU</div></div></div>
-<div class="section"><div class="sectitle">Quick-Ref: Model &amp; Library per Task</div><table><tr><th>Task</th><th>Model / Library</th><th>Catatan</th></tr><tr><td>Benchmark</td><td>microsoft/phi-2 (~2.7B)</td><td>FP16 + device_map=&#x27;auto&#x27;</td></tr><tr><td>Optimasi inference</td><td>TensorRT (TF-TRT)</td><td>2-5x, konseptual (tanpa demo)</td></tr><tr><td>NER</td><td>TokenClassificationModel / ner_en_bert</td><td>berbasis BERT</td></tr><tr><td>Question Answering</td><td>QAModel / qa_squadv1.1_bertbase</td><td>prediksi start-end</td></tr><tr><td>Text Classification</td><td>TextClassificationModel</td><td>label per kalimat</td></tr><tr><td>Punctuation</td><td>PunctuationCapitalizationModel / punctuation_en_bert</td><td>rapikan transkrip</td></tr><tr><td>Machine Translation</td><td>MTEncDecModel / nmt_en_zh_transformer24x6</td><td>EN -&gt; Mandarin</td></tr><tr><td>TTS</td><td>FastPitch + HiFiGAN</td><td>spectrogram lalu audio</td></tr><tr><td>RAG embedding</td><td>SentenceTransformer all-MiniLM-L6-v2</td><td>di GPU (.to(self.device))</td></tr><tr><td>RAG index / LLM</td><td>FAISS IndexFlatL2 / gpt2</td><td>faiss-gpu install, index di CPU</td></tr></table></div>
-<div class="section"><div class="sectitle">Istilah Kunci</div><div class="glossary"><div><b>CUDA</b> — Platform NVIDIA yang menjembatani GPU untuk komputasi umum (general-purpose).</div><div><b>Tensor Cores</b> — Unit GPU NVIDIA khusus yang sangat cepat untuk operasi FP16.</div><div><b>FP16 / FP32</b> — Angka 16-bit (hemat ~50% memori) vs 32-bit (presisi penuh, boros).</div><div><b>Mixed precision (AMP)</b> — Campur FP32+FP16 saat training; berbeda dari FP16 penuh, dibahas di M02.</div><div><b>TensorRT</b> — alat/SDK NVIDIA untuk optimasi inference via layer fusion &amp; precision calibration.</div><div><b>NeMo</b> — Toolkit open-source NVIDIA berbasis pre-trained model untuk conversational AI.</div><div><b>Vocoder (HiFiGAN)</b> — Komponen TTS yang mengubah spectrogram menjadi audio.</div><div><b>cudf (RAPIDS)</b> — DataFrame ber-GPU dari RAPIDS; di notebook hanya bungkus dokumen lalu .to_pandas().</div></div></div>
-<div class="footer">Navasena Gen-ML Course · Module 06 NVIDIA Ecosystem — Cheat Sheet</div>
+<div class="scope">Separuh depan: stack NVIDIA membuat LLM cepat &amp; murah di-<i>serve</i> (GPU/Tensor Core, precision, quantization, TensorRT-LLM → Triton/Dynamo/NIM). Separuh belakang: Trustworthy AI memagari layanan itu (fairness, NemoGuard safety/topic, PII/UU PDP, grounding) lalu menjahitnya jadi service <i>/ask</i> ber-audit. Ringkasan lima notebook (nb01–05).</div></div>
+
+<div class="pipeline"><span class="lbl">Alur Modul 06:</span>
+<span class="step">① GPU + Precision + Quant</span> <span class="arr">→</span>
+<span class="step">② Serve: Triton→Dynamo→NIM</span> <span class="arr">→</span>
+<span class="step">③ Fairness + Tata Kelola</span> <span class="arr">→</span>
+<span class="step">④ Guardrails NemoGuard</span> <span class="arr">→</span>
+<span class="step">⑤ PII/UU PDP + Grounding</span> <span class="arr">→</span>
+<span class="step">⑥ Capstone /ask ber-audit</span></div>
+
+<div class="grid">
+
+<div class="card"><h3>① GPU, Precision &amp; Optimasi</h3><ul>
+<li><b>Tensor Core</b>: hardware matmul; nyala hanya di precision rendah (FP16/FP8)</li>
+<li><b>Precision</b> FP32→FP16: memori 6.18→3.10 GB (<b>2.0×</b>); matmul 34.81→6.23 ms (<b>5.6×</b>)</li>
+<li><b>Quantization 4-bit</b> (NF4): 3.09→1.16 GB (<b>2.7×</b>) → 7B muat di T4 16 GB</li>
+<li><b>TensorRT</b> = compiler umum; <b>TensorRT-LLM</b> = khusus LLM (paged KV-cache, in-flight batching, FP8/INT4)</li>
+</ul><div class="when">▸ perkecil + percepat sebelum deploy</div></div>
+
+<div class="card"><h3>② Serving (Triton/Dynamo/NIM)</h3><ul>
+<li><b>Triton</b> = baseline ujian: <i>dynamic batching</i>, multi-framework, metrics (<tt>config.pbtxt</tt>)</li>
+<li><b>Dynamo</b> = flagship terkini (GTC 2025): disaggregated serving, KV-cache routing, multi-node</li>
+<li><b>NIM</b> = model siap-pakai, kontrak <b>OpenAI /v1</b>; hosted vs self-host</li>
+<li>"one client, many backends": ganti <tt>base_url</tt>+<tt>model</tt> saja; <i>streaming</i> &amp; request paralel naikkan throughput</li>
+</ul><div class="when">▸ menjalankan ≠ menyajikan</div></div>
+
+<div class="card"><h3>③ Fairness &amp; Tata Kelola</h3><ul>
+<li><b>Demographic parity</b>: tingkat persetujuan sama antar kelompok?</li>
+<li><b>Equalized odds</b> (lebih ketat): gap TPR/FPR antar kelompok; <b>disparitas &lt; 0.1</b> = cukup adil</li>
+<li>Akurasi total menyembunyikan bias → fairness metrics membongkar per kelompok</li>
+<li>Teks bebas: <b>LLM-judge</b> NIM (sinyal saja). Deliverable: <b>Model Card</b> + ethics checklist</li>
+</ul><div class="when">▸ audit offline, bukan rail runtime</div></div>
+
+<div class="card"><h3>④ Safety &amp; Guardrails (NemoGuard)</h3><ul>
+<li><b>Content Safety</b> <tt>nemoguard-8b-content-safety</tt>: taksonomi Aegis 23 kategori → JSON safe/unsafe</li>
+<li><b>Topic Control</b> <tt>nemoguard-8b-topic-control</tt>: on-topic / off-topic (scope-limiter)</li>
+<li><b>Jailbreak</b>: produksi = <tt>/v1/classify</tt> (Random Forest, bukan chat) → di sini <b>self-check</b> classifier Nemotron</li>
+<li>Input rails (jailbreak→safety→topic) <i>fail fast</i>; output rail cek jawaban juga</li>
+</ul><div class="when">▸ satpam masuk &amp; resepsionis keluar</div></div>
+
+<div class="card"><h3>⑤ Privasi (PII/UU PDP) + Grounding</h3><ul>
+<li><b>PII masking</b> regex deterministik → <tt>[NIK]</tt>/<tt>[PHONE]</tt>/<tt>[ACCOUNT]</tt> (NIK 16-digit dicek dulu)</li>
+<li><b>Data minimization</b>: model hanya melihat placeholder, masuk &amp; keluar</li>
+<li><b>UU PDP</b> No. 27/2022: breach report <b>≤ 72 jam</b>, denda <b>≤ 2%</b> pendapatan tahunan</li>
+<li><b>Grounding</b>: jawab hanya dari konteks + sitasi [n]; verifikasi grounded/ungrounded</li>
+</ul><div class="when">▸ privasi = hukum, bukan etika belaka</div></div>
+
+<div class="card"><h3>⑥ Capstone: /ask Berpagar</h3><ul>
+<li><b>FastAPI</b> <tt>POST /ask</tt>: input rails → RAG (NIM) generate [n] → output rails</li>
+<li>Tiap rail aktif dicatat di field <tt>rails</tt> → jejak <b>audit</b> (Transparency/Accountability)</li>
+<li><b>TestClient</b> smoke: valid=200 grounded+cited; jailbreak/off-topic blocked; cacat=<b>422</b> Pydantic</li>
+<li>Backend bisa ditukar (NIM→Ollama→TensorRT) tanpa ubah rail; runbook = deliverable</li>
+</ul><div class="when">▸ Trustworthy AI = lapisan runtime</div></div>
+
+<div class="card"><h3>⑦ Edge Deploy (Jetson)</h3><ul>
+<li><b>TensorRT Edge-LLM</b>: safetensors → <b>ONNX</b> (portabel) → <b>engine TRT</b> (terikat GPU) → inference C++ di Orin</li>
+<li><b>Engine tak portabel</b>: embed SASS+taktik per arch (sm_87)+versi TRT → engine T4 ditolak di Orin ⇒ build di perangkat target</li>
+<li>Gotcha: venv <tt>torch-CPU 2.12</tt> (bukan container); <tt>EMBEDDED_TARGET=jetson-orin</tt>; engine OOM → <tt>maxInputLen 256 / KV 512</tt> + drop_caches</li>
+<li><b>Worth it?</b> 42.7 vs Ollama 40.4 tok/dtk (≈ sama) → model kecil: <b>Ollama menang</b>; TRT sepadan di skala produksi</li>
+</ul><div class="when">▸ ukur dulu — NVIDIA-native ≠ otomatis lebih baik</div></div>
+
+</div>
+
+<div class="section"><div class="sectitle">Quick-Ref Ekosistem NVIDIA &amp; Trustworthy AI (5 Notebook)</div>
+<table><tr><th>nb</th><th>Lapisan / Alat</th><th>Tujuan</th><th>Sertifikasi</th></tr>
+<tr><td>01</td><td>Tensor Core · FP16/FP8 · quantization 4-bit · TensorRT-LLM</td><td>Perkecil &amp; percepat model untuk inference</td><td>Software Dev</td></tr>
+<tr><td>02</td><td>Triton → Dynamo → NIM (Nemotron, OpenAI /v1)</td><td>Sajikan model ke banyak pengguna; streaming, throughput</td><td>Software Dev</td></tr>
+<tr><td>03</td><td>Fairness metrics · LLM-judge · Model Card</td><td>Audit adil &amp; tata kelola (offline)</td><td>Trustworthy AI</td></tr>
+<tr><td>04</td><td>NemoGuard content-safety + topic-control · self-check jailbreak · PII · grounding</td><td>Pagar runtime tiap pesan; privasi UU PDP</td><td>Trustworthy AI</td></tr>
+<tr><td>05</td><td>FastAPI /ask + semua rail · TestClient · runbook</td><td>Service ber-audit yang siap deploy</td><td>Software Dev + Trustworthy AI</td></tr>
+</table></div>
+
+<div class="section"><div class="sectitle">Istilah Kunci</div><div class="glossary">
+<div><b>Tensor Core</b> — Unit hardware NVIDIA untuk matmul precision rendah (FP16/FP8); kunci kecepatan inference LLM.</div>
+<div><b>Quantization</b> — Simpan bobot di bit lebih sedikit (4-bit NF4) → model besar muat di GPU kecil; di sini untuk inference, bukan training.</div>
+<div><b>TensorRT-LLM</b> — Compiler LLM NVIDIA: paged KV-cache + in-flight batching + FP8/INT4; mesin di balik NIM.</div>
+<div><b>Triton / Dynamo</b> — Server inference NVIDIA: Triton = baseline ujian (dynamic batching); Dynamo = penerus flagship GTC 2025 (LLM datacenter).</div>
+<div><b>NIM</b> — NVIDIA Inference Microservice; model siap-pakai (mis. <tt>nvidia/nemotron-3-nano-30b-a3b</tt>) lewat kontrak OpenAI /v1. Nemotron = reasoning model; matikan thinking via <tt>extra_body chat_template_kwargs.enable_thinking=False</tt>.</div>
+<div><b>Fairness metrics</b> — Demographic parity &amp; equalized odds (gap TPR/FPR); ambang disparitas &lt; 0.1; deterministik, beda dari LLM-judge.</div>
+<div><b>Model Card</b> — "Label gizi" model (data, tujuan, batasan) → memenuhi pilar Transparency.</div>
+<div><b>NemoGuard</b> — Model penjaga NVIDIA via NIM: content-safety (Aegis 23-kat) &amp; topic-control (on/off-topic).</div>
+<div><b>Content Safety / Topic Control</b> — Rail keamanan (apakah berbahaya?) vs rail lingkup (apakah di dalam topik?).</div>
+<div><b>PII masking</b> — Ganti data pribadi (<tt>[NIK]</tt>/<tt>[PHONE]</tt>/<tt>[ACCOUNT]</tt>) sebelum ke model/log; data minimization.</div>
+<div><b>UU PDP</b> — UU No. 27/2022 Pelindungan Data Pribadi: breach ≤ 72 jam, denda ≤ 2% pendapatan tahunan.</div>
+<div><b>Grounding</b> — Rail transparansi: jawaban bersandar pada konteks + sitasi [n], diverifikasi grounded/ungrounded.</div>
+<div><b>Capstone /ask</b> — FastAPI service yang menjahit semua rail + RAG; keputusan diaudit lewat field <tt>rails</tt>.</div>
+</div></div>
+
+<div class="footer">Navasena Gen-ML Course · Module 06 NVIDIA Ecosystem — Cheat Sheet · lima notebook (nb01–05)</div>
 </body></html>
