@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Menu Ide Capstone — Bootcamp NCA-GENL (Navasena)</title>
+<style>
+@page { size: A4; margin: 11mm; }
+* { box-sizing: border-box; }
+body { font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  margin:0; color:#1a1a2e; font-size:11.5px; line-height:1.45; background:#fff;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+a { color:#4f7a00; text-decoration:none; word-break:break-all; }
+
+.header { background:linear-gradient(135deg,#76B900,#5a8c00); color:#fff;
+  padding:14px 20px; border-radius:10px; display:flex; justify-content:space-between;
+  align-items:center; margin-bottom:12px; }
+.header .mod { font-size:10px; opacity:.9; letter-spacing:2px; text-transform:uppercase; }
+.header h1 { font-size:26px; margin:2px 0; font-weight:800; }
+.header .scope { font-size:10.5px; opacity:.95; max-width:48%; text-align:right; line-height:1.4; }
+
+.intro { margin:0 0 10px; }
+.rules { background:#f4f7ec; border:1px solid #cfe0a8; border-radius:8px;
+  padding:10px 14px; margin-bottom:14px; break-inside:avoid; }
+.rules h2 { color:#4f7a00; font-size:13px; margin:0 0 5px; }
+.rules ul { margin:0; padding-left:18px; } .rules li { margin:2px 0; }
+.rules b { color:#5a8c00; }
+
+.sectitle { color:#4f7a00; font-size:16px; font-weight:800; margin:16px 0 7px;
+  border-bottom:2px solid #76B900; padding-bottom:3px; }
+
+table { width:100%; border-collapse:collapse; }
+table.summary { font-size:10.3px; margin-bottom:6px; }
+table.summary th { background:#76B900; color:#fff; text-align:left; padding:4px 7px; }
+table.summary td { border-bottom:1px solid #e6e6ec; padding:4px 7px; vertical-align:top; }
+table.summary tr:nth-child(even) td { background:#f6f8ef; }
+
+.card { break-inside:avoid; background:#fafafb; border:1px solid #e3e3ea;
+  border-left:4px solid #76B900; border-radius:7px; padding:10px 14px; margin:0 0 11px; }
+.card-head { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+.card h3 { color:#4f7a00; font-size:13.5px; margin:0 0 2px; }
+.meta { font-size:9.8px; color:#6a6a76; margin:0 0 5px; }
+.meta b { color:#5a8c00; }
+.card p { margin:3px 0; }
+.lbl { font-weight:700; color:#5a8c00; }
+
+.badge { font-size:9px; font-weight:800; padding:2px 8px; border-radius:10px;
+  white-space:nowrap; letter-spacing:.3px; }
+.lvl-pemula { background:#a3d944; color:#2c4a00; }
+.lvl-menengah { background:#76B900; color:#fff; }
+.lvl-mahir { background:#4f7a00; color:#fff; }
+
+.checklist { list-style:none; margin:4px 0 0; padding:0; }
+.checklist li { margin:2px 0; padding-left:18px; position:relative; }
+.checklist li::before { content:"\2610"; position:absolute; left:0; top:-1px;
+  color:#76B900; font-weight:700; font-size:12px; }
+
+.stretch { font-size:10.5px; color:#5a6b3a; margin-top:5px;
+  border-top:1px dashed #d6e3b5; padding-top:4px; }
+.stretch b { color:#4f7a00; }
+
+.safety { background:#fff4e5; border:1px solid #f0c894; border-left:4px solid #e8920a;
+  border-radius:6px; padding:6px 10px; margin:5px 0; font-size:10.3px; color:#7a4a00; }
+.safety b { color:#b35e00; }
+
+.footer { text-align:center; color:#aaa; font-size:9px; margin-top:16px;
+  border-top:1px solid #eee; padding-top:6px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="mod">Capstone Project &middot; NCA-GENL</div>
+    <h1>Menu Ide Capstone</h1>
+  </div>
+  <div class="scope">Bootcamp Navasena. Pilih <b>satu</b>, kerjakan sampai tuntas.<br>
+  Semua project bisa jalan di Google Colab <b>Tesla T4</b> (gratis).</div>
+</div>
+
+<p class="intro">Di tahap capstone, kamu membuktikan bahwa skill dari Modul 01 sampai 06 bisa dirangkai menjadi
+satu produk yang utuh dan jalan. Pilih satu project dari 11 pilihan di bawah, lalu kerjakan sampai memenuhi
+checklist <b>Definisi Selesai</b>-nya.</p>
+
+<div class="rules">
+  <h2>Ketentuan umum</h2>
+  <ul>
+    <li><b>Lingkungan:</b> Google Colab dengan runtime GPU Tesla T4. Semua project sudah dipastikan cukup di T4;
+      tidak boleh butuh GPU lebih tinggi.</li>
+    <li><b>Yang dikumpulkan:</b> (1) notebook <code>.ipynb</code> yang jalan end-to-end di Colab; (2) laporan
+      singkat 3-6 halaman (masalah, data, metode, hasil dan metrik, analisis error, keterbatasan); (3) demo
+      interaktif (Gradio / FastAPI / fungsi di notebook).</li>
+    <li><b>NVIDIA NIM:</b> sebagian project meng-offload generasi LLM besar ke NIM (gratis, daftar API key di
+      <a href="https://build.nvidia.com">build.nvidia.com</a>) supaya ringan di T4. Project lain bisa jalan
+      sepenuhnya offline.</li>
+    <li><b>Main jujur:</b> pakai metrik yang benar untuk masalahnya, cegah data leakage (pisahkan train/test
+      sebelum transformasi yang belajar dari data), dan jangan pakai dataset gated.</li>
+    <li><b>Project kesehatan:</b> bingkai sebagai artefak edukasi, bukan alat medis. Tiap jawaban wajib ada
+      disclaimer.</li>
+  </ul>
+</div>
+
+<div class="sectitle">Ringkasan 11 pilihan</div>
+<table class="summary">
+  <thead><tr><th>#</th><th>Judul</th><th>Tingkat</th><th>Modul inti</th><th>Dataset</th><th>ID</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Audit Adil: deteksi bias sentimen antar kategori produk</td><td>Menengah</td><td>M06 + M03/M04/M01</td><td>PRDECT-ID</td><td>Ya</td></tr>
+    <tr><td>2</td><td>Spesialis NL-to-SQL (dengan verifikasi eksekusi)</td><td>Menengah</td><td>M04 + M06</td><td>sql-create-context</td><td>&ndash;</td></tr>
+    <tr><td>3</td><td>Tanya-Dokter Grounded (RAG kesehatan + disclaimer)</td><td>Menengah</td><td>M05 + M06/M03</td><td>Alodokter QA</td><td>Ya</td></tr>
+    <tr><td>4</td><td>IDK-RAG: asisten yang tahu kapan bilang "tidak tahu"</td><td>Menengah</td><td>M05 + M06/M03/M04</td><td>IDK-MRC</td><td>Ya</td></tr>
+    <tr><td>5</td><td>Wartawan Mini: spesialis ringkasan dan judul berita</td><td>Mahir</td><td>M04 + M03/M06</td><td>IndoSum</td><td>Ya</td></tr>
+    <tr><td>6</td><td>JDIH-Asisten: Ask-My-Regulation hukum ketenagakerjaan</td><td>Menengah</td><td>M05 + M03/M06/M01</td><td>UU 13/2003 (JDIH BPK)</td><td>Ya</td></tr>
+    <tr><td>7</td><td>Deteksi fraud pada data tidak seimbang</td><td>Menengah</td><td>M01</td><td>Credit Card Fraud (ULB)</td><td>&ndash;</td></tr>
+    <tr><td>8</td><td>Pengenal motif batik + Grad-CAM</td><td>Menengah</td><td>M02 + M06</td><td>Indonesian Batik Motifs</td><td>Ya</td></tr>
+    <tr><td>9</td><td>Estimator harga mobil bekas Indonesia</td><td><b>Pemula</b></td><td>M01</td><td>Used Car Listings ID</td><td>Ya</td></tr>
+    <tr><td>10</td><td>Asisten triase kesehatan (spesialis + edge GGUF)</td><td>Mahir</td><td>M04 + M03/M06</td><td>Alodokter QA</td><td>Ya</td></tr>
+    <tr><td>11</td><td>Radar emosi ulasan: klasik vs IndoBERT + dashboard <i>(bonus)</i></td><td>Menengah</td><td>M03 + M01/M02</td><td>PRDECT-ID</td><td>Ya</td></tr>
+  </tbody>
+</table>
+<p style="font-size:9.8px;color:#6a6a76;margin:2px 0 0;">Project 2 dan 7 memakai dataset non-Indonesia (disengaja:
+keyword SQL memang berbahasa Inggris, dan untuk fraud tidak ada dataset Indonesia dengan kualitas setara). Semua
+dataset berlisensi publik (CC0, CC-BY, MIT, Apache, atau DbCL).</p>
+
+<div class="sectitle">Detail 11 pilihan project</div>
+
+<div class="card">
+  <div class="card-head"><h3>1. Audit Adil: deteksi bias sentimen antar kategori produk</h3>
+    <span class="badge lvl-menengah">Menengah</span></div>
+  <div class="meta"><b>Modul:</b> M06 (inti), M03, M04, M01 &nbsp;&middot;&nbsp; <b>NIM:</b> ya (untuk bias-judge)</div>
+  <p><span class="lbl">Tujuan.</span> Audit sebuah classifier sentimen/emosi untuk soal keadilan (fairness):
+    apakah ia memperlakukan tiap kategori produk dan kelompok rating dengan adil, atau ada kelompok yang
+    konsisten dirugikan?</p>
+  <p><span class="lbl">Dataset.</span> PRDECT-ID (review produk Indonesia), lisensi MIT / CC-BY-4.0, sekitar
+    1,2 MB. <a href="https://github.com/rhiosutoyo/PRDECT-ID-Indonesian-Product-Reviews-Dataset">github.com/rhiosutoyo/PRDECT-ID-Indonesian-Product-Reviews-Dataset</a></p>
+  <p><span class="lbl">Yang dibangun.</span> Classifier baseline (TF-IDF dan LogReg), tabel metrik fairness per
+    grup (demographic parity, equalized-odds, disparate impact) dengan uji signifikansi, pengecekan stereotip
+    lewat bias-judge NIM, plus <code>Model_Card.md</code> dan checklist etika.</p>
+  <p><span class="lbl">Titik mulai.</span> Pakai ulang fungsi <code>demographic_parity()</code> dan
+    <code>equalized_odds()</code> dari notebook M06 <code>03_fairness_and_governance.ipynb</code>. Bentuk grup
+    audit dari kolom Category dan bin Customer Rating. Pasang ambang jumlah data minimum untuk kategori yang
+    datanya sedikit.</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>Classifier baseline jalan dan ada skor keseluruhannya.</li>
+    <li>Tabel metrik fairness per grup (minimal per kategori dan per bin rating).</li>
+    <li>Minimal 300 review dinilai bias-judge untuk stereotip.</li>
+    <li><code>Model_Card.md</code> dan checklist etika dihasilkan.</li>
+    <li>Minimal satu kategori paling bias diidentifikasi plus rekomendasi mitigasi.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Tambahkan classifier IndoBERT fine-tune; cek apakah model yang lebih kuat
+    memperbesar atau memperkecil selisih error antar kategori.</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>2. Spesialis NL-to-SQL: pertanyaan jadi query SQL yang bisa dijalankan</h3>
+    <span class="badge lvl-menengah">Menengah</span></div>
+  <div class="meta"><b>Modul:</b> M04 (inti), M06 &nbsp;&middot;&nbsp; <b>NIM:</b> opsional (sebagai pembanding)</div>
+  <p><span class="lbl">Tujuan.</span> Fine-tune model kecil menjadi spesialis text-to-SQL, dan buktikan
+    kebenarannya dengan menjalankan query-nya, bukan sekadar mencocokkan teks.</p>
+  <p><span class="lbl">Dataset.</span> <code>b-mc2/sql-create-context</code>, lisensi CC-BY-4.0, 21,8 MB.
+    <a href="https://huggingface.co/datasets/b-mc2/sql-create-context">huggingface.co/datasets/b-mc2/sql-create-context</a></p>
+  <p><span class="lbl">Yang dibangun.</span> QLoRA fine-tune Qwen3-1.7B, plus skrip verifikasi yang menjalankan
+    SQL prediksi dan SQL gold di SQLite in-memory lalu membandingkan hasilnya tanpa peduli urutan baris. Diuji
+    pada skema bisnis Indonesia buatan sendiri.</p>
+  <p><span class="lbl">Titik mulai.</span> Fork notebook M04 <code>05_slm_specialist.ipynb</code>. Pisahkan data
+    sebelum disubsample, lalu QLoRA Qwen3-1.7B (nf4, fp16, r=16). Bangun skrip verifikasi: <code>CREATE TABLE</code>
+    ke sqlite3, jalankan gold dan prediksi, lalu bandingkan.</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>QLoRA fine-tune selesai dan model bisa menghasilkan SQL.</li>
+    <li>Skrip verifikasi eksekusi membandingkan kesetaraan hasil base vs spesialis di test set.</li>
+    <li>Ada angka akurasi eksekusi base vs spesialis (bukan kecocokan teks).</li>
+    <li>Demo pada skema Indonesia buatan sendiri yang sudah berisi data, dan query-nya mengembalikan angka nyata.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Pakai database berisi dari dataset Spider untuk mengukur akurasi pada
+    database terisi, bukan sekadar kesetaraan pada skema kosong.</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>3. Tanya-Dokter Grounded: RAG info kesehatan dengan sitasi</h3>
+    <span class="badge lvl-menengah">Menengah</span></div>
+  <div class="meta"><b>Modul:</b> M05 (inti), M06, M03 &nbsp;&middot;&nbsp; <b>NIM:</b> ya</div>
+  <div class="safety"><b>Penting:</b> artefak edukasi, bukan alat diagnosis. Tiap jawaban wajib ditutup dengan
+    "informasi ini bukan pengganti konsultasi dokter".</div>
+  <p><span class="lbl">Tujuan.</span> Bangun asisten info kesehatan yang menjawab dengan mengutip jawaban dokter
+    asli (bukan berhalusinasi), lalu ukur seberapa besar grounding menekan klaim yang tak berdasar.</p>
+  <p><span class="lbl">Dataset.</span> <code>agufsamudra/alodokter-qna</code>, lisensi Apache-2.0, CSV 2,83 GB
+    (stream dan sampel, jangan load penuh).
+    <a href="https://huggingface.co/datasets/agufsamudra/alodokter-qna">huggingface.co/datasets/agufsamudra/alodokter-qna</a></p>
+  <p><span class="lbl">Yang dibangun.</span> Index FAISS dari sampel tanya-jawab, retrieve dua tahap plus
+    reranker, generasi NIM yang wajib menyitir sumber, guardrail self-check yang memaksa disclaimer, evaluasi
+    RAGAS faithfulness, dan demo FastAPI <code>/ask</code>.</p>
+  <p><span class="lbl">Titik mulai.</span> Anonimkan <code>doctor_name</code>, sampel sekitar 30k. Embed ke
+    FAISS-CPU, ambil top-50, rerank ke top-5. Pakai ulang pola RAG dari M05 nb05/nb07/nb08 dan guardrail dari
+    M06 nb04.</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>Index FAISS terbentuk dari sampel (bukan load penuh 2,83 GB).</li>
+    <li>Pipeline retrieve, rerank, dan generate jalan, dan jawaban menyertakan sitasi sumber.</li>
+    <li>Guardrail self-check memaksa disclaimer dan memblokir saran dosis.</li>
+    <li>RAGAS faithfulness dibandingkan: grounded vs tanpa RAG pada minimal 25 pertanyaan.</li>
+    <li>Demo FastAPI <code>/ask</code> jalan, dan tiap jawaban memuat disclaimer.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Tabel audit guardrail terukur (berapa persen prompt yang minta dosis
+    berhasil diblokir).</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>4. IDK-RAG: asisten yang tahu kapan bilang "tidak tahu"</h3>
+    <span class="badge lvl-menengah">Menengah</span></div>
+  <div class="meta"><b>Modul:</b> M05 (inti), M06, M03, M04 &nbsp;&middot;&nbsp; <b>NIM:</b> ya</div>
+  <p><span class="lbl">Tujuan.</span> Bangun RAG yang menjawab hanya kalau bukti mendukung, dan bilang "tidak
+    tahu" kalau tidak. Ukur kualitas jawaban sekaligus seberapa sering sistem nekat menjawab pertanyaan mustahil.</p>
+  <p><span class="lbl">Dataset.</span> <code>rifkiaputri/idk-mrc</code> (berisi pertanyaan yang bisa dan tidak
+    bisa dijawab), lisensi CC-BY-4.0, korpus kecil.
+    <a href="https://huggingface.co/datasets/rifkiaputri/idk-mrc">huggingface.co/datasets/rifkiaputri/idk-mrc</a></p>
+  <p><span class="lbl">Yang dibangun.</span> RAG dengan gerbang abstention (berdasar skor reranker), dievaluasi
+    pada split test: EM/F1 untuk yang bisa dijawab plus akurasi abstention untuk yang tidak bisa dijawab, kurva
+    precision vs coverage, dan demo <code>/ask</code> yang balas "tidak tahu" pada pertanyaan luar korpus.</p>
+  <p><span class="lbl">Titik mulai.</span> Angkat pipeline nb07, ganti korpus dengan paragraf IDK-MRC. Tambahkan
+    gerbang abstention (abstain kalau skor reranker tertinggi di bawah ambang), tuning ambang di split VAL.</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>Pipeline RAG jalan dengan gerbang abstention dua tahap.</li>
+    <li>Dilaporkan di split TEST: EM/F1 (bisa dijawab) plus akurasi abstention dan false-answer rate (tidak bisa dijawab).</li>
+    <li>Kurva precision vs coverage dibuat.</li>
+    <li>Demo mengembalikan "tidak tahu" untuk pertanyaan luar korpus.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Bandingkan gerbang ambang reranker dengan cek self-consistency "apakah saya
+    yakin?".</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>5. Wartawan Mini: spesialis ringkasan dan judul berita</h3>
+    <span class="badge lvl-mahir">Mahir</span></div>
+  <div class="meta"><b>Modul:</b> M04 (inti), M03, M06 &nbsp;&middot;&nbsp; <b>NIM:</b> ya (sebagai pembanding raksasa)</div>
+  <p><span class="lbl">Tujuan.</span> Fine-tune model kecil menjadi spesialis ringkasan berita Indonesia, lalu
+    buktikan ia bisa menyaingi model raksasa pada satu domain spesifik.</p>
+  <p><span class="lbl">Dataset.</span> IndoSum, lisensi CC-BY-SA-4.0 (data).
+    <a href="https://github.com/kata-ai/indosum">github.com/kata-ai/indosum</a></p>
+  <p><span class="lbl">Yang dibangun.</span> QLoRA fine-tune yang menghasilkan ringkasan 2-3 kalimat plus satu
+    judul, dievaluasi ROUGE/BERTScore dan diadu melawan Llama-3.3-70B via NIM, plus demo tempel-artikel dan
+    ekspor GGUF.</p>
+  <p><span class="lbl">Titik mulai.</span> Format tiap artikel jadi instruksi "ringkas lalu beri judul". Pakai
+    ulang kerangka QLoRA dari M04 nb05 dan sel evaluasi dari nb04 (ganti BERTScore ke model multilingual/IndoBERT).</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>QLoRA fine-tune selesai dan model menghasilkan ringkasan plus judul.</li>
+    <li>ROUGE/BERTScore dilaporkan untuk base vs spesialis vs NIM-70B, dengan uji signifikansi.</li>
+    <li>Demo tempel-artikel jalan dan mengeluarkan ringkasan plus judul.</li>
+    <li>Model di-merge dan diekspor ke GGUF.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Coba SmolLM3-3B 4-bit sebagai spesialis lebih besar; bandingkan trade-off
+    ukuran vs kualitas.</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>6. JDIH-Asisten: Ask-My-Regulation hukum ketenagakerjaan (sitasi Pasal)</h3>
+    <span class="badge lvl-menengah">Menengah</span></div>
+  <div class="meta"><b>Modul:</b> M05 (inti), M03, M06, M01 &nbsp;&middot;&nbsp; <b>NIM:</b> ya</div>
+  <p><span class="lbl">Tujuan.</span> Bangun asisten tanya-jawab atas teks UU yang menyitir Pasal persis
+    sumbernya, dan abstain kalau tidak ada Pasal yang relevan.</p>
+  <p><span class="lbl">Dataset.</span> UU 13/2003 Ketenagakerjaan plus klaster Cipta Kerja (PDF resmi JDIH BPK),
+    domain publik.
+    <a href="https://peraturan.bpk.go.id/Details/43013/uu-no-13-tahun-2003">peraturan.bpk.go.id/Details/43013/uu-no-13-tahun-2003</a></p>
+  <p><span class="lbl">Yang dibangun.</span> Pipeline Docling yang mem-parse PDF jadi chunk ber-tag Pasal,
+    retrieve plus rerank, jawaban NIM dengan sitasi Pasal wajib, evaluasi RAGAS, dan demo FastAPI <code>/ask</code>.</p>
+  <p><span class="lbl">Titik mulai.</span> Fork nb07, ganti URL-fetch arXiv dengan parsing Docling untuk PDF UU
+    13/2003. Di HybridChunker, tambahkan field metadata yang menangkap heading "Pasal N" terdekat lewat regex.
+    Kerjakan dulu satu UU saja.</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>Docling mem-parse PDF menjadi chunk yang ber-tag nomor Pasal.</li>
+    <li>Pipeline retrieve, rerank, dan generate jalan, dan jawaban menyebut Pasal sumbernya.</li>
+    <li>Sistem abstain kalau tidak ada Pasal relevan.</li>
+    <li>RAGAS dijalankan pada minimal 30 pertanyaan ketenagakerjaan.</li>
+    <li>Demo FastAPI <code>/ask</code> jalan.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Tambahkan amandemen Cipta Kerja (UU 6/2023) dan lacak Pasal yang masih
+    berlaku vs yang sudah dicabut.</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>7. Deteksi transaksi fraud pada data tidak seimbang</h3>
+    <span class="badge lvl-menengah">Menengah</span></div>
+  <div class="meta"><b>Modul:</b> M01 &nbsp;&middot;&nbsp; <b>NIM:</b> tidak (sepenuhnya offline)</div>
+  <p><span class="lbl">Tujuan.</span> Deteksi fraud pada data yang sangat tidak seimbang (hanya 0,172% fraud),
+    dengan teknik dan metrik yang benar. Pahami kenapa "akurasi" menyesatkan di sini.</p>
+  <p><span class="lbl">Dataset.</span> Credit Card Fraud Detection (ULB), lisensi DbCL v1.0, sekitar 144 MB.
+    <a href="https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud">kaggle.com/datasets/mlg-ulb/creditcardfraud</a></p>
+  <p><span class="lbl">Yang dibangun.</span> Pipeline lengkap: EDA yang membuktikan jebakan akurasi, eksperimen
+    resampling, perbandingan model dengan PR-AUC/recall/precision, threshold tuning berbasis biaya, dan demo
+    skoring satu transaksi.</p>
+  <p><span class="lbl">Titik mulai.</span> Load data, buat EDA jebakan-akurasi (model dummy "selalu bukan-fraud"
+    mencapai akurasi 99,83% tapi nol fraud tertangkap). Rangkai <code>imblearn.Pipeline</code> supaya resampling
+    hanya terjadi di dalam fold training.</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>EDA membuktikan jebakan akurasi secara eksplisit.</li>
+    <li>Minimal 3 model dibandingkan lewat PR-AUC/recall/precision plus confusion matrix.</li>
+    <li>Resampling hanya terjadi di dalam fold training (tidak ada leakage).</li>
+    <li>Threshold dipilih berbasis fungsi biaya, bukan default 0,5.</li>
+    <li>Kurva PR plus rekomendasi operasional ada di laporan.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Tambahkan kalibrasi probabilitas dan sapuan cost-curve untuk menunjukkan
+    pergeseran titik operasi optimal.</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>8. Pengenal motif batik Nusantara dengan Grad-CAM</h3>
+    <span class="badge lvl-menengah">Menengah</span></div>
+  <div class="meta"><b>Modul:</b> M02 (inti), M06 &nbsp;&middot;&nbsp; <b>NIM:</b> tidak</div>
+  <p><span class="lbl">Tujuan.</span> Bangun classifier motif batik yang tidak cuma menebak nama motif, tapi juga
+    menunjukkan bagian kain mana yang jadi dasar keputusannya lewat Grad-CAM.</p>
+  <p><span class="lbl">Dataset.</span> Indonesian Batik Motifs (Corak App), lisensi CC0, sekitar 156 MB.
+    <a href="https://www.kaggle.com/datasets/alfanme/indonesian-batik-motifs-corak-app">kaggle.com/datasets/alfanme/indonesian-batik-motifs-corak-app</a></p>
+  <p><span class="lbl">Yang dibangun.</span> Training transfer learning ResNet50, metrik per kelas, overlay
+    heatmap Grad-CAM, dan demo Gradio yang menyebut nama motif sambil menampilkan heatmap.</p>
+  <p><span class="lbl">Titik mulai.</span> Mulai dari M02 nb03, ganti loader CIFAR-10 dengan
+    <code>image_dataset_from_directory</code> atas folder batik. Bangun ResNet50 dengan backbone beku, latih
+    10-15 epoch, lalu tambahkan Grad-CAM.</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>ResNet50 transfer learning terlatih, ada precision/recall per kelas plus confusion matrix.</li>
+    <li>Grad-CAM menghasilkan overlay heatmap yang masuk akal di gambar uji.</li>
+    <li>Demo Gradio jalan: input gambar, output nama motif plus heatmap.</li>
+    <li>Laporan menyebut motif yang paling sering tertukar.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Bandingkan dua backbone (ResNet50 vs MobileNetV2), atau benchmark latency
+    ONNX/TensorRT di T4.</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>9. Estimator harga mobil bekas Indonesia</h3>
+    <span class="badge lvl-pemula">Pemula</span></div>
+  <div class="meta"><b>Modul:</b> M01 &nbsp;&middot;&nbsp; <b>NIM:</b> tidak &nbsp;&middot;&nbsp; jalur masuk paling ringan</div>
+  <p><span class="lbl">Tujuan.</span> Prediksi harga mobil bekas dari listing nyata, lalu jelaskan fitur mana
+    yang paling menentukan harga. Output akhirnya alat "cek harga wajar" yang langsung berguna.</p>
+  <p><span class="lbl">Dataset.</span> Used Car Listings in Indonesia, lisensi CC0, sekitar 25 KB.
+    <a href="https://www.kaggle.com/datasets/indraputra21/used-car-listings-in-indonesia">kaggle.com/datasets/indraputra21/used-car-listings-in-indonesia</a></p>
+  <p><span class="lbl">Yang dibangun.</span> Pipeline regresi: cleaning, feature engineering, perbandingan
+    beberapa model dengan cross-validation, analisis fitur penting, dan fungsi <code>estimasi_harga(spek)</code>
+    yang interaktif.</p>
+  <p><span class="lbl">Titik mulai.</span> Parse harga dan kilometer jadi numerik, hitung umur mobil, encode
+    kolom kategori. Latih Linear/Ridge/RandomForest/XGBoost dalam satu loop dengan <code>cross_val_score</code>
+    5-fold.</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>Data dibersihkan dan ada feature engineering (minimal umur mobil plus encoding).</li>
+    <li>Minimal 3 model dibandingkan dengan RMSE/MAE/R2 plus cross-validation.</li>
+    <li>Feature importance plus analisis residual per segmen harga ada.</li>
+    <li>Fungsi <code>estimasi_harga(spek)</code> jalan interaktif dan menampilkan rentang prediksi.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Jalankan ulang RandomForest di cuML untuk menunjukkan speedup di T4.</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>10. Asisten triase kesehatan: spesialis tanya-jawab plus edge GGUF</h3>
+    <span class="badge lvl-mahir">Mahir</span></div>
+  <div class="meta"><b>Modul:</b> M04 (inti), M03, M06 &nbsp;&middot;&nbsp; <b>NIM:</b> ya (sebagai judge)</div>
+  <div class="safety"><b>Penting:</b> artefak edukasi, bukan alat triase sungguhan. Output wajib ditutup dengan
+    disclaimer dan blok "kapan harus ke dokter".</div>
+  <p><span class="lbl">Tujuan.</span> Fine-tune spesialis yang menjawab pertanyaan kesehatan awam dengan
+    struktur ala dokter, tapi sadar batas: selalu menutup dengan disclaimer dan triase red-flag. Lalu deploy
+    offline lewat Ollama GGUF.</p>
+  <p><span class="lbl">Dataset.</span> <code>agufsamudra/alodokter-qna</code>, lisensi Apache-2.0.
+    <a href="https://huggingface.co/datasets/agufsamudra/alodokter-qna">huggingface.co/datasets/agufsamudra/alodokter-qna</a></p>
+  <p><span class="lbl">Yang dibangun.</span> QLoRA fine-tune dengan kerangka output yang selalu menambahkan
+    disclaimer plus red-flag, perbandingan base vs spesialis, LLM-judge keamanan via NIM, ekspor GGUF, dan demo
+    Ollama.</p>
+  <p><span class="lbl">Titik mulai.</span> Anonimkan <code>doctor_name</code>, subsample sekitar 10k. Bungkus
+    tiap pasangan dalam template yang output-nya selalu memuat disclaimer plus blok red-flag, supaya aspek
+    keamanan ikut dilatih.</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>QLoRA fine-tune selesai dengan kerangka disclaimer plus red-flag yang konsisten muncul.</li>
+    <li>Perbandingan base vs spesialis ada (contoh sebelum dan sesudah).</li>
+    <li>LLM-judge menilai keamanan dan faktualitas.</li>
+    <li>Model diekspor ke GGUF Q4_K_M dan jalan di Ollama.</li>
+    <li>Laporan menganalisis kasus di mana model tidak boleh menjawab, dan dibingkai tegas sebagai edukasi.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Tambahkan rail NeMo Guardrails self-check dan ukur berapa output tak aman
+    yang tertangkap.</p>
+</div>
+
+<div class="card">
+  <div class="card-head"><h3>11. Radar emosi ulasan: klasik vs IndoBERT plus dashboard <i>(bonus)</i></h3>
+    <span class="badge lvl-menengah">Menengah</span></div>
+  <div class="meta"><b>Modul:</b> M03 (inti), M01, M02 &nbsp;&middot;&nbsp; <b>NIM:</b> tidak (hanya di stretch)</div>
+  <p><span class="lbl">Tujuan.</span> Klasifikasi review ke 5 emosi, adu baseline klasik melawan IndoBERT, lalu
+    kemas jadi dashboard yang membantu penjual UMKM membaca suara pelanggan, lebih dari sekadar rating bintang.</p>
+  <p><span class="lbl">Dataset.</span> PRDECT-ID, lisensi CC-BY-4.0, sekitar 1,26 MB.
+    <a href="https://data.mendeley.com/datasets/574v66hf2v/1">data.mendeley.com/datasets/574v66hf2v/1</a></p>
+  <p><span class="lbl">Yang dibangun.</span> Baseline TF-IDF dan SVM, IndoBERT fine-tune, analisis error per
+    emosi, dan dashboard Gradio yang memetakan emosi per kategori serta menandai review marah/sedih sebagai
+    komplain prioritas.</p>
+  <p><span class="lbl">Titik mulai.</span> Bangun baseline klasik dulu (TfidfVectorizer dan LinearSVC), baru
+    fine-tune <code>indobenchmark/indobert-base-p1</code> dengan <code>num_labels=5</code>. Catatan: pergantian
+    head ke <code>AutoModelForSequenceClassification</code> tidak diajarkan di kelas, jadi kamu perlu baca
+    dokumentasinya sendiri (bagian dari tantangan).</p>
+  <p class="lbl">Definisi Selesai.</p>
+  <ul class="checklist">
+    <li>Baseline TF-IDF dan SVM jalan, ada macro-F1 plus confusion matrix.</li>
+    <li>IndoBERT fine-tune jalan, ada macro-F1 plus confusion matrix per emosi.</li>
+    <li>Perbandingan klasik vs transformer dianalisis (bukan cuma angka, tapi di mana masing-masing unggul).</li>
+    <li>Dashboard Gradio jalan: memetakan emosi per kategori dan menandai komplain prioritas.</li>
+  </ul>
+  <p class="stretch"><b>Stretch.</b> Tambahkan perbandingan dengan klasifikasi zero-shot NIM-LLM, untuk melihat
+    di mana model kecil yang terspesialisasi menang.</p>
+</div>
+
+<div class="sectitle">Rubrik penilaian</div>
+<table class="summary">
+  <thead><tr><th>Aspek</th><th style="width:64px;">Bobot</th><th>Yang dinilai</th></tr></thead>
+  <tbody>
+    <tr><td>Fungsionalitas end-to-end</td><td>30%</td><td>Notebook jalan dari data sampai demo, tanpa error fatal.</td></tr>
+    <tr><td>Ketepatan metrik dan evaluasi</td><td>25%</td><td>Metrik yang dipakai benar untuk masalahnya (lihat Definisi Selesai tiap project).</td></tr>
+    <tr><td>Trustworthy AI dan keamanan</td><td>15%</td><td>Disclaimer, abstention, sitasi, audit bias, atau guardrail sesuai konteks.</td></tr>
+    <tr><td>Kualitas laporan dan komunikasi</td><td>20%</td><td>Analisis error jujur, keterbatasan diakui, ada insight, bukan cuma angka.</td></tr>
+    <tr><td>Demo dan reproduktibilitas</td><td>10%</td><td>Demo jalan, dan orang lain bisa menjalankan ulang di Colab T4.</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">Bootcamp NCA-GENL (Navasena) &middot; Menu Ide Capstone &middot; Semua project diverifikasi
+cukup di Google Colab Tesla T4 &middot; Pilih yang paling bikin kamu penasaran.</div>
+
+</body>
+</html>
