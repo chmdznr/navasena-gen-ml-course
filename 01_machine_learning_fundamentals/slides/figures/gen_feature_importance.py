@@ -17,7 +17,7 @@ OUTPUT_PATH = os.path.join(SCRIPT_DIR, "feature_importance.pdf")
 
 df = pd.read_csv(os.path.join(SCRIPT_DIR, "..", "..", "income_evaluation.csv"))
 df.columns = df.columns.str.strip()
-for col in df.select_dtypes(include="object").columns:
+for col in df.select_dtypes(exclude="number").columns:
     df[col] = df[col].str.strip()
 
 y = (df["income"] == ">50K").astype(int)
@@ -38,17 +38,17 @@ BG_COLOR = "#1A1A2E"
 TEXT_COLOR = "white"
 BAR_COLOR = "#76B900"
 
-fig, ax = plt.subplots(figsize=(7, 4.5))
+fig, ax = plt.subplots(figsize=(7, 4.2))
 fig.patch.set_facecolor(BG_COLOR)
 ax.set_facecolor(BG_COLOR)
 
 bars = ax.barh(top8.index, top8.values, color=BAR_COLOR, zorder=3)
 for bar, val in zip(bars, top8.values):
     ax.text(val + top8.values.max() * 0.015, bar.get_y() + bar.get_height() / 2,
-            f"{val:.3f}", va="center", ha="left", color=TEXT_COLOR, fontsize=9)
+            f"{val:.3f}", va="center", ha="left", color=TEXT_COLOR, fontsize=12)
 
-ax.set_xlabel("Feature importance (XGBoost)", color=TEXT_COLOR, fontsize=10)
-ax.tick_params(colors=TEXT_COLOR, labelsize=9)
+ax.set_xlabel("Feature importance (XGBoost)", color=TEXT_COLOR, fontsize=12)
+ax.tick_params(colors=TEXT_COLOR, labelsize=12)
 for spine in ax.spines.values():
     spine.set_edgecolor(TEXT_COLOR)
     spine.set_alpha(0.4)

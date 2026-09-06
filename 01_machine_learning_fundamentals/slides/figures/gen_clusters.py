@@ -56,8 +56,8 @@ ax.scatter(
 )
 
 # Labels
-ax.set_xlabel("Fitur 1", color="white")
-ax.set_ylabel("Fitur 2", color="white")
+ax.set_xlabel("Feature 1", color="white")
+ax.set_ylabel("Feature 2", color="white")
 
 # Tick styling
 ax.tick_params(colors="white")
