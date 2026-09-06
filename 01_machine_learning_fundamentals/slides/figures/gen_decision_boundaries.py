@@ -33,7 +33,7 @@ models = [
 
 # ── Colour palette ───────────────────────────────────────────────────────────
 BG_COLOR   = "#1A1A2E"
-RDYLGN     = plt.cm.get_cmap("RdYlGn")
+RDYLGN     = plt.get_cmap("RdYlGn")
 CLASS_COLS = [RDYLGN(0.15), RDYLGN(0.85)]   # red-ish / green-ish for points
 
 # ── Figure ───────────────────────────────────────────────────────────────────
