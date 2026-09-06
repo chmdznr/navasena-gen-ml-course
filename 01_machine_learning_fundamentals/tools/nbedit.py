@@ -53,8 +53,9 @@ def clean(nb):
 
 def save(nb, path):
     clean(nb)
-    json.dump(nb, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    open(path, "a").write("\n")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(nb, f, ensure_ascii=False, indent=1)
+        f.write("\n")
 
 if __name__ == "__main__":
     nb = load(sys.argv[1])

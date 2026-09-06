@@ -1,10 +1,12 @@
 #!/bin/zsh
 # Eksekusi notebook penuh; output ke scratchpad, tidak ke repo.
+# Env: NB_PYTHON (python with nbconvert + kernel m01venv), NB_OUT_DIR (output dir)
 set -e
-SCRATCH=/private/tmp/claude-501/-Users-chmdznr-work-navasena-navasena-gen-ml-course/c45d5983-d2e4-4e18-9f76-56fd52059487/scratchpad
-mkdir -p $SCRATCH/executed
+PY=${NB_PYTHON:-python3}
+OUT=${NB_OUT_DIR:-/tmp/m01-executed}
+mkdir -p "$OUT"
 cd "$(dirname "$0")/.."
-$SCRATCH/venv/bin/python -m jupyter nbconvert --to notebook --execute \
+$PY -m jupyter nbconvert --to notebook --execute \
   --ExecutePreprocessor.kernel_name=m01venv --ExecutePreprocessor.timeout=1800 \
-  --output-dir $SCRATCH/executed "$1"
+  --output-dir "$OUT" "$1"
 echo "OK: $1"
