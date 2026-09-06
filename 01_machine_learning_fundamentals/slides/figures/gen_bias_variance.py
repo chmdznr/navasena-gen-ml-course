@@ -29,7 +29,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 x_plot = np.linspace(0, 1, 300)
 
 degrees = [1, 4, 15]
-titles = ["Underfitting (derajat 1)", "Pas (derajat 4)", "Overfitting (derajat 15)"]
+titles = ["Underfitting (derajat 1)", "Mengikuti pola utama (derajat 4)", "Overfitting (derajat 15)"]
 
 BG_COLOR = "#1A1A2E"
 TEXT_COLOR = "white"
