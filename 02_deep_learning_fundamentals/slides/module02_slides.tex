@@ -1542,4 +1542,572 @@
   \end{itemize}
 \end{frame}
 
+% ==========================================================
+% ACT 5
+% ==========================================================
+\acttitle{Act 5}{\fontsize{24}{28}\selectfont\bfseries Kapan GPU benar-benar diperlukan?}{Dari perkalian matriks sampai TensorRT}
+
+% ----------------------------------------------------------
+% FRAME 51 — Training = banyak perkalian matriks
+% ----------------------------------------------------------
+\begin{frame}{Training berisi banyak perkalian matriks besar}
+  \vspace{0.3em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    m/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=4pt,
+              minimum width=1.9cm, minimum height=1.7cm, align=center}]
+    \node[m] (a) at (0,0) {masukan\\ satu batch\\ {\color{nvgray}64 $\times$ 784}};
+    \node[text=nvwhite] at (1.7,0) {$\times$};
+    \node[m] (w) at (3.4,0) {bobot layer\\ Dense\\ {\color{nvgray}784 $\times$ 128}};
+    \node[text=nvwhite] at (5.1,0) {$=$};
+    \foreach \i in {0,1,2,3,4,5} \foreach \j in {0,1,2,3}
+      \draw[nvcard, fill=nvbg, line width=0.3pt]
+        ({5.9+\i*0.3},{-0.6+\j*0.3}) rectangle ++(0.3,0.3);
+    \fill[nvgreen] (5.9,-0.3) rectangle ++(0.3,0.3);
+    \fill[nvgreen] (6.5,0.3) rectangle ++(0.3,0.3);
+    \fill[nvgreen] (7.1,-0.6) rectangle ++(0.3,0.3);
+    \fill[nvgreen] (7.4,0.0) rectangle ++(0.3,0.3);
+    \node[text=nvgray, anchor=north, align=center] at (6.8,-0.75)
+      {keluaran layer\\ 64 $\times$ 128};
+    \node[text=nvlightgreen, anchor=west, align=left, text width=3.6cm] at (8.1,0)
+      {tiap sel keluaran dihitung dari barisnya dan kolomnya sendiri, jadi urutan
+       pengerjaannya tidak penting};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Satu langkah training menghitung prediksi (maju), lalu membagi kesalahan ke tiap
+          bobot (mundur). Keduanya berisi perkalian matriks seperti di atas.
+    \item Jumlahnya banyak: benchmark nb05 melatih CNN pada 10.000 gambar CIFAR-10 dengan
+          batch 64, selama beberapa epoch.
+    \item Pekerjaan yang bisa dipecah seperti inilah yang bisa dikerjakan serentak.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 52 — Intuisi: CPU vs GPU
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{CPU sedikit tapi kuat, GPU banyak tapi sederhana}
+  \vspace{0.1em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize]
+    \foreach \x in {0,1} \foreach \y in {0,1}
+      \draw[fill=nvcard, draw=nvgreen, rounded corners=3pt, line width=0.7pt]
+        ({\x*1.0},{\y*1.0}) rectangle ++(0.88,0.88);
+    \node[text=nvwhite, anchor=north, align=center, text width=4.4cm] at (0.94,-0.2)
+      {\textbf{CPU}\\ sedikit unit hitung, tiap unit kuat dan serba bisa};
+    \foreach \x in {0,...,13} \foreach \y in {0,...,6}
+      \draw[fill=nvlightgreen, draw=nvbg, line width=0.2pt]
+        ({6.4+\x*0.2},{\y*0.2}) rectangle ++(0.155,0.155);
+    \node[text=nvwhite, anchor=north, align=center, text width=5.6cm] at (7.8,-0.2)
+      {\textbf{GPU}\\ banyak unit hitung sederhana yang bekerja serentak};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.3em}
+  \nvbox{Intinya}{Analogi nb05: menghitung nilai ujian seribu siswa bisa dikerjakan satu guru
+  yang cepat sekali, atau seribu kalkulator sederhana yang bekerja bersamaan. Pilihan kedua
+  menang kalau pekerjaannya bisa dipecah.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 53 — Kapan GPU tidak untung
+% ----------------------------------------------------------
+\begin{frame}{Kapan GPU tidak memberi keuntungan}
+  \vspace{0.2em}
+  \begin{itemize}\setlength\itemsep{0.4em}
+    \item \textbf{\color{nvlightgreen}Modelnya kecil.} Beberapa layer Dense di atas data
+          tabular selesai sebelum GPU sempat sibuk.
+    \item \textbf{\color{nvlightgreen}Batchnya kecil.} Batch 8 memberi sedikit pekerjaan per
+          langkah, jadi banyak unit hitung menganggur.
+    \item \textbf{\color{nvlightgreen}Datanya bolak-balik.} Setiap batch harus dipindahkan ke
+          memori GPU dulu; kalau hitungannya ringan, pemindahan itu yang mendominasi.
+    \item \textbf{\color{nvlightgreen}Pemanggilan pertama mahal.} Kernel dan graph disiapkan
+          saat dipakai pertama kali, jadi panggilan pertama jauh lebih lambat daripada
+          panggilan berikutnya.
+  \end{itemize}
+  \vspace{0.4em}
+  \jebakan{Mengukur tanpa warm-up membuat GPU tampak lambat. Di nb05, \texttt{fit} dan
+  \texttt{predict} dipanggil sekali di kedua sisi sebelum stopwatch dinyalakan, supaya yang
+  dibandingkan hitungannya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 54 — Mixed precision
+% ----------------------------------------------------------
+\begin{frame}[fragile]{Mixed precision: hitung di float16, keluaran di float32}
+  \vspace{0.2em}
+\begin{lstlisting}
+from tensorflow.keras import mixed_precision
+mixed_precision.set_global_policy('mixed_float16')
+Dense(10, activation='softmax', dtype='float32')  # keluaran
+\end{lstlisting}
+  \vspace{0.4em}
+  \begin{itemize}\setlength\itemsep{0.32em}
+    \item float16 memakai 16 bit per angka, float32 memakai 32 bit. GPU NVIDIA modern punya
+          Tensor Core yang mengerjakan operasi float16.
+    \item Bagian yang rawan dibiarkan di float32: keluaran softmax dan penjumlahan gradient.
+          Karena itu output layernya diberi \texttt{dtype='float32'}.
+    \item Bukan tombol ajaib: keuntungannya terasa pada model dan batch yang cukup besar, dan
+          besarnya diukur di nb05, bukan diperkirakan.
+  \end{itemize}
+  \vspace{0.4em}
+  {\footnotesize\color{nvgray}Di nb05 policynya dikembalikan ke \texttt{float32} setelah
+  percobaan, supaya sel-sel berikutnya tidak ikut terpengaruh.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 55 — Dari training ke inferensi: ONNX -> TensorRT
+% ----------------------------------------------------------
+\begin{frame}[fragile]{Dari training ke inferensi: ONNX lalu TensorRT}
+  \vspace{0.2em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    s/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=5pt,
+              minimum height=0.9cm, align=center}]
+    \node[s] (k) at (0,0) {model Keras\\ hasil training};
+    \node[s] (sm) at (3.1,0) {SavedModel};
+    \node[s, draw=nvgreen] (on) at (6.0,0) {ONNX};
+    \node[s, draw=nvlightgreen] (trt) at (9.3,0) {engine TensorRT\\ FP16};
+    \draw[nvgreen, -{Stealth[length=4pt]}] (k) -- node[above, text=nvgray, font=\tiny] {export} (sm);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (sm) -- node[above, text=nvgray, font=\tiny] {tf2onnx} (on);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (on) -- node[above, text=nvgray, font=\tiny] {Polygraphy} (trt);
+    \draw[nvlightgreen, -{Stealth[length=4pt]}] (trt) -- ++(1.9,0)
+      node[right, text=nvwhite] {inferensi};
+    \node[text=nvgray, anchor=north, align=center, text width=11cm] at (4.6,-0.7)
+      {ONNX adalah format perantara: sekali model ada di sana, banyak mesin inferensi
+       bisa membacanya tanpa peduli framework asalnya};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.1em}
+\begin{lstlisting}
+!pip install "tensorrt>=10,<11" "tf2onnx>=1.17" onnx polygraphy
+\end{lstlisting}
+  \vspace{0.2em}
+  {\footnotesize
+  \begin{itemize}\setlength\itemsep{0.2em}
+    \item TF-TRT, integrasi bawaan TensorFlow, dihapus sejak TensorFlow 2.18 (2.17 versi
+          terakhir yang memuatnya) dan Colab sekarang memakai 2.18 ke atas.
+    \item \texttt{tensorrt} dipin ke seri 10.x: TensorRT 11 menghapus cara mudah menyalakan
+          FP16 saat engine dibangun. \texttt{tf2onnx} minimal 1.17 supaya cocok dengan NumPy 2.
+  \end{itemize}}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 56 — Benchmark: syarat pengukuran
+% ----------------------------------------------------------
+\begin{frame}{Benchmark: angkanya diukur di kelas, bukan dijanjikan di slide}
+  \vspace{0.2em}
+  \begin{center}
+  \begin{tikzpicture}
+    \node[draw=nvgray, dashed, rounded corners=4pt, inner sep=5pt]
+      {\includegraphics[width=0.62\textwidth, height=2.4cm, keepaspectratio]{figures/gpu_benchmark.pdf}};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.2em}
+  \begin{itemize}\setlength\itemsep{0.26em}
+    \item Yang diukur nb05: perkalian matriks berukuran 500 sampai 8.000, training CNN 3 epoch
+          pada 10.000 gambar CIFAR-10, inferensi 1.000 gambar, dan TensorRT FP16 dibanding
+          TensorFlow FP32 untuk model yang sama.
+    \item Pembandingnya CPU Colab lawan satu GPU T4 pada runtime yang sama, dan tiap sisi
+          dipanggil sekali sebagai warm-up sebelum diukur.
+    \item Figur ini terisi setelah nb05 dijalankan; angkanya milik sesi masing-masing, jadi
+          yang dicatat adalah hasil di kelas hari ini.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 57 — Kapan pakai & jebakan GPU
+% ----------------------------------------------------------
+\begin{frame}{Kapan GPU sepadan, dan apa jebakannya}
+  \vspace{0.3em}
+  \kapan{
+    \item datanya gambar atau urutan panjang, modelnya berlapis
+    \item batchnya cukup besar dan epochnya banyak
+    \item banyak percobaan: ganti arsitektur, ulang training
+    \item inferensinya melayani banyak permintaan sekaligus
+  }{
+    \item data tabular kecil seperti hari 1
+    \item satu prediksi sesekali di server biasa
+    \item hitungannya ringan, waktunya habis untuk pindah data
+    \item modelnya belum benar; masalahnya bukan kecepatan
+  }
+  \vspace{0.4em}
+  \jebakan{GPU mempercepat hitungan, bukan memperbaiki model. Kalau loss tidak turun,
+  yang perlu diperiksa adalah data, learning rate, dan arsitekturnya. GPU hanya membuat
+  percobaan yang sama selesai lebih cepat.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 58 — Ringkasan Act 5
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 5}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.46em}
+    \item Training deep learning berisi perkalian matriks besar yang bisa dipecah, dan itulah
+          bentuk pekerjaan yang cocok untuk GPU.
+    \item CPU punya sedikit unit hitung yang kuat; GPU punya banyak unit sederhana yang
+          bekerja serentak.
+    \item Keuntungannya hilang kalau modelnya kecil, batchnya kecil, atau waktunya habis untuk
+          memindahkan data. Warm-up harus dikeluarkan dari pengukuran.
+    \item Mixed precision menghitung di float16 dan menyimpan bagian yang rawan di float32;
+          output layernya diberi \texttt{dtype='float32'}.
+    \item Untuk inferensi, model diekspor lewat ONNX lalu dibangun menjadi engine TensorRT.
+          Jalur bawaan TF-TRT sudah tidak ada di TensorFlow 2.18 ke atas.
+  \end{itemize}
+\end{frame}
+
+% ==========================================================
+% ACT 6
+% ==========================================================
+\acttitle{Act 6}{\fontsize{20}{24}\selectfont\bfseries Bagaimana model menghasilkan data baru?}{Memampatkan, berlomba, lalu membalik noise}
+
+% ----------------------------------------------------------
+% FRAME 60 — Diskriminatif vs generatif
+% ----------------------------------------------------------
+\begin{frame}{Dua arah: menebak label, atau menghasilkan data}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    bx/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=5pt,
+               minimum width=2.3cm, minimum height=0.85cm, align=center}]
+    \node[text=nvgreen, anchor=east, align=right] at (-0.4,1.0) {diskriminatif\\ nb01--nb04};
+    \node[bx] (im) at (1.4,1.0) {gambar};
+    \node[bx, draw=nvgreen] (m1) at (5.0,1.0) {model};
+    \node[bx] (lb) at (8.6,1.0) {label ``kaus''};
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (im) -- (m1);
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (m1) -- (lb);
+    \node[text=nvorange, anchor=east, align=right] at (-0.4,-0.9) {generatif\\ nb06};
+    \node[bx] (nz) at (1.4,-0.9) {noise atau teks};
+    \node[bx, draw=nvorange] (m2) at (5.0,-0.9) {model};
+    \node[bx] (out) at (8.6,-0.9) {gambar baru};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (nz) -- (m2);
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (m2) -- (out);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.32em}
+    \item Empat notebook pertama semuanya diskriminatif: masukan datang, model memberi label
+          atau satu angka.
+    \item Model generatif dilatih untuk hal lain: mengenali seperti apa data yang wajar, lalu
+          mengambil contoh baru dari situ.
+    \item Bahan dasarnya sesuatu yang sederhana, misalnya noise acak, yang diubah bertahap
+          menjadi data yang rumit.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 61 — Intuisi: autoencoder
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Autoencoder: peras dulu, lalu bangun ulang}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize]
+    \filldraw[fill=nvcard, draw=nvgreen, line width=0.8pt]
+      (0,-1.25) -- (0,1.25) -- (2.7,0.42) -- (2.7,-0.42) -- cycle;
+    \filldraw[fill=nvcard, draw=nvlightgreen, line width=0.8pt]
+      (5.1,0.42) -- (7.8,1.25) -- (7.8,-1.25) -- (5.1,-0.42) -- cycle;
+    \node[text=nvwhite] at (1.1,0) {encoder};
+    \node[text=nvwhite] at (6.6,0) {decoder};
+    \node[fill=nvgreen!35!nvbg, draw=nvgreen, rounded corners=3pt, text=nvwhite,
+          inner sep=4pt, align=center] (z) at (3.9,0) {32\\ angka};
+    \draw[nvgreen, -{Stealth[length=4pt]}] (2.75,0) -- (z);
+    \draw[nvlightgreen, -{Stealth[length=4pt]}] (z) -- (5.05,0);
+    \node[text=nvwhite, anchor=east, align=right] at (-0.3,0) {gambar 28 $\times$ 28\\ 784 angka};
+    \node[text=nvwhite, anchor=west, align=left] at (8.1,0) {rekonstruksi\\ 28 $\times$ 28};
+    \node[text=nvgray, anchor=north] at (3.9,-1.35) {loss = selisih gambar masuk dan gambar keluar};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.3em}
+  \nvbox{Intinya}{Kalau gambar bisa dibangun ulang dari 32 angka, maka 32 angka itu memuat
+  isi pentingnya. Decodernya kemudian bisa dipakai sendiri: masukkan 32 angka, keluar satu
+  gambar. Di situlah autoencoder mulai menjadi generator.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 62 — Latent space dan interpolasi
+% ----------------------------------------------------------
+\begin{frame}{Latent space: alamat 32 angka untuk tiap gambar}
+  \vspace{0.3em}
+  \begin{center}
+    \includegraphics[width=0.94\textwidth, height=2.0cm, keepaspectratio]{figures/latent_interp.pdf}
+  \end{center}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.32em}
+    \item Figur di atas: alamat satu digit 7 dan alamat satu digit 2 diambil, lalu jalan dari
+          alamat pertama ke alamat kedua di-decode langkah demi langkah.
+    \item Bentuk di antaranya tetap masuk akal. Berarti latent space menyimpan struktur, bukan
+          hanya memampatkan gambar satu per satu.
+    \item Titik acak yang jauh dari data justru memberi gambar kabur: autoencoder biasa tidak
+          pernah diminta merapikan seluruh ruangnya. VAE menambahkan aturan itu.
+  \end{itemize}
+  \vspace{0.2em}
+  {\footnotesize\color{nvgray}Autoencoder Dense pada MNIST, latent 32 angka, 10 epoch, seed 42.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 63 — Intuisi: GAN
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{GAN: pemalsu lukisan melawan kurator galeri}
+  \vspace{0.3em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    bx/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=5pt,
+               minimum width=2.0cm, minimum height=0.85cm, align=center}]
+    \node[bx] (nz) at (0,0.85) {noise acak};
+    \node[bx, draw=nvgreen] (g) at (3.0,0.85) {generator\\ {\color{nvgray}pemalsu}};
+    \node[bx] (fake) at (6.1,0.85) {gambar palsu};
+    \node[bx] (real) at (6.1,-0.85) {gambar asli\\ {\color{nvgray}dari MNIST}};
+    \node[bx, draw=nvorange, minimum height=1.1cm] (d) at (9.2,0) {discriminator\\ {\color{nvgray}kurator}};
+    \draw[nvgreen, -{Stealth[length=4pt]}] (nz) -- (g);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (g) -- (fake);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (fake) -- (d);
+    \draw[nvgray, -{Stealth[length=4pt]}] (real) -- (d);
+    \draw[nvorange, -{Stealth[length=4pt]}] (d) -- ++(1.9,0)
+      node[right, text=nvwhite, align=left] {asli atau\\ palsu?};
+    \draw[nvorange, line width=0.9pt, -{Stealth[length=4pt]}]
+      (d.south) -- (9.2,-1.75) -- (3.0,-1.75) -- (3.0,0.4);
+    \node[text=nvorange, anchor=north] at (6.1,-1.85)
+      {tebakan ini menjadi loss untuk keduanya};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.2em}
+  \nvbox{Intinya}{Keduanya dilatih bersamaan. Setiap kali kurator makin jeli, pemalsu terpaksa
+  membuat tiruan yang lebih meyakinkan, dan sebaliknya. Yang kita simpan di akhir hanya
+  generatornya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 64 — Mekanisme GAN dan mode collapse
+% ----------------------------------------------------------
+\begin{frame}{Digit yang lahir dari noise, epoch demi epoch}
+  \vspace{0.1em}
+  \begin{center}
+    \includegraphics[width=0.72\textwidth, height=2.7cm, keepaspectratio]{figures/gan_grid.pdf}
+  \end{center}
+  \vspace{0.1em}
+  \begin{itemize}\setlength\itemsep{0.22em}
+    \item DCGAN pada MNIST, 15 epoch, seed 42. Tiap baris memakai noise masukan yang sama,
+          jadi yang berubah hanya generatornya: epoch 1 masih berbintik, epoch 15 sebagian
+          sudah berbentuk digit yang bisa dikenali dan tidak satu pun ada di dataset.
+  \end{itemize}
+  \vspace{0.1em}
+  \jebakan{Mode collapse: generator bisa menemukan satu atau dua bentuk yang lolos terus, lalu
+  berhenti belajar variasi lain. Gejalanya keluaran yang mirip satu sama lain, jadi yang
+  diperiksa keragamannya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 65 — Diffusion
+% ----------------------------------------------------------
+\begin{frame}{Diffusion: noise ditambahkan bertahap, lalu dibalik}
+  \vspace{0.05em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize]
+    \pgfmathsetseed{42}
+    \foreach \i/\op/\nd in {0/0.95/6, 1/0.62/26, 2/0.28/65, 3/0.04/145} {
+      \draw[fill=nvcard, draw=nvgray, line width=0.5pt]
+        ({\i*3.05},-0.65) rectangle ++(1.3,1.3);
+      \node[text=nvwhite, font=\large\bfseries, opacity=\op] at ({\i*3.05+0.65},0) {7};
+      \foreach \k in {1,...,\nd}
+        \fill[nvwhite, opacity=0.5] ({\i*3.05+0.07+1.16*rnd},{-0.58+1.16*rnd}) circle (0.022);
+    }
+    \node[text=nvgray, anchor=north] at (0.65,-0.72) {gambar asli};
+    \node[text=nvgray, anchor=north] at (9.8,-0.72) {noise murni};
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (0.65,0.9) -- (9.8,0.9);
+    \node[text=nvgreen, anchor=south] at (5.2,0.98)
+      {maju: tambahkan noise sedikit demi sedikit (tidak perlu dilatih)};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (9.8,-1.3) -- (0.65,-1.3);
+    \node[text=nvorange, anchor=north] at (5.2,-1.38)
+      {balik: bersihkan selangkah demi selangkah (ini yang dipelajari model)};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.25em}
+  \begin{itemize}\setlength\itemsep{0.22em}
+    \item Melatih model diffusion dari nol butuh data dan waktu jauh di luar satu sesi kelas.
+    \item Inferensinya bertahap: satu gambar butuh beberapa sampai puluhan langkah pembersihan,
+          bukan satu lompatan seperti GAN.
+    \item Di nb06 kita memakai model pretrained SD-Turbo dengan 4 langkah, dan menyimpan gambar
+          di tiap langkah supaya prosesnya terlihat.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 66 — Peta generatif modern
+% ----------------------------------------------------------
+\begin{frame}{Peta keluarga generatif}
+  \vspace{0.2em}
+  \begin{center}
+  {\scriptsize\renewcommand{\arraystretch}{1.45}
+  \begin{tabular}{p{2.5cm}p{6.1cm}p{3.0cm}}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Keluarga} &
+    \color{nvgreen}\textbf{Ide inti} &
+    \color{nvgreen}\textbf{Contoh} \\
+    \midrule
+    Autoencoder & Peras lalu bangun ulang; decoder jadi generator & Kompresi, denoising \\
+    VAE & Latent space diatur supaya titik acak tetap wajar & Generator wajah awal \\
+    GAN & Generator berlomba melawan discriminator & StyleGAN \\
+    Diffusion & Belajar membersihkan noise bertahap & Stable Diffusion \\
+    Transformer & Menebak potongan berikutnya, berulang-ulang & GPT, Llama \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.4em}
+  \nvbox{Menuju Modul 4}{Baris terakhir itu yang kita pakai besok. Yang dihasilkan bukan pixel
+  lagi, tetapi token: satu potongan teks demi satu potongan teks.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 67 — Kapan pakai & jebakan generatif
+% ----------------------------------------------------------
+\begin{frame}{Kapan model generatif cocok, dan apa jebakannya}
+  \vspace{0.3em}
+  \kapan{
+    \item butuh contoh baru: menambah variasi data, mengisi bagian yang hilang
+    \item butuh ringkasan padat: kompresi, denoising, deteksi anomali dari galat rekonstruksi
+    \item hasilnya dinilai orang, bukan dicocokkan dengan satu jawaban
+  }{
+    \item pertanyaannya klasifikasi atau prediksi satu angka
+    \item jawabannya harus bisa diperiksa benar atau salah
+    \item data trainnya sedikit dan sempit
+  }
+  \vspace{0.5em}
+  \jebakan{Model generatif menghasilkan yang wajar menurut data trainnya, belum tentu yang
+  benar. Akurasi tidak bisa dipakai menilainya, dan di Modul 5 kita lihat satu cara mengikat
+  keluaran ke sumber yang bisa ditunjuk.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 68 — Ringkasan Act 6
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 6}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.46em}
+    \item Model diskriminatif memetakan data ke label; model generatif belajar seperti apa data
+          yang wajar, lalu menghasilkan contoh baru.
+    \item Autoencoder memampatkan gambar menjadi beberapa angka dan membangunnya ulang.
+          Decodernya bisa dipakai sendiri sebagai generator.
+    \item Latent space menyimpan struktur, terlihat dari interpolasi yang mulus. Titik acak di
+          daerah kosong masih memberi hasil kabur.
+    \item GAN melatih generator dan discriminator sebagai lawan tanding. Hasilnya bisa bagus,
+          tetapi rewel dan rentan mode collapse.
+    \item Diffusion membalik penambahan noise selangkah demi selangkah: mahal saat training,
+          bertahap saat menghasilkan gambar.
+  \end{itemize}
+\end{frame}
+
+% ==========================================================
+% ACT 7 — PENUTUP
+% ==========================================================
+
+% ----------------------------------------------------------
+% FRAME 69 — Enam notebook hari ini
+% ----------------------------------------------------------
+\begin{frame}{Enam notebook hari ini}
+  \vspace{0.3em}
+  \begin{center}
+  {\footnotesize\renewcommand{\arraystretch}{1.3}
+  \begin{tabular}{p{1.5cm}p{6.0cm}p{4.1cm}}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Notebook} &
+    \color{nvgreen}\textbf{Topik} &
+    \color{nvgreen}\textbf{Data} \\
+    \midrule
+    nb01 & Neural network pertama dengan Keras & Fashion-MNIST \\
+    nb02 & Fungsi aktivasi dan optimizer & Fashion-MNIST \\
+    nb03 & CNN dan transfer learning & CIFAR-10 \\
+    nb04 & RNN, LSTM, dan embedding & Deret sinus dan review IMDB \\
+    nb05 & GPU, mixed precision, ONNX, TensorRT & CIFAR-10 \\
+    nb06 & Autoencoder, GAN, dan diffusion & MNIST, SD-Turbo pretrained \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.5em}
+  {\footnotesize\color{nvgray}Semuanya dijalankan di Google Colab dengan runtime T4, memakai
+  \texttt{set\_seed} supaya hasilnya bisa diulang, dan setiap model dibandingkan dengan
+  baseline lebih dulu.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 70 — Apa selanjutnya
+% ----------------------------------------------------------
+\begin{frame}{Apa yang menyusul sesudah hari 2}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    md/.style={fill=nvcard, rounded corners=4pt, text=nvwhite, inner sep=7pt,
+               text width=2.72cm, align=left, anchor=north west}]
+    \node[md] at (0,0)
+      {{\bfseries\color{nvgreen}Modul 3 · NLP}\\[2pt] Teks menjadi angka: token dan
+       vektor kata};
+    \node[md] at (3.2,0)
+      {{\bfseries\color{nvlightgreen}Modul 4 · LLM}\\[2pt] Transformer dan model
+       bahasa};
+    \node[md] at (6.4,0)
+      {{\bfseries\color{nvorange}Modul 5 · RAG}\\[2pt] Menjawab dengan sumber yang bisa
+       ditunjuk};
+    \node[md] at (9.6,0)
+      {{\bfseries\color{nvgreen}Modul 6 · NVIDIA}\\[2pt] Optimasi, deploy, dan sisi
+       tanggung jawab};
+    \draw[nvgreen, -{Stealth[length=4pt]}] (2.9,-1.1) -- (3.15,-1.1);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (6.1,-1.1) -- (6.35,-1.1);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (9.3,-1.1) -- (9.55,-1.1);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.6em}
+  \begin{itemize}\setlength\itemsep{0.34em}
+    \item Bekal hari 2 yang dipakai terus: loss, gradient descent, overfitting, embedding,
+          dan cara memakai GPU.
+    \item Model urutan hari ini adalah pintu masuk ke transformer, yang dipakai Modul 3 dan
+          Modul 4 untuk teks.
+    \item Jalur ONNX dan TensorRT hari ini muncul lagi di Modul 6, kali ini untuk model bahasa.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 71 — Latihan mandiri
+% ----------------------------------------------------------
+\begin{frame}{Latihan mandiri sebelum hari 3}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.38em}
+    \item Tiap notebook punya blok \textbf{Latihan} di bagian akhir, dengan satu sel kosong
+          untuk kodemu.
+    \item Kerjakan minimal satu sebelum hari 3, dan pilih yang paling membuat penasaran.
+    \item Contohnya: di nb05 kecilkan jumlah gambar inferensi sampai keuntungan GPU hilang;
+          di nb06 ubah \texttt{LATENT\_DIM} autoencoder menjadi 8 atau 64.
+    \item Simpan hasil sebelum dan sesudah perubahan supaya perbandingannya jelas.
+  \end{itemize}
+  \vspace{0.35em}
+  \nvbox{Kebiasaan yang dibawa dari hari 2}{Sebelum menyimpulkan satu perubahan menolong,
+  catat syaratnya: data mana, berapa epoch, seed berapa, dan baseline apa.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 72 — Terima kasih
+% ----------------------------------------------------------
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[nvbg] (current page.south west) rectangle (current page.north east);
+    \fill[nvgreen] ([yshift=-3pt]current page.north west)
+      rectangle ([yshift=-7pt]current page.north east);
+    \fill[nvgreen!30] (current page.south west)
+      rectangle ([xshift=6pt]current page.north west);
+    \node[anchor=center, yshift=1.3cm,
+          font=\fontsize{30}{34}\selectfont\bfseries, text=nvgreen]
+          at (current page.center) {Terima kasih};
+    \draw[nvgreen, line width=1pt]
+      ([xshift=-4.5cm, yshift=0.4cm]current page.center)
+      -- ([xshift=4.5cm, yshift=0.4cm]current page.center);
+    \node[anchor=center, yshift=-0.3cm, font=\normalsize, text=nvwhite]
+          at (current page.center)
+          {Hari 2 selesai: dari satu neuron sampai model yang menghasilkan gambar};
+    \node[anchor=center, yshift=-1.3cm, font=\small, text=nvgray]
+          at (current page.center)
+          {Navasena Gen-ML Course \textperiodcentered{} Batch 6 \textperiodcentered{} Deep Learning Fundamentals};
+  \end{tikzpicture}
+\end{frame}
+
 \end{document}
