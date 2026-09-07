@@ -879,4 +879,667 @@
   \end{itemize}
 \end{frame}
 
+% ==========================================================
+% ACT 3
+% ==========================================================
+\acttitle{Act 3}{\fontsize{24}{28}\selectfont\bfseries Bagaimana komputer melihat gambar?}{Satu filter kecil yang sama, digeser ke seluruh gambar}
+
+% ----------------------------------------------------------
+% FRAME 28 — Piksel sebagai angka
+% ----------------------------------------------------------
+\begin{frame}{Gambar sampai ke model sebagai tabel angka}
+  \vspace{0.2em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize]
+    \foreach \row [count=\r from 0] in {%
+      {5,8,60,92,20,4},{7,35,180,205,70,6},{12,90,235,240,120,10},%
+      {9,70,220,225,95,8},{6,25,140,160,45,5},{4,7,40,55,12,3}} {
+      \foreach \v [count=\c from 0] in \row {
+        \pgfmathsetmacro{\p}{\v/2.55}
+        \fill[nvwhite!\p!nvbg] (\c*0.44,-\r*0.44) rectangle ++(0.44,-0.44);
+      }
+    }
+    \draw[nvgray, line width=0.4pt] (0,0) rectangle (2.64,-2.64);
+    \node[text=nvwhite, anchor=north] at (1.32,-2.78) {potongan gambar};
+    \draw[nvgreen, line width=1pt] (0.88,-0.88) rectangle (1.76,-1.76);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (1.82,-1.32) -- (3.15,-1.32);
+    \foreach \row [count=\r from 0] in {{235,240},{220,225}} {
+      \foreach \v [count=\c from 0] in \row {
+        \node[fill=nvcard, draw=nvgreen, text=nvwhite, minimum size=0.78cm,
+              inner sep=0pt, anchor=north west] at (3.3+\c*0.78,-0.94-\r*0.78) {\v};
+      }
+    }
+    \node[text=nvgray, anchor=north, align=center] at (4.08,-2.6)
+      {nilai tiap pixel:\\ 0 sampai 255};
+    \begin{scope}[shift={(7.2,-2.35)}]
+      \foreach \i/\lab/\col in {0/B/nvlightgreen, 1/G/nvgreen, 2/R/nvorange} {
+        \draw[\col, fill=nvcard, line width=0.8pt]
+          (\i*0.34,\i*0.34) rectangle ++(1.55,1.55);
+        \node[text=\col] at (\i*0.34+0.24,\i*0.34+1.31) {\lab};
+      }
+      \node[text=nvwhite, anchor=north, align=center] at (1.12,-0.15)
+        {gambar berwarna:\\ 3 channel};
+      \node[text=nvgray, anchor=west, align=left, font=\tiny] at (2.5,1.1)
+        {32$\times$32$\times$3\\ = 3.072 angka};
+    \end{scope}
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.1em}
+  \begin{itemize}\setlength\itemsep{0.28em}
+    \item Satu gambar Fashion-MNIST adalah 784 angka; satu gambar CIFAR-10 adalah 3.072
+          angka, karena tiap pixel punya nilai merah, hijau, dan biru.
+    \item Dense layer membaca 3.072 angka itu sebagai satu daftar panjang: pixel
+          bertetangga dan pixel di sudut berlawanan diperlakukan sama saja.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 29 — Intuisi: konvolusi
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Konvolusi: satu filter kecil digeser ke seluruh gambar}
+  \vspace{0.1em}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=4.6cm, keepaspectratio]{figures/convolution.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \vspace{0.3em}
+      \nvbox{Intinya}{Filter tepi vertikal bereaksi kuat hanya di tempat yang punya
+      perubahan terang-gelap ke arah samping. Filter yang sama digeser ke semua posisi,
+      jadi jawabannya berupa peta: di mana pola itu ditemukan.\\[0.25em]{\footnotesize
+      \color{nvgray}Kedua filter ini ditulis tangan; di CNN, angka di dalam filternya
+      dipelajari dari data.}}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 30 — Mekanisme konvolusi dan bobot yang dibagi
+% ----------------------------------------------------------
+\begin{frame}{Mekanisme konvolusi: satu jumlah berbobot per posisi}
+  \begin{center}
+  \begin{tikzpicture}[font=\tiny, scale=0.85]
+    \foreach \i in {0,...,4} \foreach \j in {0,...,4}
+      \draw[nvgray, fill=nvcard, line width=0.3pt] (\i*0.46,\j*0.46) rectangle ++(0.46,0.46);
+    \draw[nvgreen, line width=1.2pt] (0,0.92) rectangle (1.38,2.3);
+    \node[text=nvwhite, anchor=north, align=center] at (1.15,-0.15) {input 5$\times$5};
+    \foreach \i in {0,...,2} \foreach \j in {0,...,2}
+      \draw[nvlightgreen, fill=nvcard, line width=0.4pt]
+        (3.4+\i*0.46,0.92+\j*0.46) rectangle ++(0.46,0.46);
+    \node[text=nvwhite, anchor=north, align=center] at (4.09,0.77)
+      {filter 3$\times$3\\ 9 bobot + 1 bias};
+    \draw[nvgreen, -{Stealth[length=4pt]}] (1.5,1.61) -- (3.3,1.61);
+    \foreach \i in {0,...,2} \foreach \j in {0,...,2}
+      \draw[nvgray, fill=nvcard, line width=0.3pt]
+        (6.6+\i*0.46,0.92+\j*0.46) rectangle ++(0.46,0.46);
+    \fill[nvgreen] (6.6,1.84) rectangle ++(0.46,0.46);
+    \draw[nvlightgreen, -{Stealth[length=4pt]}] (5.1,1.61) -- (6.5,1.61);
+    \node[text=nvwhite, anchor=north, align=center] at (7.29,0.77)
+      {keluaran 3$\times$3};
+    \node[text=nvgray, anchor=west, align=left] at (8.3,1.61)
+      {satu kotak hijau\\ = satu posisi filter};
+  \end{tikzpicture}
+  \end{center}
+  \begin{center}
+    \color{nvlightgreen}$\displaystyle
+    \text{keluaran}(r,c) = \sum_{i,j} w_{ij}\,x_{r+i,\,c+j} + b$
+  \end{center}
+  \vspace{0.2em}
+  \begin{itemize}\setlength\itemsep{0.26em}
+    \item Bobot filternya dibagi bersama: sembilan angka yang sama dipakai di seluruh
+          gambar, jadi pola yang sama tetap dikenali walau posisinya berpindah.
+    \item \texttt{Conv2D(32, (3,3))} di nb03 memakai $32\times(3\times3\times3+1)=896$
+          parameter; satu Dense layer dari 3.072 pixel ke 1.024 neuron butuh 3.145.728 bobot.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 31 — Feature map
+% ----------------------------------------------------------
+\begin{frame}{Feature map: satu peta untuk tiap filter}
+  \vspace{0.1em}
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=4.5cm, keepaspectratio]{figures/feature_maps.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \vspace{0.3em}
+      \begin{itemize}\setlength\itemsep{0.42em}
+        \item Tiap filter menghasilkan satu feature map: kuning berarti filter itu bereaksi
+              kuat di posisi tersebut.
+        \item Delapan peta ini dari layer konvolusi pertama sebuah CNN kecil setelah satu
+              epoch. Ada yang menyorot goresan tebal, ada yang menyorot latar, ada yang
+              masih hampir kosong.
+        \item Layer berikutnya bekerja di atas peta ini, bukan di atas pixel mentah, sehingga
+              pola yang dikenalinya makin besar dan makin abstrak.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 32 — Pooling
+% ----------------------------------------------------------
+\begin{frame}{Pooling: menyusutkan peta, menyimpan yang paling kuat}
+  \vspace{0.3em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    cell/.style={fill=nvcard, draw=nvgray, text=nvwhite, minimum size=0.62cm,
+                 inner sep=0pt, anchor=north west}]
+    \foreach \row [count=\r from 0] in {{1,3,2,4},{5,6,1,0},{2,1,7,3},{0,4,2,8}}
+      \foreach \v [count=\c from 0] in \row
+        \node[cell] at (\c*0.62,-\r*0.62) {\v};
+    \draw[nvgreen, line width=1pt] (0,0) rectangle (1.24,-1.24);
+    \draw[nvgreen, line width=1pt] (1.24,0) rectangle (2.48,-1.24);
+    \draw[nvgreen, line width=1pt] (0,-1.24) rectangle (1.24,-2.48);
+    \draw[nvgreen, line width=1pt] (1.24,-1.24) rectangle (2.48,-2.48);
+    \node[text=nvwhite, anchor=north] at (1.24,-2.62) {feature map 4$\times$4};
+    \draw[nvgreen, -{Stealth[length=5pt]}] (2.9,-1.24) -- (4.6,-1.24)
+      node[midway, above, text=nvgreen, align=center] {ambil nilai\\ terbesar};
+    \foreach \row [count=\r from 0] in {{6,4},{4,8}}
+      \foreach \v [count=\c from 0] in \row
+        \node[cell, draw=nvgreen, minimum size=0.9cm] at (5.1+\c*0.9,-0.52-\r*0.9) {\v};
+    \node[text=nvwhite, anchor=north] at (6.0,-2.62) {keluaran 2$\times$2};
+    \node[text=nvgray, anchor=west, align=left] at (7.6,-1.24)
+      {ukurannya seperempat,\\ tanpa satu pun\\ bobot yang dilatih};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.4em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item \texttt{MaxPooling2D((2,2))} membagi peta menjadi petak 2$\times$2 dan menyimpan
+          nilai terbesar di tiap petak: di nb03 ukurannya turun 32 $\rightarrow$ 16
+          $\rightarrow$ 8 $\rightarrow$ 4.
+    \item Karena hanya nilai terkuat yang disimpan, pergeseran kecil pada gambar tidak
+          banyak mengubah hasilnya, dan perhitungan layer selanjutnya jadi lebih ringan.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 33 — Arsitektur CNN lengkap
+% ----------------------------------------------------------
+\begin{frame}{Arsitektur CNN nb03 dari ujung ke ujung}
+  \vspace{0.5em}
+  \begin{center}
+  \begin{tikzpicture}[font=\tiny, scale=0.97,
+    bx/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=3pt,
+               minimum width=1.5cm, minimum height=1.15cm, align=center},
+    dim/.style={text=nvgray, anchor=north, align=center, font=\tiny}]
+    \node[bx] (in) at (0,0) {Input};
+    \node[bx, draw=nvgreen] (b1) at (1.9,0) {Conv2D 32\\[1pt]\color{nvlightgreen}MaxPool};
+    \node[bx, draw=nvgreen] (b2) at (3.8,0) {Conv2D 64\\[1pt]\color{nvlightgreen}MaxPool};
+    \node[bx, draw=nvgreen] (b3) at (5.7,0) {Conv2D 128\\[1pt]\color{nvlightgreen}MaxPool};
+    \node[bx] (fl) at (7.6,0) {Flatten};
+    \node[bx, draw=nvorange] (d1) at (9.5,0) {Dense 128\\[1pt]Dropout 0,5};
+    \node[bx, draw=nvorange] (d2) at (11.4,0) {Dense 10\\[1pt]softmax};
+    \foreach \a/\b in {in/b1, b1/b2, b2/b3, b3/fl, fl/d1, d1/d2}
+      \draw[nvgreen, -{Stealth[length=4pt]}] (\a) -- (\b);
+    \node[dim] at (0,-0.72) {32$\times$32$\times$3};
+    \node[dim] at (1.9,-0.72) {16$\times$16$\times$32};
+    \node[dim] at (3.8,-0.72) {8$\times$8$\times$64};
+    \node[dim] at (5.7,-0.72) {4$\times$4$\times$128};
+    \node[dim] at (7.6,-0.72) {2.048};
+    \node[dim] at (9.5,-0.72) {128};
+    \node[dim] at (11.4,-0.72) {10};
+    \node[text=nvgreen, anchor=north, align=center] at (3.8,-1.35)
+      {tiga kali Conv $\rightarrow$ Pool: petanya menyusut, jumlah filternya bertambah};
+    \node[text=nvorange, anchor=north, align=center] at (10.45,-1.35)
+      {kepala klasifikasi};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.6em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Bagian konvolusi menyusun feature dari pixel; bagian Dense di ujung memakai
+          feature itu untuk memilih satu dari sepuluh kelas.
+    \item Setiap blok melihat wilayah yang lebih luas dari gambar aslinya, jadi layer awal
+          menangkap tepi dan layer akhir menangkap bagian objek.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 34 — Augmentasi sebagai layer
+% ----------------------------------------------------------
+\begin{frame}{Augmentasi sebagai layer di dalam model}
+  \begin{columns}[T]
+    \begin{column}{0.34\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[font=\scriptsize,
+        bx/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=4pt,
+                   minimum width=2.7cm, align=center}]
+        \node[bx] (in) at (0,0) {Input 32$\times$32$\times$3};
+        \node[bx, draw=nvorange, below=0.3cm of in] (au)
+          {RandomFlip\\ RandomRotation(0,04)\\ RandomZoom(0,1)};
+        \node[bx, below=0.3cm of au] (cv) {Conv2D, MaxPool, \dots};
+        \draw[nvgreen, -{Stealth[length=4pt]}] (in) -- (au);
+        \draw[nvgreen, -{Stealth[length=4pt]}] (au) -- (cv);
+      \end{tikzpicture}
+      \end{center}
+      \vspace{0.2em}
+      {\footnotesize\color{nvorange}Aktif saat \texttt{fit()}, mati saat evaluasi.}
+    \end{column}
+    \begin{column}{0.64\textwidth}
+      \begin{itemize}\setlength\itemsep{0.34em}
+        \item Augmentasi menambah ragam data train tanpa gambar baru: gambar yang sama
+              dibalik, diputar sedikit, atau di-zoom ulang tiap epoch.
+        \item Ragamnya dipilih sesuai datanya: kucing yang dibalik tetap kucing, tetapi
+              angka atau tulisan yang dibalik bisa berubah arti.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.15em}
+  \jebakan{Gambar train diacak sementara data validation tidak, jadi akurasi train bisa
+  terlihat lebih rendah daripada akurasi validation di awal training. Itu efek augmentasi.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 35 — Intuisi: transfer learning
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Transfer learning: meminjam mata yang sudah terlatih}
+  \vspace{0.3em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    bx/.style={fill=nvcard, rounded corners=4pt, text=nvwhite, inner sep=5pt,
+               minimum height=1.0cm, align=center}]
+    \node[bx, draw=nvgray, minimum width=2.0cm] (l1) at (0,0) {tepi dan\\ warna};
+    \node[bx, draw=nvgray, minimum width=2.0cm] (l2) at (2.5,0) {tekstur dan\\ sudut};
+    \node[bx, draw=nvgray, minimum width=2.0cm] (l3) at (5.0,0) {bagian objek:\\ roda, mata};
+    \node[bx, draw=nvgreen, minimum width=2.3cm] (hd) at (8.1,0)
+      {kepala baru:\\ 10 kelas CIFAR-10};
+    \draw[nvgray, -{Stealth[length=4pt]}] (l1) -- (l2);
+    \draw[nvgray, -{Stealth[length=4pt]}] (l2) -- (l3);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (l3) -- (hd);
+    \draw[nvgray, dashed] (-1.15,0.85) rectangle (6.15,-0.85);
+    \node[text=nvgray, anchor=north, align=center] at (2.5,-1.0)
+      {ResNet50 yang sudah dilatih di ImageNet:\\ 14 juta gambar, 1.000 kelas};
+    \node[text=nvgreen, anchor=north] at (8.1,-1.0) {dilatih dengan datamu};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.5em}
+  \nvbox{Intinya}{Layer awal model gambar mempelajari hal yang umum: tepi, warna, tekstur.
+  Bagian itu bisa dipinjam apa adanya, dan kita hanya melatih lapisan terakhir yang
+  memutuskan kelas apa yang ada di depannya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 36 — Mekanisme: bekukan backbone, latih kepala
+% ----------------------------------------------------------
+\begin{frame}{Mekanismenya: bekukan backbone, latih kepalanya}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    bx/.style={fill=nvcard, rounded corners=4pt, text=nvwhite, inner sep=5pt,
+               minimum height=1.05cm, align=center}]
+    \node[bx, draw=nvgray, minimum width=3.6cm] (bb) at (0,0)
+      {ResNet50 tanpa layer teratas\\ \texttt{trainable = False}};
+    \node[bx, draw=nvgreen, minimum width=2.4cm] (gp) at (4.3,0)
+      {GlobalAverage\\ Pooling2D};
+    \node[bx, draw=nvgreen, minimum width=2.0cm] (d1) at (7.2,0)
+      {Dense 128\\ Dropout 0,5};
+    \node[bx, draw=nvgreen, minimum width=1.9cm] (d2) at (9.9,0)
+      {Dense 10\\ softmax};
+    \draw[nvgray, -{Stealth[length=4pt]}] (bb) -- (gp);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (gp) -- (d1);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (d1) -- (d2);
+    \node[text=nvgray, anchor=north] at (0,-0.75) {bobotnya tidak diperbarui};
+    \node[text=nvgreen, anchor=north] at (7.1,-0.75) {inilah yang dilatih};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.6em}
+  \begin{itemize}\setlength\itemsep{0.34em}
+    \item Dengan \texttt{base\_model.trainable = False}, backprop berhenti di batas kepala:
+          hanya bobot kepala yang bergerak, dan bagian terbesar modelnya tetap seperti
+          hasil latihan di ImageNet.
+    \item Waktu per epochnya tidak otomatis kecil. Setiap gambar masih dihitung melewati
+          seluruh ResNet50, hanya arah baliknya yang lebih pendek.
+    \item Fine-tuning adalah langkah lanjutan: setelah kepalanya stabil, beberapa layer atas
+          backbone dibuka dan dilatih dengan learning rate kecil.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 37 — Kapan pakai transfer learning & jebakan
+% ----------------------------------------------------------
+\begin{frame}{Kapan transfer learning menolong, kapan tidak}
+  \vspace{0.3em}
+  \kapan{
+    \item datanya sedikit: ribuan gambar, bukan jutaan
+    \item resolusinya mendekati 224$\times$224
+    \item objeknya sejenis foto sehari-hari di ImageNet
+  }{
+    \item gambarnya kecil, 32$\times$32 seperti CIFAR-10
+    \item domainnya jauh dari foto biasa: citra medis, radar
+    \item datanya besar dan cukup untuk melatih CNN dari nol
+  }
+  \vspace{0.8em}
+  \jebakan{Di nb03, ResNet50 yang dibekukan tidak otomatis mengalahkan CNN kecil yang
+  dilatih dari nol pada CIFAR-10: gambar 32$\times$32 harus diperbesar dulu sebelum masuk
+  backbone yang belajar di 224$\times$224. Bandingkan keduanya di data validation.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 38 — Ringkasan Act 3
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 3}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.46em}
+    \item Gambar masuk ke model sebagai tabel angka. Konvolusi memanfaatkan kedekatan antar
+          pixel yang diabaikan Dense layer.
+    \item Satu filter kecil digeser ke seluruh gambar dan menghasilkan satu feature map.
+          Bobot yang dibagi bersama membuat parameternya jauh lebih sedikit.
+    \item Pooling menyusutkan peta dengan menyimpan nilai terkuat, tanpa menambah parameter.
+    \item Blok Conv $\rightarrow$ Pool ditumpuk sampai petanya kecil, lalu Flatten dan Dense
+          mengambil keputusan kelas.
+    \item Augmentasi sebagai layer hanya aktif saat training. Transfer learning meminjam
+          backbone terlatih dan melatih kepalanya, dan keunggulannya bergantung pada
+          resolusi serta kedekatan domain.
+  \end{itemize}
+\end{frame}
+
+% ==========================================================
+% ACT 4
+% ==========================================================
+\acttitle{Act 4}{\fontsize{26}{30}\selectfont\bfseries Bagaimana model membaca urutan?}{Satu ringkasan pendek yang dibawa dari langkah ke langkah}
+
+% ----------------------------------------------------------
+% FRAME 40 — Data berurutan
+% ----------------------------------------------------------
+\begin{frame}{Data berurutan: posisinya ikut membawa arti}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize, scale=0.9,
+    w/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=4pt,
+              minimum width=1.35cm}]
+    \node[text=nvgray, anchor=east] at (-0.3,1.9) {teks};
+    \node[w] at (0.7,1.9) {Saya};
+    \node[w] at (2.2,1.9) {suka};
+    \node[w] at (3.7,1.9) {kucing};
+    \node[text=nvgray, anchor=west] at (4.6,1.9)
+      {urutan lain, arti lain};
+    \node[text=nvgray, anchor=east] at (-0.3,0.75) {sensor suhu};
+    \draw[nvlightgreen, line width=1pt] (0.1,0.75)
+      .. controls (1.2,1.25) and (2.0,0.3) .. (3.0,0.8)
+      .. controls (4.0,1.3) and (5.2,0.35) .. (6.3,0.9);
+    \foreach \x/\y in {0.1/0.75, 3.0/0.8, 6.3/0.9}
+      \fill[nvlightgreen] (\x,\y) circle (1.4pt);
+    \node[text=nvgray, anchor=west] at (6.6,0.75) {tiap menit, berjam-jam};
+    \node[text=nvgray, anchor=east] at (-0.3,-0.55) {penjualan harian};
+    \foreach \x/\h in {0.2/0.35, 0.75/0.6, 1.3/0.45, 1.85/0.8, 2.4/0.55,
+                       2.95/0.9, 3.5/0.7, 4.05/1.05, 4.6/0.8, 5.15/1.15}
+      \fill[nvgreen] (\x,-0.95) rectangle ++(0.36,\h);
+    \node[text=nvgray, anchor=west] at (5.8,-0.55) {pola mingguan dan tren};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.4em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Mengubah urutannya mengubah artinya: urutan itu sendiri adalah informasi.
+    \item Dense layer dan CNN memproses tiap contoh tanpa membawa apa pun dari contoh
+          sebelumnya. Untuk urutan, model perlu tempat menyimpan yang sudah dibaca.
+    \item nb04 memakai gelombang sinus sebagai contoh kecil, lalu 50.000 review film IMDB
+          yang dipotong menjadi 200 kata.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 41 — Intuisi: RNN
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{RNN: satu catatan ringkas yang dibawa terus}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize]
+    \node[fill=nvcard, draw=nvgreen, rounded corners=4pt, text=nvwhite, inner sep=8pt,
+          minimum width=2.4cm, minimum height=1.5cm, align=center] (r) at (0,0)
+      {sel RNN};
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (-3.0,0) -- (r.west)
+      node[midway, above, text=nvwhite] {langkah ke-$t$};
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (r.east) -- (3.0,0)
+      node[midway, above, text=nvwhite] {keluaran};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}]
+      (r.north east) .. controls (2.0,1.7) and (-2.0,1.7) .. (r.north west);
+    \node[text=nvorange, anchor=south] at (0,1.75)
+      {hidden state: ringkasan yang dibawa ke langkah berikutnya};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.5em}
+  \nvbox{Intinya}{Modelnya membaca satu langkah pada satu waktu. Setiap langkah, catatan
+  ringkasnya diperbarui dari catatan lama dan masukan baru. Yang tersimpan bukan seluruh
+  riwayat, hanya ringkasan sepanjang beberapa puluh angka.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 42 — Mekanisme RNN
+% ----------------------------------------------------------
+\begin{frame}{Mekanisme RNN: bobot yang sama dipakai di tiap langkah}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    cell/.style={fill=nvcard, draw=nvgreen, rounded corners=4pt, text=nvwhite,
+                 inner sep=5pt, minimum width=1.6cm, minimum height=1.0cm, align=center},
+    inp/.style={text=nvwhite}]
+    \node[cell] (c1) at (0,0) {RNN};
+    \node[cell] (c2) at (3.2,0) {RNN};
+    \node[cell] (c3) at (6.4,0) {RNN};
+    \node[inp] (x1) at (0,-1.35) {$x_1$};
+    \node[inp] (x2) at (3.2,-1.35) {$x_2$};
+    \node[inp] (x3) at (6.4,-1.35) {$x_3$};
+    \foreach \a/\b in {x1/c1, x2/c2, x3/c3}
+      \draw[nvgreen, -{Stealth[length=4pt]}] (\a) -- (\b);
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (c1) -- (c2)
+      node[midway, above, text=nvorange] {$h_1$};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (c2) -- (c3)
+      node[midway, above, text=nvorange] {$h_2$};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (c3) -- (8.6,0)
+      node[midway, above, text=nvorange] {$h_3$};
+    \node[fill=nvcard, draw=nvlightgreen, rounded corners=3pt, text=nvwhite,
+          inner sep=5pt] (out) at (9.9,0) {Dense};
+    \draw[nvlightgreen, -{Stealth[length=4pt]}] (out) -- (11.2,0)
+      node[right, text=nvwhite] {prediksi};
+    \node[text=nvgray, anchor=north, align=center] at (3.2,-1.9)
+      {sel yang sama, bobot yang sama, dipakai ulang di setiap langkah};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.3em}
+  \begin{center}
+    \color{nvlightgreen}$\displaystyle
+    h_t = \tanh\left(W_x x_t + W_h h_{t-1} + b\right)$
+  \end{center}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.28em}
+    \item $W_x$ membaca masukan langkah ini, $W_h$ membaca ringkasan langkah sebelumnya.
+          Keduanya tidak berubah sepanjang urutan.
+    \item Panjang hidden state ditentukan jumlah unit: \texttt{SimpleRNN(32)} di nb04
+          membawa 32 angka antar langkah, dan keluaran langkah terakhir dipakai memprediksi.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 43 — Intuisi: vanishing gradient di urutan panjang
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Urutan panjang: pesan yang menipis di sepanjang rantai}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    cell/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=4pt,
+                 minimum width=1.15cm, minimum height=0.8cm}]
+    \node[cell] (c1) at (0,0) {$t=1$};
+    \node[cell] (c2) at (1.9,0) {$t=2$};
+    \node[text=nvgray] (dots) at (3.55,0) {\dots};
+    \node[cell] (c3) at (5.2,0) {$t=199$};
+    \node[cell] (c4) at (7.1,0) {$t=200$};
+    \node[fill=nvorange!30!nvbg, draw=nvorange, rounded corners=3pt, text=nvwhite,
+          inner sep=4pt] (ls) at (9.3,0) {loss};
+    \foreach \a/\b in {c1/c2, c2/dots, dots/c3, c3/c4, c4/ls}
+      \draw[nvgreen, -{Stealth[length=4pt]}] (\a) -- (\b);
+    \draw[nvorange, line width=1.1pt, -{Stealth[length=5pt]}] (9.3,-0.95) -- (7.1,-0.95);
+    \draw[nvorange!75!nvbg, line width=0.9pt, -{Stealth[length=5pt]}] (7.1,-0.95) -- (5.2,-0.95);
+    \draw[nvorange!45!nvbg, line width=0.7pt, -{Stealth[length=5pt]}] (5.2,-0.95) -- (1.9,-0.95);
+    \draw[nvorange!22!nvbg, line width=0.5pt, -{Stealth[length=5pt]}] (1.9,-0.95) -- (0,-0.95);
+    \node[text=nvgray, anchor=north, align=center] at (4.6,-1.25)
+      {sinyal perbaikan dikalikan ulang di tiap langkah, dan makin tipis ke arah awal urutan};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.4em}
+  \nvbox{Intinya}{Seperti permainan bisik berantai: makin panjang rantainya, makin sedikit
+  pesan awal yang selamat. Review IMDB sepanjang 200 kata berarti 200 langkah, jadi kata di
+  awal review hampir tidak lagi mempengaruhi perbaikan bobot.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 44 — LSTM: gerbang
+% ----------------------------------------------------------
+\begin{frame}{LSTM: tiga gerbang yang mengatur satu catatan}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    g/.style={fill=nvcard, draw=nvgreen, rounded corners=3pt, text=nvwhite,
+              inner sep=5pt, minimum width=1.9cm, align=center}]
+    \draw[nvlightgreen, line width=1.6pt, -{Stealth[length=6pt]}] (-1.0,1.3) -- (10.6,1.3);
+    \node[text=nvlightgreen, anchor=south west] at (-1.0,1.45)
+      {catatan (cell state) berjalan lurus dari langkah ke langkah};
+    \node[g] (f) at (0.9,-0.1) {lupa\\[1pt] \color{nvgray}buang bagian\\ catatan lama};
+    \node[g] (i) at (4.3,-0.1) {simpan\\[1pt] \color{nvgray}tulis bagian\\ masukan baru};
+    \node[g] (o) at (7.7,-0.1) {keluar\\[1pt] \color{nvgray}pilih bagian\\ yang dibaca};
+    \foreach \n in {f,i,o}
+      \draw[nvgreen, -{Stealth[length=4pt]}] (\n.north) -- ++(0,0.85);
+    \node[text=nvorange, anchor=west, align=left] at (9.4,-0.1)
+      {keluaran\\ langkah ini};
+    \draw[nvorange, -{Stealth[length=4pt]}] (o.east) -- (9.3,-0.1);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Ketiga gerbang itu bukan aturan tetap: bobotnya dilatih, jadi model belajar sendiri
+          kapan sesuatu perlu dibuang, ditulis, atau dibaca.
+    \item Catatan itu punya jalur yang tidak melewati perkalian bobot di tiap langkah,
+          sehingga informasi dari awal urutan lebih tahan sampai ke akhir.
+    \item Harganya: satu sel LSTM menyimpan lebih banyak bobot dan lebih lambat dihitung
+          daripada SimpleRNN dengan jumlah unit sama.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 45 — GRU
+% ----------------------------------------------------------
+\begin{frame}{GRU: versi ringkas dengan dua gerbang}
+  \vspace{0.2em}
+  \begin{center}
+  {\small\renewcommand{\arraystretch}{1.35}
+  \begin{tabular}{lccc}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Sel} &
+    \color{nvgreen}\textbf{Gerbang} &
+    \color{nvgreen}\textbf{Catatan terpisah} &
+    \color{nvgreen}\textbf{Parameter} \\
+    \midrule
+    SimpleRNN(32) & tidak ada              & tidak & 1.088 \\
+    GRU(32)       & update, reset          & tidak & 3.360 \\
+    LSTM(32)      & lupa, simpan, keluar   & ya    & 4.352 \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.6em}
+  \begin{itemize}\setlength\itemsep{0.32em}
+    \item GRU menggabungkan gerbang lupa dan simpan menjadi satu gerbang update, dan tidak
+          memisahkan catatan dari hidden state.
+    \item Parameter di tabel dihitung untuk 32 unit dan satu feature masukan, seperti pada
+          data sinus nb04. Lebih sedikit bobot berarti lebih ringan per langkah.
+    \item Pilihan antara GRU dan LSTM diselesaikan dengan mencoba keduanya dan
+          membandingkan hasilnya di data validation, bukan dari jumlah gerbangnya.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 46 — Embedding untuk teks
+% ----------------------------------------------------------
+\begin{frame}{Embedding: dari indeks kata ke vektor}
+  \vspace{0.3em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    bx/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=5pt,
+               align=center}]
+    \node[bx] (w) at (0,0) {kata\\ ``bagus''};
+    \node[bx, draw=nvgray] (ix) at (2.6,0) {indeks\\ 187};
+    \node[bx, draw=nvgreen, minimum height=1.5cm] (tab) at (5.6,0)
+      {tabel embedding\\ 10.000 baris\\ $\times$ 64 kolom};
+    \node[bx, draw=nvlightgreen] (vec) at (9.1,0)
+      {vektor 64 angka\\ {\color{nvgray}0,21\quad $-$0,04\quad 0,58\quad \dots}};
+    \draw[nvgreen, -{Stealth[length=4pt]}] (w) -- (ix);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (ix) -- (tab);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (tab) -- (vec);
+    \node[text=nvgray, anchor=north, align=center] at (5.6,-1.0)
+      {isi tabelnya dilatih bersama model, bukan ditetapkan sebelumnya};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Indeks kata hanyalah nomor urut di kamus. Kata bernomor 5.000 bukan dua kali
+          lipat kata bernomor 2.500, jadi angkanya tidak boleh masuk langsung ke layer.
+    \item Layer \texttt{Embedding} menukar setiap indeks dengan satu baris vektor, dan
+          barisan vektor itulah yang dibaca LSTM langkah demi langkah.
+    \item Di nb04 semua review disamakan menjadi 200 langkah: yang pendek ditambah 0.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 47 — Hasil nyata: SimpleRNN pada sinus
+% ----------------------------------------------------------
+\begin{frame}{Hasil nyata: SimpleRNN memprediksi nilai berikutnya}
+  \vspace{0.1em}
+  \begin{center}
+    \includegraphics[width=0.9\textwidth, height=3.5cm, keepaspectratio]{figures/rnn_sine.pdf}
+  \end{center}
+  \begin{itemize}\setlength\itemsep{0.24em}
+    \item \texttt{SimpleRNN(32)} membaca 20 langkah terakhir dan memprediksi satu nilai
+          berikutnya: MAE 0,0246 pada data test, satu run, seed 42, 20 epoch.
+    \item Pembandingnya baseline ``ulangi nilai terakhir yang dilihat'', dan di nb04
+          baseline itu dihitung lebih dulu supaya angka modelnya punya arti.
+    \item Pola berulang serapi ini memang mudah; deret nyata seperti penjualan atau sensor
+          punya tren dan gangguan.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 48 — Kapan pakai & jebakan
+% ----------------------------------------------------------
+\begin{frame}{Kapan model urutan cocok, dan apa jebakannya}
+  \vspace{0.3em}
+  \kapan{
+    \item urutannya bermakna, panjangnya puluhan sampai ratusan langkah
+    \item datanya deret waktu dari sensor
+    \item modelnya perlu kecil, misalnya untuk perangkat edge
+  }{
+    \item konteks jauh menentukan; transformer di Modul 3 dan 4 lebih cocok
+    \item urutannya bisa diringkas menjadi feature tabular
+    \item barisnya sebenarnya tidak berurutan
+  }
+  \vspace{0.6em}
+  \jebakan{LSTM tidak otomatis lebih baik daripada SimpleRNN. Pada urutan pendek seperti data
+  sinus nb04, keduanya bisa setara sementara LSTM memakai empat kali lebih banyak bobot.
+  Yang menentukan adalah hasil di data validation.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 49 — Ringkasan Act 4
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 4}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.46em}
+    \item Pada data berurutan, posisi ikut membawa arti, jadi modelnya perlu membawa sesuatu
+          dari langkah sebelumnya.
+    \item RNN menyimpan hidden state: satu ringkasan pendek yang diperbarui tiap langkah
+          dengan bobot yang sama di sepanjang urutan.
+    \item Makin panjang urutannya, makin tipis sinyal perbaikan yang sampai ke langkah awal.
+          Itu vanishing gradient dalam bentuk waktu.
+    \item LSTM menambahkan catatan dengan tiga gerbang terlatih; GRU melakukan hal serupa
+          dengan dua gerbang dan bobot lebih sedikit.
+    \item Teks masuk lewat layer Embedding yang menukar indeks kata menjadi vektor, dan
+          panjang urutannya disamakan lebih dulu.
+  \end{itemize}
+\end{frame}
+
 \end{document}
