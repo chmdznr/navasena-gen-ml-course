@@ -6,7 +6,7 @@ from bahasa_rules import check
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 COMMON_MARKERS = ["🏋️ Latihan", "dari 6", "Input(shape", "set_seed", "QUICK"]
-COMMON_FORBIDDEN = ["input_shape=", "input_length=", "ImageDataGenerator", "pip install -q tensorflow",
+COMMON_FORBIDDEN = ["input_length=", "ImageDataGenerator", "pip install -q tensorflow",
                     "Modul 06", "Module 0", "10-100x", "10–100x", "6x lebih cepat", "files.upload"]
 REGISTRY = {
     "01_building_first_neural_networks_tensorflow.ipynb": ["validation", "confusion_matrix", "Baseline"],
@@ -37,6 +37,9 @@ for name, markers in REGISTRY.items():
     for f in COMMON_FORBIDDEN:
         if f in src_all:
             errs.append(f"forbidden: {f}")
+    import re
+    if re.search(r"(Flatten|Dense|Conv2D|LSTM|SimpleRNN|GRU|Embedding)\([^)]*input_shape=", src_all):
+        errs.append("forbidden: input_shape= di layer (pakai Input(shape=...))")
     errs += check(src_all, limit=1)
     idx_l = [i for i, c in enumerate(nb["cells"]) if "🏋️ Latihan" in "".join(c["source"])]
     idx_r = [i for i, c in enumerate(nb["cells"]) if c["cell_type"] == "markdown" and any(
