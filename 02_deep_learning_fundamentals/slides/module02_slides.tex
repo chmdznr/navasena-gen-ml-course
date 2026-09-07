@@ -1,6 +1,6 @@
 % ============================================================
-% Module 02: Deep Learning Fundamentals
-% Custom Navasena Dark Beamer Theme
+% Modul 02: Deep Learning Fundamentals
+% Custom NVIDIA Dark Beamer Theme
 % Compiler: xelatex
 % ============================================================
 \documentclass[aspectratio=169,t]{beamer}
@@ -8,6 +8,14 @@
 % ---- Fonts (xelatex) ----------------------------------------
 \usepackage{fontspec}
 \usepackage[sfdefault]{FiraSans}
+
+% ---- Bahasa (pola pemenggalan Indonesia) --------------------
+\usepackage[indonesian]{babel}
+
+% Kata Inggris yang dipenggal salah oleh pola Indonesia
+\hyphenation{train vari-ance scal-ing de-ci-sion boost-ing gra-di-ent
+  drop-out soft-max learn-ing back-prop op-ti-mi-zer va-nish-ing
+  po-oling con-vo-lu-tion em-bed-ding}
 
 % ---- Core packages ------------------------------------------
 \usepackage{graphicx}
@@ -22,19 +30,18 @@
 \usepackage{listings}
 
 % ============================================================
-% COLOR PALETTE (Navasena dark theme)
+% COLOR PALETTE
 % ============================================================
-\definecolor{nvbg}{HTML}{1A1A2E}
-\definecolor{nvdark}{HTML}{1A1A2E}
-\definecolor{nvcard}{HTML}{2D2D44}
-\definecolor{nvgreen}{HTML}{76B900}
-\definecolor{nvlightgreen}{HTML}{A3D944}
+\definecolor{nvbg}{HTML}{1A1A2E}        % dark navy background
+\definecolor{nvdark}{HTML}{1A1A2E}     % alias for nvbg
+\definecolor{nvcard}{HTML}{2D2D44}      % card / box background
+\definecolor{nvgreen}{HTML}{76B900}     % NVIDIA green (primary accent)
+\definecolor{nvlightgreen}{HTML}{A3D944}% secondary accent
 \definecolor{nvwhite}{HTML}{FFFFFF}
-\definecolor{nvgray}{HTML}{AAAACC}
-\definecolor{nvdarkcard}{HTML}{23233A}
-\definecolor{nvred}{HTML}{EF5350}
-\definecolor{nvorange}{HTML}{FF6F00}
-\definecolor{nvblue}{HTML}{42A5F5}
+\definecolor{nvgray}{HTML}{AAAACC}      % muted text
+\definecolor{nvdarkcard}{HTML}{23233A}  % slightly darker card
+\definecolor{nvred}{HTML}{EF5350}       % accent red
+\definecolor{nvorange}{HTML}{FF6F00}    % accent orange
 
 % ============================================================
 % LISTINGS STYLE
@@ -57,949 +64,819 @@
 }
 
 % ============================================================
-% BEAMER THEME — NAVASENA DARK
+% BEAMER THEME — NVIDIA DARK
 % ============================================================
 \usetheme{default}
 \usecolortheme{default}
-
+\setbeamercolor{normal text}{fg=nvwhite, bg=nvbg}
 \setbeamercolor{background canvas}{bg=nvbg}
-\setbeamercolor{normal text}{fg=nvwhite}
 \setbeamercolor{frametitle}{fg=nvwhite, bg=nvbg}
-\setbeamercolor{framesubtitle}{fg=nvgray, bg=nvbg}
 \setbeamercolor{title}{fg=nvgreen}
+\setbeamercolor{subtitle}{fg=nvwhite}
 \setbeamercolor{author}{fg=nvgray}
 \setbeamercolor{date}{fg=nvgray}
 \setbeamercolor{item}{fg=nvgreen}
 \setbeamercolor{subitem}{fg=nvlightgreen}
 \setbeamercolor{subsubitem}{fg=nvgray}
 \setbeamercolor{block title}{fg=nvwhite, bg=nvcard}
-\setbeamercolor{block body}{fg=nvwhite, bg=nvcard}
+\setbeamercolor{block body}{fg=nvwhite, bg=nvdarkcard}
+\setbeamercolor{alerted text}{fg=nvgreen}
+\setbeamercolor{structure}{fg=nvgreen}
+\setbeamercolor{footline}{fg=nvgray, bg=nvbg}
+\setbeamercolor{section in toc}{fg=nvwhite}
 
-\setbeamertemplate{footline}{%
-  \hbox{%
-    \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1ex,leftskip=2em]{author in head/foot}%
-      \color{nvgray}\small\textbf{Deep Learning Fundamentals} \hfill \insertframenumber\,/\,\inserttotalframenumber
-    \end{beamercolorbox}%
-  }%
-}
+% Remove navigation symbols
 \setbeamertemplate{navigation symbols}{}
+
+% ---- Frame title with green underline -----------------------
+\setbeamertemplate{frametitle}{%
+  \vspace{0.3em}%
+  \begin{beamercolorbox}[wd=\paperwidth, leftskip=0.5cm]{frametitle}%
+    {\large\bfseries\insertframetitle}%
+    \ifx\insertframesubtitle\@empty\else
+      \\[0.1em]{\small\color{nvgray}\insertframesubtitle}%
+    \fi
+  \end{beamercolorbox}%
+  \begin{tikzpicture}[overlay, remember picture]
+    \draw[nvgreen, line width=1.5pt]
+      ([xshift=0.5cm, yshift=-0.1cm]current page.north west)
+      -- ([xshift=-0.5cm, yshift=-0.1cm]current page.north east);
+  \end{tikzpicture}%
+  \vspace{-0.3em}%
+}
+
+% ---- Footer -------------------------------------------------
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth, ht=2.2ex, dp=1.2ex]{footline}%
+    \hspace{0.6cm}%
+    {\footnotesize\color{nvgray}Deep Learning Fundamentals}%
+    \hfill%
+    {\footnotesize\color{nvgray}\insertframenumber\,/\,\inserttotalframenumber}%
+    \hspace{0.6cm}%
+  \end{beamercolorbox}%
+}
+
+% Remove headline
+\setbeamertemplate{headline}{}
+
+% Itemize bullets
+\setbeamertemplate{itemize item}{\color{nvgreen}\rule[0.3ex]{0.55em}{0.55em}}
+\setbeamertemplate{itemize subitem}{\color{nvlightgreen}\small$\blacktriangleright$}
 
 % ============================================================
 % CUSTOM COMMANDS
 % ============================================================
+
+% \acttitle{Act N}{Title}{Subtitle/question}
 \newcommand{\acttitle}[3]{%
   \begin{frame}[plain]
-    \vspace{1.5cm}
-    \begin{center}
-      {\color{nvgreen}\Huge\bfseries Act #1}\\[1.2em]
-      {\color{nvwhite}\Huge #2}\\[0.8em]
-      {\color{nvgray}\Large #3}
-    \end{center}
+    \begin{tikzpicture}[remember picture, overlay]
+      % Full dark background
+      \fill[nvbg] (current page.south west) rectangle (current page.north east);
+      % Subtle horizontal accent bar
+      \fill[nvgreen] ([yshift=-2pt]current page.north west)
+        rectangle ([yshift=-5pt]current page.north east);
+      % Act label (top-left, small)
+      \node[anchor=north west, xshift=1.2cm, yshift=-1.0cm,
+            font=\large\bfseries, text=nvgreen] at (current page.north west) {#1};
+      % Main title (center, large, NVIDIA green)
+      \node[anchor=center, yshift=0.5cm,
+            font=\fontsize{32}{36}\selectfont\bfseries, text=nvgreen]
+            at (current page.center) {#2};
+      % Subtitle / question (center, below, white)
+      \node[anchor=center, yshift=-1.0cm,
+            font=\large, text=nvwhite]
+            at (current page.center) {\textit{#3}};
+      % Bottom accent line
+      \draw[nvcard, line width=2pt]
+        ([xshift=2cm, yshift=2.0cm]current page.south west)
+        -- ([xshift=-2cm, yshift=2.0cm]current page.south east);
+    \end{tikzpicture}
   \end{frame}%
 }
 
-\title{Deep Learning Fundamentals}
+% Colored info box
+\newcommand{\nvbox}[2]{%
+  \begin{tikzpicture}
+    \node[fill=nvcard, rounded corners=4pt, inner sep=8pt,
+          text width=\linewidth-16pt, text=nvwhite]
+      {\textbf{\color{nvgreen}#1}\\\medskip#2};
+  \end{tikzpicture}%
+}
+
+% \intuisi{Judul} -> frametitle "Judul" + tag kecil "Intuisi" di kanan atas
+\newcommand{\intuisi}[1]{%
+  \frametitle{\makebox[\dimexpr\paperwidth-1.7cm\relax][l]{%
+    #1\hfill{\small\color{nvlightgreen}Intuisi}}}}
+
+% \jebakan{teks} -> kotak oranye
+\newcommand{\jebakan}[1]{%
+  \begin{tikzpicture}
+    \node[fill=nvorange!25!nvbg, draw=nvorange, rounded corners=4pt, inner sep=7pt,
+          text width=\linewidth-16pt, text=nvwhite]
+      {\textbf{\color{nvorange}Jebakan:} #1};
+  \end{tikzpicture}%
+}
+
+% \kapan{cocok}{kurang cocok} -> dua kolom hijau/merah
+\newcommand{\kapan}[2]{%
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvgreen}Cocok kalau}
+      \begin{itemize}#1\end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvred}Kurang cocok kalau}
+      \begin{itemize}#2\end{itemize}
+    \end{column}
+  \end{columns}%
+}
+
+% ============================================================
+% TITLE INFO
+% ============================================================
+\title{\color{nvgreen}Deep Learning Fundamentals}
 \subtitle{Navasena Gen-ML Course}
 \author{Navasena AI}
 \date{}
 
 % ============================================================
+% DOCUMENT
+% ============================================================
 \begin{document}
 
-% Slide 1 — Title
+% ==========================================================
+% ACT 0
+% ==========================================================
+
+% ----------------------------------------------------------
+% FRAME 1 — Judul
+% ----------------------------------------------------------
 \begin{frame}[plain]
-  \vspace{0.7cm}
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[nvbg] (current page.south west) rectangle (current page.north east);
+    \fill[nvgreen] ([yshift=-3pt]current page.north west)
+      rectangle ([yshift=-7pt]current page.north east);
+    \fill[nvgreen!30] (current page.south west)
+      rectangle ([xshift=6pt]current page.north west);
+    \node[anchor=center, yshift=1.6cm,
+          font=\fontsize{28}{32}\selectfont\bfseries, text=nvgreen]
+          at (current page.center) {Deep Learning Fundamentals};
+    \node[anchor=center, yshift=0.5cm, font=\large, text=nvwhite]
+          at (current page.center)
+          {Hari 2 \textperiodcentered{} Navasena Gen-ML Course \textperiodcentered{} Batch 6};
+    \draw[nvgreen, line width=1pt]
+      ([xshift=-5cm]current page.center) -- ([xshift=5cm]current page.center);
+    \node[anchor=center, yshift=-0.6cm, font=\normalsize, text=nvgray]
+          at (current page.center)
+          {6 notebook \textperiodcentered{} TensorFlow dan Keras \textperiodcentered{} Google Colab};
+    \node[anchor=center, yshift=-1.5cm, font=\small, text=nvgray]
+          at (current page.center) {Navasena AI};
+  \end{tikzpicture}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 2 — Peta hari 2
+% ----------------------------------------------------------
+\begin{frame}{Peta hari 2}
+  \vspace{0.2em}
   \begin{center}
-    {\color{nvgreen}\Huge\bfseries Module 02}\\[1.0em]
-    {\color{nvwhite}\Huge\bfseries Deep Learning Fundamentals}\\[0.6em]
-    {\color{nvgray}\Large Neural Networks dengan TensorFlow}\\[1.2em]
-
-    \begin{tikzpicture}[scale=0.72, every node/.style={transform shape},
-        nrn/.style={circle, draw=nvgreen, fill=nvcard, minimum size=0.5cm}]
-      \foreach \i/\y in {1/1,2/2,3/3} \node[nrn] (i\i) at (0,\y) {};
-      \foreach \i/\y in {1/0.5,2/1.5,3/2.5,4/3.5} \node[nrn, draw=nvlightgreen] (h\i) at (2,\y) {};
-      \foreach \i/\y in {1/1.5,2/2.5} \node[nrn, draw=nvorange] (o\i) at (4,\y) {};
-      \foreach \a in {1,2,3} \foreach \b in {1,2,3,4} \draw[nvgray, opacity=0.4] (i\a) -- (h\b);
-      \foreach \a in {1,2,3,4} \foreach \b in {1,2} \draw[nvgray, opacity=0.4] (h\a) -- (o\b);
-      \node[color=nvgray, font=\scriptsize] at (0,-0.1) {input};
-      \node[color=nvgray, font=\scriptsize] at (2,-0.1) {hidden};
-      \node[color=nvgray, font=\scriptsize] at (4,-0.1) {output};
-    \end{tikzpicture}
-
-    \vspace{0.8em}
-    {\color{nvgray}\small Navasena AI \quad $\cdot$ \quad 2026}
-  \end{center}
-\end{frame}
-
-% ── Act 1: Neural Network Pertama ─────────────────────────
-\acttitle{1}{Neural Network Pertama}{Membangun jaringan saraf pertama dengan TensorFlow}
-
-% Slide 2 — Apa itu NN
-\begin{frame}{Apa itu Neural Network?}
-  \framesubtitle{Meniru cara otak memproses informasi}
-  \begin{columns}[T]
-    \begin{column}{0.52\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Neuron}: unit pemrosesan terkecil, seperti sel saraf
-        \item \textbf{Layer}: kumpulan neuron yang bekerja bersama
-        \item \textbf{Weights} (bobot): kekuatan koneksi yang dipelajari
-        \item Alur: \textbf{input} $\to$ \textbf{hidden layers} $\to$ \textbf{output} (prediksi)
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \begin{center}
-        \includegraphics[width=\linewidth]{figures/nn_layers.png}
-      \end{center}
-    \end{column}
-  \end{columns}
-  \vspace{0.3em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
-    \small\color{white}
-    NN belajar pola dengan menyetel ribuan \textbf{weights}, bukan aturan manual. Analogi koki: weight $=$ takaran bumbu, training $=$ coba sampai pas.
-  \end{beamercolorbox}
-\end{frame}
-
-% Slide 3 — Dataset & Normalisasi
-\begin{frame}[fragile]{Dataset \& Normalisasi}
-  \framesubtitle{Fashion MNIST: 70.000 gambar pakaian}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Fashion MNIST}: 28$\times$28 grayscale, 10 kelas
-        \item 60.000 train $+$ 10.000 test; 5.000 validasi dipisah dari train
-        \item Pixel asli 0--255 $\to$ normalisasi (bagi 255) jadi 0.0--1.0
-        \item Manfaat: training stabil \& cepat, \textbf{gradient} terkendali
-      \end{itemize}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-X_train = X_train / 255.0
-X_test  = X_test  / 255.0
-      \end{lstlisting}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{center}
-      \renewcommand{\arraystretch}{1.3}
-      {\footnotesize
-      \setlength{\tabcolsep}{3pt}
-      \begin{tabular}{@{}p{0.42\linewidth}p{0.52\linewidth}@{}}
-        \toprule
-        \rowcolor{nvcard!50}
-        \textbf{Aspek} & \textbf{Nilai} \\
-        \midrule
-        Ukuran gambar & 28$\times$28 = 784 pixel \\
-        Jumlah kelas & 10 (T-shirt $\ldots$ Boot) \\
-        Pixel sebelum & 0--255 (uint8) \\
-        Pixel sesudah & 0.0--1.0 (float) \\
-        \bottomrule
-      \end{tabular}%
-      }
-      \end{center}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% Slide 4 — Membangun Model
-\begin{frame}[fragile]{Membangun Model}
-  \framesubtitle{Sequential: Flatten menuju Dense bertingkat}
-  \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Sequential}: tumpukan layer input $\to$ output
-        \item \textbf{Flatten}: 28$\times$28 jadi 784 angka
-        \item \textbf{Dense}(128) lalu Dense(64), \textbf{ReLU}
-        \item Dense(10) \textbf{Softmax}: jadi probabilitas
-        \item Total $\sim$109K \textbf{parameter} dipelajari
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.52\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-model = tf.keras.Sequential([
-  layers.Flatten(input_shape=(28,28)),
-  layers.Dense(128, activation='relu'),
-  layers.Dense(64,  activation='relu'),
-  layers.Dense(10,  activation='softmax')
-])
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small Tiap parameter $=$ satu nilai yang dipelajari; training mengoptimalkan semuanya sekaligus.}\end{center}
-\end{frame}
-
-% Slide 5 — Training & Loss
-\begin{frame}[fragile]{Training \& Loss}
-  \framesubtitle{compile lalu fit selama 20 epoch}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \texttt{compile}: butuh \textbf{loss}, \textbf{optimizer}, \textbf{metrics}
-        \item \textbf{Loss} (crossentropy): ukur seberapa salah
-        \item \textbf{Optimizer} Adam: perbaiki weights tiap langkah
-        \item \textbf{Epoch}: 1 putaran lihat semua data (per \textbf{batch})
-        \item Harapan: loss turun, train \& val rapat (hindari \textbf{overfitting})
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-model.compile(
-  loss='sparse_categorical_crossentropy',
-  optimizer='adam',
-  metrics=['accuracy'])
-history = model.fit(X_train, y_train,
-  epochs=20, batch_size=32,
-  validation_data=(X_valid, y_valid))
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% Slide 6 — Evaluasi
-\begin{frame}{Evaluasi Model}
-  \framesubtitle{Ujian akhir dengan data yang belum pernah dilihat}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Test set: tipikal $\sim$88\% accuracy (per run berbeda)
-        \item \textbf{Confusion matrix}: kelas mana sering tertukar
-        \item Shirt vs T-shirt sering tertukar (mirip visual)
-        \item Softmax beri probabilitas untuk tiap dari 10 kelas
-        \item Prediksi $=$ kelas dengan probabilitas tertinggi
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \begin{center}
-        \includegraphics[width=0.74\linewidth]{figures/confusion.pdf}
-      \end{center}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% ── Act 2: Aktivasi & Optimizer ───────────────────────────
-\acttitle{2}{Aktivasi \& Optimizer}{Membuat jaringan belajar lebih baik}
-
-% Slide 7 — Kenapa Aktivasi
-\begin{frame}[fragile]{Kenapa Perlu Aktivasi?}
-  \framesubtitle{Tanpa non-linearity, jaringan tetap satu garis lurus}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Tanpa \textbf{activation}, NN cuma jumlah \& kali
-        \item Banyak layer linear ditumpuk $=$ tetap 1 fungsi linear
-        \item \textbf{Activation} tambah \textbf{non-linearity} $\to$ kenali pola berkelok
-        \item Inti pengenalan gambar, teks, dan suara
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-layer2     = W2 @ (W1 @ x)
-W_gabungan = W2 @ W1
-satu_layer = W_gabungan @ x
-# layer2 == satu_layer (sama!)
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
-    \centering\small\color{white}
-    Tanpa activation, 100 layer $=$ 1 layer linear belaka.
-  \end{beamercolorbox}
-\end{frame}
-
-% Slide 8 — Fungsi Aktivasi Utama
-\begin{frame}{Fungsi Aktivasi Utama}
-  \framesubtitle{Bentuk dan kegunaan tiap fungsi}
-  \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{ReLU}: $\max(0,x)$; cepat, standar industri
-        \item \textbf{Sigmoid}: 0--1, cocok probabilitas
-        \item \textbf{Tanh}: -1--1, zero-centered, stabil
-        \item \textbf{LeakyReLU}: gradient kecil di sisi negatif
-        \item Risiko: \textbf{vanishing gradient}, \textbf{dead neuron}
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.52\textwidth}
-      \begin{center}
-        \includegraphics[width=\linewidth]{figures/activations.pdf}
-      \end{center}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small ReLU mendominasi hidden layer karena cepat dan sederhana.}\end{center}
-\end{frame}
-
-% Slide 9 — Softmax
-\begin{frame}{Softmax untuk Klasifikasi}
-  \framesubtitle{Mengubah logits menjadi probabilitas}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Bekerja pada seluruh output layer sekaligus
-        \item Ubah skor mentah (\textbf{logits}) jadi probabilitas
-        \item Semua probabilitas selalu berjumlah 100\%
-        \item Nilai tertinggi diperkuat eksponensial
-        \item Dipakai di output layer multi-kelas
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{center}
-      \begin{tikzpicture}[scale=0.62, every node/.style={transform shape}]
-        \foreach \x/\h/\c/\lab in {0/0.5/nvgray/2.0, 1/2.4/nvgreen/4.0, 2/0.3/nvgray/0.5, 3/0.1/nvgray/-1.0, 4/0.25/nvgray/0.1} {
-          \fill[\c] (\x,0) rectangle (\x+0.6,\h);
-          \node[color=nvgray, font=\tiny] at (\x+0.3,-0.25) {\lab};
-        }
-        \node[color=nvgreen, font=\small\bfseries] at (1.3,2.7) {0.70};
-        \node[color=nvwhite, font=\tiny, rotate=90] at (-0.5,1.4) {probabilitas};
-        \draw[->,thick,color=nvwhite] (-0.2,-0.6) -- (5,-0.6) node[right,font=\tiny]{kelas};
-      \end{tikzpicture}
-      \\[0.3em]
-      {\tiny\color{nvgray}angka bawah $=$ \textbf{logit}; tinggi batang $=$ \textbf{probabilitas} (softmax, jumlah $=1$)}
-      \end{center}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small Softmax $=$ penerjemah skor mentah ke probabilitas multi-kelas.}\end{center}
-\end{frame}
-
-% Slide 10 — Panduan Memilih Aktivasi
-\begin{frame}{Panduan Memilih Aktivasi}
-  \framesubtitle{Aturan praktis sesuai jenis layer}
-  \begin{center}
-  \renewcommand{\arraystretch}{1.3}
-  {\footnotesize
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{@{}p{0.30\linewidth}p{0.26\linewidth}p{0.36\linewidth}@{}}
-    \toprule
-    \rowcolor{nvcard!50}
-    \textbf{Situasi} & \textbf{Aktivasi} & \textbf{Alasan} \\
-    \midrule
-    Hidden layer (default) & \textbf{ReLU} & Cepat, efektif, standar \\
-    Hidden (advanced) & Swish / LeakyReLU & Performa sedikit lebih baik \\
-    Output biner & \textbf{Sigmoid} & Probabilitas Ya/Tidak (0--1) \\
-    Output multi-kelas & \textbf{Softmax} & Probabilitas tiap kelas \\
-    Output regresi & Linear (None) & Prediksi angka bebas \\
-    \bottomrule
-  \end{tabular}%
-  }
-  \end{center}
-  \vspace{0.4em}
-  \begin{center}\textcolor{nvlightgreen}{\small Default aman: ReLU di hidden, Sigmoid biner, Softmax multiclass.}\end{center}
-\end{frame}
-
-% Slide 11 — Optimizer
-\begin{frame}[fragile]{Optimizer}
-  \framesubtitle{Bagaimana model memperbaiki kesalahannya}
-  \begin{columns}[T]
-    \begin{column}{0.54\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Optimizer}: cara update \textbf{weights} via \textbf{gradient}
-        \item Analogi: turun gunung berkabut cari titik terendah
-        \item \textbf{SGD}+Momentum: langkah kecil, inersia stabil
-        \item \textbf{RMSprop}: sesuaikan langkah; cocok RNN/LSTM
-        \item \textbf{Adam}: adaptif arah + kecepatan; paling populer
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.44\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-model.compile(
-  loss='sparse_categorical'
-       '_crossentropy',
-  optimizer='adam',
-  metrics=['accuracy'])
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small Mulai selalu dengan Adam; pindah SGD+Momentum bila tak stabil.}\end{center}
-\end{frame}
-
-% ── Act 3: CNN & Transfer Learning ────────────────────────
-\acttitle{3}{CNN \& Transfer Learning}{Neural network untuk gambar}
-
-% Slide 12 — Apa itu CNN
-\begin{frame}{Apa itu CNN?}
-  \framesubtitle{Convolutional Neural Network: cara komputer melihat gambar}
-  \begin{center}
-    \includegraphics[width=0.9\textwidth]{figures/cnn_flow.png}
-  \end{center}
-  \vspace{0.2em}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Convolution}: filter kecil memindai gambar cari pola lokal
-        \item \textbf{Filter/kernel} 3$\times$3: deteksi tepi, garis, tekstur
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Pooling}: menyusutkan ukuran, simpan fitur penting
-        \item \textbf{Weights} di-share $\to$ parameter jauh lebih sedikit
-      \end{itemize}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% Slide 13 — Membangun CNN
-\begin{frame}[fragile]{Membangun CNN dari Nol}
-  \framesubtitle{Conv2D + MaxPooling2D + Dense pada CIFAR-10}
-  \begin{columns}[T]
-    \begin{column}{0.44\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{CIFAR-10}: 60K gambar warna 32$\times$32, 10 kelas
-        \item Blok \texttt{Conv2D} (\textbf{ReLU}) $\to$ \texttt{MaxPooling2D}
-        \item Tiap pooling: dimensi 32$\to$16$\to$8$\to$4, filter bertambah
-        \item \texttt{Flatten} $\to$ \texttt{Dense} $\to$ \texttt{Dropout} $\to$ \texttt{Dense(10)}
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny\color{nvwhite}]
-model = Sequential([
-  Conv2D(32,(3,3),activation='relu',padding='same',
-         input_shape=(32,32,3)),
-  MaxPooling2D(),               # 32->16
-  Conv2D(64,(3,3),activation='relu',padding='same'),
-  MaxPooling2D(),               # 16->8
-  Conv2D(128,(3,3),activation='relu',padding='same'),
-  MaxPooling2D(),               # 8->4
-  Flatten(), Dense(128,'relu'),
-  Dropout(0.5), Dense(10,'softmax')
-])
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% Slide 14 — Apa yang Dipelajari CNN
-\begin{frame}{Apa yang Dipelajari CNN?}
-  \framesubtitle{Feature maps: dari tepi sampai objek}
-  \begin{itemize}
-    \footnotesize
-    \item \textbf{Feature maps}: hasil tiap filter saat memproses gambar
-    \item Layer awal: tepi, garis, warna sederhana
-    \item Layer tengah: gabung jadi bentuk \& tekstur
-    \item Layer akhir: bagian objek (telinga, roda, sayap)
-  \end{itemize}
-  \vspace{0.4em}
-  \begin{center}
-  \begin{tikzpicture}[scale=0.9, every node/.style={transform shape},
-      box/.style={draw=nvgreen, fill=nvcard, rounded corners=4pt, text=white, font=\small, minimum width=2.3cm, minimum height=0.8cm, align=center}]
-    \node[box] (a) {Tepi \& garis};
-    \node[box, right=0.8cm of a] (b) {Bentuk \& tekstur};
-    \node[box, right=0.8cm of b] (c) {Bagian objek};
-    \draw[->,thick,color=nvgreen] (a) -- (b);
-    \draw[->,thick,color=nvgreen] (b) -- (c);
+  \begin{tikzpicture}[
+    card/.style={fill=nvcard, rounded corners=4pt, inner sep=7pt, text width=3.15cm,
+                 text=nvwhite, font=\scriptsize, anchor=north west, align=left}]
+    \node[card] at (0,0)
+      {{\bfseries\color{nvgreen}Dasar belajar}\\[2pt]
+       nb01 Neural network pertama (Fashion-MNIST)};
+    \node[card] at (4.15,0)
+      {{\bfseries\color{nvlightgreen}Aktivasi}\\[2pt]
+       nb02 Fungsi aktivasi dan optimizer};
+    \node[card] at (8.3,0)
+      {{\bfseries\color{nvorange}Gambar}\\[2pt]
+       nb03 CNN dan transfer learning (CIFAR-10)};
+    \node[card] at (0,-2.7)
+      {{\bfseries\color{nvgreen}Urutan}\\[2pt]
+       nb04 RNN dan LSTM};
+    \node[card] at (4.15,-2.7)
+      {{\bfseries\color{nvlightgreen}GPU}\\[2pt]
+       nb05 Mixed precision, ONNX, TensorRT};
+    \node[card] at (8.3,-2.7)
+      {{\bfseries\color{nvorange}Generatif}\\[2pt]
+       nb06 Autoencoder, GAN, diffusion};
   \end{tikzpicture}
   \end{center}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small CNN membangun pemahaman bertingkat secara otomatis: tepi $\to$ bentuk $\to$ objek.}\end{center}
-\end{frame}
-
-% Slide 15 — Transfer Learning
-\begin{frame}[fragile]{Transfer Learning}
-  \framesubtitle{Pakai ResNet50 yang sudah pintar}
-  \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Analogi: fasih B.Indonesia $\to$ belajar B.Melayu lebih cepat
-        \item \textbf{ResNet50} pretrained di ImageNet (14 juta gambar)
-        \item \textbf{Freeze} layer bawah: \texttt{trainable=False}
-        \item Ganti \textbf{head}: pooling $\to$ Dense $\to$ Dense(10)
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.52\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-base = ResNet50(weights='imagenet',
-  include_top=False,
-  input_shape=(32,32,3))
-base.trainable = False   # freeze
-model = Sequential([base,
-  GlobalAveragePooling2D(),
-  Dense(128,'relu'),
-  Dense(10,'softmax')])
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% Slide 16 — CNN vs Transfer Learning
-\begin{frame}{CNN dari Nol vs Transfer Learning}
-  \framesubtitle{Kapan masing-masing menang?}
-  \begin{center}
-  \renewcommand{\arraystretch}{1.3}
-  {\footnotesize
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{@{}p{0.30\linewidth}p{0.30\linewidth}p{0.34\linewidth}@{}}
-    \toprule
-    \rowcolor{nvcard!50}
-    \textbf{Aspek} & \textbf{CNN dari Nol} & \textbf{Transfer (ResNet50)} \\
-    \midrule
-    Data dibutuhkan & Banyak & Sedikit \\
-    Kecepatan latih & Lambat & Cepat (layer di-freeze) \\
-    Data berlabel terbatas & Mudah overfit & Unggul (fitur sudah jadi) \\
-    Gambar kecil (32$\times$32) & Bisa bersaing & Tidak selalu unggul \\
-    \bottomrule
-  \end{tabular}%
-  }
-  \end{center}
-  \vspace{0.3em}
-  \begin{center}\textcolor{nvlightgreen}{\small Data terbatas / gambar resolusi tinggi $\to$ transfer learning (jalan pintas standar industri).}\end{center}
-\end{frame}
-
-% ── Act 4: RNN & LSTM ─────────────────────────────────────
-\acttitle{4}{RNN \& LSTM}{Neural network untuk data berurutan}
-
-% Slide 17 — Data Berurutan & RNN
-\begin{frame}{Data Berurutan \& RNN}
-  \framesubtitle{Neural network yang punya 'memori'}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Sequential data}: urutan PENTING (teks, saham, cuaca)
-        \item "Saya suka kucing" $\neq$ "Kucing suka saya"
-        \item Dense/CNN proses tiap input independen (tanpa memori)
-        \item \textbf{RNN} ingat langkah sebelumnya via \textbf{hidden state} ($h$)
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{center}
-      \begin{tikzpicture}[scale=0.7, every node/.style={transform shape},
-          c/.style={circle, draw=nvgreen, fill=nvcard, text=white, font=\small, minimum size=0.9cm}]
-        \node[c] (h1) at (0,0) {$h_1$};
-        \node[c] (h2) at (2,0) {$h_2$};
-        \node[c] (h3) at (4,0) {$h_3$};
-        \draw[->,thick,color=nvgreen] (h1) -- (h2);
-        \draw[->,thick,color=nvgreen] (h2) -- (h3);
-        \foreach \x/\n in {0/x_1,2/x_2,4/x_3} {
-          \node[color=nvgray, font=\small] (\n) at (\x,-1.6) {$\n$};
-          \draw[->,color=nvgray] (\n) -- ++(0,1.0);
-        }
-        \node[color=nvorange, font=\small] at (5.6,0) {out};
-        \draw[->,thick,color=nvorange] (h3) -- (5.2,0);
-      \end{tikzpicture}
-      \\[0.2em]
-      {\tiny\color{nvgray}hidden state diteruskan antar timestep}
-      \end{center}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small RNN memproses input baru $+$ memori dari langkah sebelumnya (hidden state).}\end{center}
-\end{frame}
-
-% Slide 18 — RNN Prediksi Sinus
-\begin{frame}[fragile]{RNN: Prediksi Sinus}
-  \framesubtitle{Regresi deret waktu dengan SimpleRNN}
-  \begin{columns}[T]
-    \begin{column}{0.42\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Data: gelombang sinus, pola berulang
-        \item Input 50 \textbf{timesteps} $\to$ prediksi langkah ke-51
-        \item Shape: (samples, timesteps, features)
-        \item \texttt{SimpleRNN(32)} + \texttt{Dense(1)}, loss \texttt{mse}
-      \end{itemize}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny\color{nvwhite}]
-SimpleRNN(32, activation='tanh',
-  input_shape=(50, 1))
-Dense(1)  # loss='mse'
-      \end{lstlisting}
-    \end{column}
-    \begin{column}{0.56\textwidth}
-      \begin{center}
-        \includegraphics[width=\linewidth]{figures/rnn_sine.pdf}
-      \end{center}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% Slide 19 — Masalah RNN -> LSTM
-\begin{frame}{Masalah RNN $\to$ LSTM}
-  \framesubtitle{Mengatasi 'lupa' konteks panjang}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{Vanishing gradient}: urutan panjang $\to$ lupa info awal
-        \item Seperti bisik berantai: pesan rusak di ujung
-        \item \textbf{LSTM} punya \textbf{cell state} (memori jangka panjang)
-        \item \textbf{Gates}: forget (hapus), input (tulis), output (baca)
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{center}
-      \renewcommand{\arraystretch}{1.25}
-      {\scriptsize
-      \setlength{\tabcolsep}{3pt}
-      \begin{tabular}{@{}p{0.38\linewidth}p{0.28\linewidth}p{0.28\linewidth}@{}}
-        \toprule
-        \rowcolor{nvcard!50}
-        \textbf{Aspek} & \textbf{SimpleRNN} & \textbf{LSTM} \\
-        \midrule
-        Memori & Pendek & Panjang \\
-        Parameter & Sedikit & $\sim$4$\times$ lebih \\
-        Vanishing grad. & Sering & Teratasi \\
-        Kecepatan & Cepat & Lebih lambat \\
-        \bottomrule
-      \end{tabular}%
-      }
-      \end{center}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small LSTM punya 3 gates $+$ cell state agar info penting bertahan lewat banyak timestep.}\end{center}
-\end{frame}
-
-% Slide 20 — LSTM Sentimen IMDB
-\begin{frame}[fragile]{LSTM: Sentimen IMDB}
-  \framesubtitle{Klasifikasi review film positif/negatif}
-  \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Dataset \texttt{imdb}: 50.000 review berlabel
-        \item \textbf{Embedding}: kata $\to$ vektor 64 dimensi
-        \item \textbf{Padding}: samakan panjang jadi 200 kata
-        \item Output \texttt{sigmoid} 0--1: positif jika $>0.5$
-      \end{itemize}
-      \begin{center}
-      \begin{tikzpicture}[scale=0.6, every node/.style={transform shape},
-          b/.style={draw=nvgreen, fill=nvcard, rounded corners=3pt, text=white, font=\scriptsize, minimum height=0.7cm, align=center}]
-        \node[b] (r) {review};
-        \node[b, right=0.4cm of r] (e) {embed};
-        \node[b, right=0.4cm of e] (l) {LSTM};
-        \node[b, right=0.4cm of l, draw=nvorange] (o) {pos/neg};
-        \draw[->,color=nvgreen] (r)--(e); \draw[->,color=nvgreen] (e)--(l); \draw[->,color=nvorange] (l)--(o);
-      \end{tikzpicture}
-      \end{center}
-    \end{column}
-    \begin{column}{0.52\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny\color{nvwhite}]
-model = Sequential([
-  Embedding(vocab_size, 64,
-            input_length=200),
-  LSTM(64),
-  Dropout(0.3),
-  Dense(32, activation='relu'),
-  Dense(1, activation='sigmoid'),
-])
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% Slide 21 — Variasi RNN
-\begin{frame}{Variasi RNN}
-  \framesubtitle{SimpleRNN vs LSTM vs GRU}
-  \begin{center}
-  \renewcommand{\arraystretch}{1.35}
-  {\footnotesize
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{@{}p{0.18\linewidth}p{0.34\linewidth}p{0.40\linewidth}@{}}
-    \toprule
-    \rowcolor{nvcard!50}
-    \textbf{Model} & \textbf{Gates} & \textbf{Kapan dipakai} \\
-    \midrule
-    SimpleRNN & 0 (RNN dasar) & Urutan pendek ($<$ 10 langkah) \\
-    LSTM & 3 (forget/input/output) & Urutan panjang, teks, musik \\
-    GRU & 2 (update/reset) & Seimbang: cepat \& akurat \\
-    \bottomrule
-  \end{tabular}%
-  }
-  \end{center}
   \vspace{0.4em}
-  \begin{center}\textcolor{nvlightgreen}{\small Evolusi: RNN $\to$ LSTM $\to$ GRU $\to$ Transformer. Pilih sesuai panjang data.}\end{center}
+  {\footnotesize\color{nvgray}Dua act pertama membahas cara satu neural network belajar. Sisanya
+  memakai dasar itu untuk gambar, urutan, GPU, dan model generatif.}
 \end{frame}
 
-% ── Act 5: Akselerasi GPU NVIDIA ──────────────────────────
-\acttitle{5}{Akselerasi GPU NVIDIA}{Kenapa deep learning butuh GPU}
-
-% Slide 22 — Kenapa GPU
-\begin{frame}{Kenapa DL Butuh GPU?}
-  \framesubtitle{CPU vs GPU: serial vs paralel}
+% ----------------------------------------------------------
+% FRAME 3 — Jembatan dari hari 1
+% ----------------------------------------------------------
+\begin{frame}{Dari hari 1 ke hari 2}
+  \vspace{0.1em}
   \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{CPU}: sedikit core kuat, kerja \textbf{serial}
-        \item \textbf{GPU}: ribuan core sederhana, kerja \textbf{paralel}
-        \item Inti NN $=$ \textbf{matrix multiplication}, sangat paralel
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.52\textwidth}
-      \begin{center}
-      \renewcommand{\arraystretch}{1.3}
-      {\scriptsize
-      \setlength{\tabcolsep}{3pt}
-      \begin{tabular}{@{}p{0.30\linewidth}p{0.30\linewidth}p{0.34\linewidth}@{}}
-        \toprule
-        \rowcolor{nvcard!50}
-        \textbf{Aspek} & \textbf{CPU} & \textbf{GPU NVIDIA} \\
-        \midrule
-        Core & 4--16 (kuat) & Ribuan (sederhana) \\
-        Cocok & Tugas berurutan & Tugas paralel \\
-        Deep Learning & Lambat & Cepat \\
-        Contoh & i7, Ryzen & T4, A100, H100 \\
-        \bottomrule
-      \end{tabular}%
-      }
-      \end{center}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small 1 guru jenius (CPU) vs 1.000 kalkulator serentak (GPU): DL pilih yang serentak.}\end{center}
-\end{frame}
-
-% Slide 23 — Benchmark CPU vs GPU
-\begin{frame}[fragile]{Benchmark CPU vs GPU}
-  \framesubtitle{Matrix multiply, training, inference}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{center}
-        \includegraphics[width=\linewidth]{figures/gpu_benchmark.pdf}
-      \end{center}
-    \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item Uji \texttt{tf.matmul} matriks besar di CPU vs GPU
-        \item Train CNN CIFAR-10, lalu \textbf{inference} 1.000 gambar
-        \item GPU $\sim$10--100$\times$ lebih cepat (ilustratif)
-        \item Makin besar data, makin lebar selisih
-      \end{itemize}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\tiny\color{nvwhite}]
-with tf.device('/GPU:0'):
-    c = tf.matmul(a, b)
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% Slide 24 — Mixed Precision
-\begin{frame}[fragile]{Mixed Precision Training}
-  \framesubtitle{Campur FP16 dan FP32}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{float16} (cepat): forward \& backward pass
-        \item \textbf{float32}: bobot master \& akumulasi \textbf{gradient}
-        \item \textbf{Tensor Cores} NVIDIA percepat operasi float16
-        \item Hemat memori $\sim$50\%, akurasi nyaris tetap
+      \textbf{\color{nvlightgreen}ML klasik (hari 1)}
+      \vspace{0.4em}
+      \begin{itemize}\setlength\itemsep{0.42em}
+        \item Feature dipilih dan dirancang manusia: kolom umur, gaji, durasi
+        \item Data tabular, satu baris satu contoh
+        \item Modelnya kecil, koefisiennya bisa dibaca satu per satu
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{lstlisting}[language=Python, basicstyle=\ttfamily\scriptsize\color{nvwhite}]
-from tensorflow.keras import \
-     mixed_precision
-mixed_precision.set_global_policy(
-     'mixed_float16')
-# output tetap float32
-Dense(10, 'softmax', dtype='float32')
-      \end{lstlisting}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small Lebih cepat $+$ hemat memori; dipakai melatih GPT, Stable Diffusion, Gemini.}\end{center}
-\end{frame}
-
-% Slide 25 — NVIDIA Ecosystem & TensorRT
-\begin{frame}{NVIDIA Ecosystem \& TensorRT}
-  \framesubtitle{Dari hardware sampai inference cepat}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{itemize}
-        \footnotesize
-        \item \textbf{TensorRT}: optimasi model terlatih untuk inference
-        \item Trik: layer fusion + precision calibration + auto-tuning
-        \item Inference 2--5$\times$ lebih cepat lewat \textbf{TF-TRT} (FP16)
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{center}
-      \renewcommand{\arraystretch}{1.2}
-      {\scriptsize
-      \setlength{\tabcolsep}{4pt}
-      \begin{tabular}{@{}p{0.34\linewidth}p{0.56\linewidth}@{}}
-        \toprule
-        \rowcolor{nvcard!50}
-        \textbf{Layer} & \textbf{Komponen} \\
-        \midrule
-        Tools & NGC, NeMo, Triton \\
-        Framework & TensorFlow, PyTorch \\
-        Library & cuDNN, cuBLAS, TensorRT \\
-        Runtime & CUDA \\
-        Hardware & T4, A100, H100 \\
-        \bottomrule
-      \end{tabular}%
-      }
-      \end{center}
-    \end{column}
-  \end{columns}
-  \vspace{0.2em}
-  \begin{center}\textcolor{nvlightgreen}{\small Dibaca dari bawah (Hardware) ke atas (Tools) --- fondasi semua modul berikutnya.}\end{center}
-\end{frame}
-
-% ============================================================
-% ACT 6: GENERATIVE AI
-% ============================================================
-\acttitle{6}{Generative AI}{Saat neural network mencipta, bukan hanya mengenali}
-
-\begin{frame}{Diskriminatif vs Generatif}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      {\color{nvgreen}\textbf{Diskriminatif (Act 1--5)}}
-      \begin{itemize}
-        \item Input data $\to$ output \textbf{label/angka}
-        \item ``Gambar ini kucing atau anjing?''
-        \item Belajar \textbf{batas} antar kelas
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      {\color{nvorange}\textbf{Generatif (Act 6)}}
-      \begin{itemize}
-        \item Noise/konteks $\to$ output \textbf{data baru}
-        \item ``Buatkan gambar digit yang meyakinkan''
-        \item Belajar \textbf{distribusi} data itu sendiri
+      \textbf{\color{nvgreen}Deep learning (hari 2)}
+      \vspace{0.4em}
+      \begin{itemize}\setlength\itemsep{0.42em}
+        \item Feature dipelajari dari data mentah: pixel, urutan kata
+        \item Gambar, teks, dan sinyal berurutan
+        \item Modelnya berlapis, jumlah parameternya ratusan ribu ke atas
       \end{itemize}
     \end{column}
   \end{columns}
   \vspace{0.5em}
-  \begin{center}
-    {\color{nvgray}\small Fondasi ChatGPT \& Stable Diffusion --- dan jembatan kita menuju Module 04 (LLM)}
-  \end{center}
+  \nvbox{Yang tidak berubah}{Alur kerjanya sama seperti hari 1: pisahkan data train,
+  validation, dan test; bandingkan dengan baseline; pilih model di data validation.
+  Yang berubah adalah bentuk modelnya dan dari mana featurenya datang.}
 \end{frame}
 
-\begin{frame}{Autoencoder \& Latent Space}
-  \begin{itemize}
-    \item Encoder memampatkan 784 pixel $\to$ \textbf{32 angka} (latent); decoder merekonstruksi
-    \item Decoder pada dasarnya = \textbf{generator}: vektor angka $\to$ gambar
-    \item Latent space menyimpan \textbf{struktur}: titik di antara dua digit juga valid
+% ==========================================================
+% ACT 1
+% ==========================================================
+\acttitle{Act 1}{\fontsize{26}{30}\selectfont\bfseries Bagaimana neural network belajar?}{Satu angka kesalahan, lalu diperbaiki sedikit demi sedikit}
+
+% ----------------------------------------------------------
+% FRAME 5 — Intuisi: satu neuron
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Satu neuron: jumlah berbobot, lalu diputuskan}
+  \vspace{0.2em}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.95, font=\scriptsize,
+    inp/.style={circle, fill=nvcard, text=nvwhite, minimum size=0.62cm, inner sep=0pt},
+    box/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=5pt}]
+    \node[inp] (x1) at (0,1.5) {$x_1$};
+    \node[inp] (x2) at (0,0.6) {$x_2$};
+    \node[inp] (x3) at (0,-0.3) {$x_3$};
+    \node[circle, draw=nvgreen, line width=1pt, fill=nvbg, text=nvwhite,
+          minimum size=1.0cm] (s) at (3.6,0.6) {$\Sigma$};
+    \node[box] (act) at (6.4,0.6) {aktivasi};
+    \node[text=nvgray] (b) at (3.6,-1.5) {bias $b$};
+    \draw[nvgreen, -{Stealth[length=4pt]}] (x1) -- node[above, sloped, text=nvlightgreen, font=\tiny] {$w_1$} (s);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (x2) -- node[above, sloped, text=nvlightgreen, font=\tiny] {$w_2$} (s);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (x3) -- node[below, sloped, text=nvlightgreen, font=\tiny] {$w_3$} (s);
+    \draw[nvgray, -{Stealth[length=4pt]}] (b) -- (s);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (s) -- (act);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (act) -- ++(2.1,0)
+      node[right, text=nvwhite] {keluaran};
+    \node[text=nvgray, font=\tiny, anchor=east] at (2.55,-1.5) {$w_1x_1+w_2x_2+w_3x_3+b$};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.2em}
+  \nvbox{Intinya}{Bobot adalah takaran: seberapa besar tiap masukan ikut dihitung. Bias
+  menggeser hasilnya. Aktivasi menentukan bentuk keluaran neuron.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 6 — Layer dan arsitektur
+% ----------------------------------------------------------
+\begin{frame}{Dari satu neuron ke satu arsitektur}
+  \vspace{0.1em}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.92, font=\tiny,
+    n/.style={circle, fill=nvlightgreen, minimum size=0.24cm, inner sep=0pt}]
+    \foreach \y in {0,1,2,3} { \node[n] (a\y) at (0,\y*0.72) {}; }
+    \foreach \y in {0,1,2,3} { \node[n] (b\y) at (3.0,\y*0.72) {}; }
+    \foreach \y in {0,1,2}   { \node[n] (c\y) at (6.0,\y*0.72+0.36) {}; }
+    \foreach \y in {0,1,2}   { \node[n] (d\y) at (9.0,\y*0.72+0.36) {}; }
+    \foreach \i in {0,1,2,3} \foreach \j in {0,1,2,3}
+      \draw[nvcard, line width=0.35pt] (a\i) -- (b\j);
+    \foreach \i in {0,1,2,3} \foreach \j in {0,1,2}
+      \draw[nvcard, line width=0.35pt] (b\i) -- (c\j);
+    \foreach \i in {0,1,2} \foreach \j in {0,1,2}
+      \draw[nvcard, line width=0.35pt] (c\i) -- (d\j);
+    \node[text=nvwhite, anchor=north, align=center] at (0,-0.45)
+      {\textbf{784}\\ pixel\\ (Flatten)};
+    \node[text=nvwhite, anchor=north, align=center] at (3.0,-0.45)
+      {\textbf{128}\\ Dense\\ ReLU};
+    \node[text=nvwhite, anchor=north, align=center] at (6.0,-0.45)
+      {\textbf{64}\\ Dense\\ ReLU};
+    \node[text=nvwhite, anchor=north, align=center] at (9.0,-0.45)
+      {\textbf{10}\\ Dense\\ softmax};
+    \node[text=nvgray, anchor=west] at (10.1,1.1) {tiap neuron};
+    \node[text=nvgray, anchor=west] at (10.1,0.75) {terhubung ke};
+    \node[text=nvgray, anchor=west] at (10.1,0.4) {semua neuron};
+    \node[text=nvgray, anchor=west] at (10.1,0.05) {layer sebelumnya};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.4em}
+  \begin{itemize}\setlength\itemsep{0.28em}
+    \item Flatten menggelar gambar 28$\times$28 menjadi satu baris berisi 784 angka.
+    \item Dua hidden layer menyusun feature: layer berikutnya bekerja di atas keluaran
+          layer sebelumnya.
+    \item Output layer punya 10 neuron, satu untuk tiap kategori pakaian.
   \end{itemize}
-  \begin{center}
-    \includegraphics[width=0.85\linewidth]{figures/latent_interp.pdf}
-  \end{center}
-  {\color{nvgray}\small Tapi: sampling \emph{acak} dari latent space AE hasilnya kabur --- AE tidak dilatih untuk mencipta. Kita butuh GAN.}
 \end{frame}
 
-\begin{frame}{GAN: Generator vs Discriminator}
+% ----------------------------------------------------------
+% FRAME 7 — Bobot dan bias
+% ----------------------------------------------------------
+\begin{frame}{Yang berubah saat model belajar}
+  \vspace{0.6em}
   \begin{center}
-    \includegraphics[width=0.92\linewidth]{figures/gan_architecture.png}
+  {\small\renewcommand{\arraystretch}{1.3}
+  \begin{tabular}{lrrr}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Layer} &
+    \color{nvgreen}\textbf{Bobot} &
+    \color{nvgreen}\textbf{Bias} &
+    \color{nvgreen}\textbf{Parameter} \\
+    \midrule
+    Dense 128 (ReLU)    & $784\times128$ & 128 & 100.480 \\
+    Dense 64 (ReLU)     & $128\times64$  & 64  & 8.256 \\
+    Dense 10 (softmax)  & $64\times10$   & 10  & 650 \\
+    \midrule
+    \textbf{Total}      &                &     & \textbf{109.386} \\
+    \bottomrule
+  \end{tabular}}
   \end{center}
+  \vspace{0.7em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Seratus ribu angka ini dimulai dari nilai acak, lalu diperbaiki selama training.
+    \item Jumlah layer, jumlah neuron, dan learning rate kamu tentukan sebelum training;
+          ketiganya bukan hasil training.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 8 — Loss
+% ----------------------------------------------------------
+\begin{frame}{Loss: satu angka yang mengukur seberapa salah}
+  \vspace{0.5em}
+  \begin{center}
+    \color{nvlightgreen}$\displaystyle \text{loss satu contoh} = -\log\left(p_{\text{kelas benar}}\right)$
+  \end{center}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.42em}
+    \item Model mengeluarkan satu probabilitas untuk tiap kelas. Loss hanya melihat
+          probabilitas yang diberikan ke kelas yang benar.
+    \item Probabilitas 0,85 untuk kelas yang benar memberi loss kecil; 0,05 memberi loss besar.
+    \item Loss seluruh batch adalah rata-rata loss tiap contohnya. Angka inilah yang
+          diperkecil saat training.
+  \end{itemize}
+  \vspace{0.5em}
+  {\footnotesize\color{nvgray}Namanya di Keras: \texttt{sparse\_categorical\_crossentropy}.
+  Accuracy dilaporkan untuk kita baca; loss yang dipakai model untuk memperbaiki diri.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 9 — Intuisi: gradient descent
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Gradient descent: menuruni bukit dalam kabut}
+  \vspace{0.1em}
+  \begin{center}
+    \includegraphics[width=0.96\textwidth, height=3.4cm, keepaspectratio]{figures/gradient_descent.pdf}
+  \end{center}
+  \vspace{0.1em}
+  \nvbox{Intinya}{Bentuk seluruh bukitnya tidak diketahui. Yang bisa diukur hanya kemiringan
+  di titik sekarang; satu langkah diambil ke arah menurun, lalu diulang sampai kemiringannya
+  mendekati nol.\\[0.3em]{\footnotesize\color{nvgray}Ketiga panel: fungsi sama, ukuran langkah berbeda.}}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 10 — Learning rate
+% ----------------------------------------------------------
+\begin{frame}{Learning rate: ukuran langkah dan gejalanya}
   \vspace{0.3em}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{itemize}
-        \item \textbf{Generator} = pemalsu: noise $\to$ gambar palsu
-        \item \textbf{Discriminator} = kurator: asli atau palsu?
+      \textbf{\color{nvlightgreen}Terlalu kecil}
+      \vspace{0.35em}
+      \begin{itemize}\setlength\itemsep{0.38em}
+        \item Loss turun, tetapi sangat lambat
+        \item Panel kiri: 12 langkah belum sampai ke dasar
+        \item Epoch habis sebelum modelnya selesai belajar
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
-      \begin{itemize}
-        \item Dilatih \textbf{bersamaan} dalam satu langkah --- saling memaksa jadi lebih baik
-        \item DCGAN: generator \texttt{Conv2DTranspose}, discriminator \texttt{Conv2D}
+      \textbf{\color{nvred}Terlalu besar}
+      \vspace{0.35em}
+      \begin{itemize}\setlength\itemsep{0.38em}
+        \item Langkahnya melewati dasar, lalu menjauh
+        \item Panel kanan: nilai $w$ makin jauh tiap langkah
+        \item Loss naik-turun tanpa arah, atau menjadi NaN
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.9em}
+  \jebakan{Adam memakai learning rate 0,001 sebagai nilai default. Itu titik awal yang
+  wajar, bukan angka yang cocok untuk semua data. Kalau loss diam saja atau meledak sejak
+  epoch pertama, ubah dulu learning ratenya sebelum menambah layer.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 11 — Intuisi: backprop
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Backprop: kesalahan dibagi ke belakang}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    lay/.style={fill=nvcard, rounded corners=4pt, text=nvwhite, inner sep=6pt,
+                minimum height=0.95cm, minimum width=1.85cm, align=center}]
+    \node[lay] (i)  at (0,0)    {input};
+    \node[lay] (h1) at (2.85,0) {hidden 1};
+    \node[lay] (h2) at (5.7,0)  {hidden 2};
+    \node[lay] (o)  at (8.55,0) {keluaran};
+    \node[fill=nvorange!30!nvbg, draw=nvorange, rounded corners=4pt, text=nvwhite,
+          inner sep=5pt] (l) at (11.1,0) {loss};
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (i) -- (h1);
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (h1) -- (h2);
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (h2) -- (o);
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (o) -- (l);
+    \node[text=nvgreen, anchor=south] at (5.7,0.62) {maju: hitung prediksi};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (11.1,-1.1) -- (8.55,-1.1);
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (8.55,-1.1) -- (5.7,-1.1);
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (5.7,-1.1) -- (2.85,-1.1);
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (2.85,-1.1) -- (0,-1.1);
+    \node[text=nvorange, anchor=north] at (5.7,-1.35) {mundur: bagi kesalahan ke tiap bobot};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.4em}
+  \nvbox{Intinya}{Setelah loss dihitung di keluaran, tiap bobot menerima satu angka:
+  seberapa besar sumbangannya terhadap kesalahan itu. Bobot yang menyumbang lebih banyak
+  digeser lebih jauh.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 12 — Epoch dan batch
+% ----------------------------------------------------------
+\begin{frame}{Epoch, batch, dan satu langkah perbaikan}
+  \vspace{0.3em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    b/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=4pt,
+              minimum width=1.35cm, minimum height=0.62cm}]
+    \node[text=nvgray, anchor=east] at (-0.35,0) {1 epoch};
+    \node[b] (b1) at (0.8,0) {batch 1};
+    \node[b] (b2) at (2.45,0) {batch 2};
+    \node[b] (b3) at (4.1,0) {batch 3};
+    \node[text=nvgray] at (5.5,0) {\dots};
+    \node[b] (b4) at (7.4,0) {batch 1.718};
+    \foreach \n in {b1,b2,b3,b4}
+      \draw[nvgreen, -{Stealth[length=4pt]}] (\n.south) -- ++(0,-0.5);
+    \node[text=nvgreen, anchor=north, align=center] at (0.8,-0.9) {bobot\\ diperbarui};
+    \node[text=nvgreen, anchor=north, align=center] at (2.45,-0.9) {bobot\\ diperbarui};
+    \node[text=nvgreen, anchor=north, align=center] at (4.1,-0.9) {bobot\\ diperbarui};
+    \node[text=nvgreen, anchor=north, align=center] at (7.4,-0.9) {bobot\\ diperbarui};
+    \draw[nvgray, -{Stealth[length=4pt]}] (8.55,0) -- (9.75,0)
+      node[right, text=nvwhite, align=left] {epoch\\ berikutnya};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.34em}
+    \item Satu batch berisi 32 gambar yang dihitung bersama. Bobot diperbarui sekali
+          untuk setiap batch.
+    \item Satu epoch berarti seluruh data train dilewati sekali: 55.000 gambar dibagi 32
+          memberi 1.718 langkah perbaikan.
+    \item Batch lebih besar membuat arah langkahnya lebih tenang, tetapi butuh memori
+          lebih besar dan langkahnya lebih sedikit per epoch.
+  \end{itemize}
+  \vspace{0.3em}
+  {\footnotesize\color{nvgray}Angka ini dari nb01: 55.000 data train, 5.000 validation,
+  10.000 test.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 13 — Kurva train vs validation
+% ----------------------------------------------------------
+\begin{frame}{Kurva train dan validation dibaca berdampingan}
+  \vspace{0.1em}
+  \begin{center}
+    \includegraphics[width=0.84\textwidth, height=3.4cm, keepaspectratio]{figures/train_curves.pdf}
+  \end{center}
+  \vspace{0.1em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Kedua kurva loss masih turun bersama, dan akurasi validation berhenti di
+          sekitar 0,88.
+    \item Kalau loss validation mulai naik sementara loss train terus turun, model mulai
+          menghafal data train.
+    \item Pada run ini val\_loss terendah jatuh di epoch terakhir, jadi 8 epoch belum
+          cukup untuk melihat titik baliknya.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 14 — Overfitting: dropout dan early stopping
+% ----------------------------------------------------------
+\begin{frame}{Overfitting: melebarnya jarak train dan validation}
+  \begin{center}
+    \includegraphics[width=0.64\textwidth, height=2.8cm, keepaspectratio]{figures/overfit_curves.pdf}
+  \end{center}
+  \begin{itemize}\setlength\itemsep{0.24em}
+    \item Model yang sama pada 6.000 sampel train: jaraknya 0,56 tanpa dropout dan 0,18
+          dengan Dropout(0,5).
+    \item Dropout mematikan sebagian neuron secara acak tiap batch; early stopping
+          berhenti saat val\_loss tidak lagi turun.
+  \end{itemize}
+  \jebakan{Dropout hanya aktif saat training. Loss validation yang lebih rendah daripada
+  loss train bukan keajaiban: saat evaluasi, dropoutnya dimatikan.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 15 — Normalisasi input
+% ----------------------------------------------------------
+\begin{frame}{Normalisasi input: dari 0--255 ke 0,0--1,0}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize]
+    \shade[left color=nvbg, right color=nvwhite, draw=nvgray]
+      (0,1.1) rectangle (7.5,1.75);
+    \node[text=nvwhite, anchor=east] at (-0.3,1.42) {nilai pixel};
+    \node[text=nvgray, anchor=north] at (0,1.05) {0};
+    \node[text=nvgray, anchor=north] at (7.5,1.05) {255};
+    \shade[left color=nvbg, right color=nvlightgreen, draw=nvgray]
+      (0,-0.35) rectangle (7.5,0.3);
+    \node[text=nvwhite, anchor=east] at (-0.3,-0.02) {setelah dibagi 255};
+    \node[text=nvgray, anchor=north] at (0,-0.4) {0,0};
+    \node[text=nvgray, anchor=north] at (7.5,-0.4) {1,0};
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (8.2,1.42)
+      .. controls (9.3,1.42) and (9.3,-0.02) .. (8.2,-0.02);
+    \node[text=nvgreen, anchor=west] at (9.5,0.7) {dibagi 255};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.6em}
+  \begin{itemize}\setlength\itemsep{0.34em}
+    \item Masukan dengan rentang besar membuat gradientnya besar juga, sehingga langkah
+          gradient descent sulit diatur dengan satu learning rate.
+    \item Untuk pixel, pembaginya konstanta 255. Untuk data tabular, statistik scalingnya
+          dihitung dari data train saja, lalu dipakai apa adanya ke validation dan test.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 16 — Evaluasi multi-kelas
+% ----------------------------------------------------------
+\begin{frame}{Evaluasi multi-kelas: akurasi saja belum cukup}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=4.65cm, keepaspectratio]{figures/confusion.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+      \vspace{0.3em}
+      \begin{itemize}\setlength\itemsep{0.42em}
+        \item Akurasi test 87,4\% pada model Dense(128) di gambar ini: satu run, seed 42,
+              data test disentuh sekali.
+        \item Diagonal berisi prediksi yang benar. Sel di luar diagonal menunjukkan kelas
+              apa tertukar dengan apa.
+        \item Pasangan yang paling sering tertukar dihitung dari matriksnya, dan bisa
+              berbeda tiap kali model dilatih ulang.
+        \item Kelas dengan bentuk khas lebih jarang tertukar daripada kelas yang
+              potongannya mirip.
       \end{itemize}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{DCGAN: Digit Lahir dari Noise}
-  \begin{center}
-    \includegraphics[width=0.8\linewidth]{figures/gan_grid.pdf}
-  \end{center}
-  \begin{itemize}
-    \item Noise input \textbf{sama} di tiap baris --- yang berubah hanya kemampuan generator
-    \item Epoch 1: noise berbintik $\to$ epoch 15: mayoritas berbentuk digit
-    \item Catatan jujur: GAN rewel ---  \emph{mode collapse} (variasi macet) sering terjadi
+% ----------------------------------------------------------
+% FRAME 17 — Ringkasan Act 1
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 1}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.46em}
+    \item Satu neuron menghitung jumlah berbobot dari masukannya, menambah bias, lalu
+          melewatkannya ke aktivasi. Layer adalah kumpulan neuron seperti itu.
+    \item Loss meringkas kesalahan menjadi satu angka. Gradient descent menurunkannya
+          dengan langkah kecil ke arah menurun, dan backprop membagi kesalahan itu ke
+          tiap bobot.
+    \item Learning rate menentukan ukuran langkah: terlalu kecil membuat training lambat,
+          terlalu besar membuatnya meledak.
+    \item Kurva train dan validation dibaca bersama. Jarak yang melebar adalah tanda
+          overfitting, dan dropout serta early stopping menahannya.
+    \item Untuk klasifikasi banyak kelas, confusion matrix menunjukkan kesalahan yang
+          tidak terlihat dari angka akurasi.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Peta Generative AI Modern}
-  \setlength{\tabcolsep}{3pt}
-  {\small
-  \begin{tabular}{p{0.2\linewidth}p{0.42\linewidth}p{0.28\linewidth}}
-    {\color{nvgreen}\textbf{Keluarga}} & {\color{nvgreen}\textbf{Ide inti}} & {\color{nvgreen}\textbf{Contoh}} \\
-    \hline
-    VAE & latent space diatur supaya bisa di-sampling & generator wajah awal \\
-    GAN & generator vs discriminator berlomba & StyleGAN, deepfake \\
-    Diffusion & generate = denoise bertahap dari noise murni & Stable Diffusion, DALL-E \\
-    Autoregressive & prediksi token berikutnya, berulang & GPT, ChatGPT, Llama \\
-  \end{tabular}}
-  \vspace{0.6em}
-  \begin{itemize}
-    \item Benang merah: semua \textbf{belajar distribusi data}, lalu sampling darinya
-    \item ChatGPT $\approx$ DCGAN kamu: sama-sama generator --- bedanya token, bukan pixel
-  \end{itemize}
-  \vspace{0.3em}
-  {\color{nvlightgreen}\small $\Rightarrow$ Module 04: hands-on dengan generator teks (LLM)}
-\end{frame}
+% ==========================================================
+% ACT 2
+% ==========================================================
+\acttitle{Act 2}{\fontsize{28}{32}\selectfont\bfseries Kenapa butuh aktivasi?}{Tanpa aktivasi, seratus layer sama saja dengan satu layer}
 
-% Slide 26 — Ringkasan
-\begin{frame}{Ringkasan Modul 02}
+% ----------------------------------------------------------
+% FRAME 19 — Tanpa aktivasi tetap linear
+% ----------------------------------------------------------
+\begin{frame}{Tanpa aktivasi, tumpukan layer tetap satu garis}
+  \vspace{0.4em}
   \begin{center}
-  \renewcommand{\arraystretch}{1.3}
-  {\scriptsize
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{@{}p{0.05\linewidth}p{0.26\linewidth}p{0.34\linewidth}p{0.27\linewidth}@{}}
-    \toprule
-    \rowcolor{nvcard!50}
-    \textbf{Act} & \textbf{Topik} & \textbf{Inti} & \textbf{Praktik} \\
-    \midrule
-    1 & Neural Network & Layer, weights, training & Fashion MNIST \\
-    2 & Aktivasi \& Optimizer & Non-linearity, Adam & Activation comparison \\
-    3 & CNN \& Transfer Learning & Convolution, ResNet50 & CIFAR-10 \\
-    4 & RNN \& LSTM & Hidden state, gates & Sinus, IMDB \\
-    5 & GPU NVIDIA & Paralelisme, mixed precision & Benchmark, TensorRT \\
-    6 & Generative AI & Autoencoder \& DCGAN & Network yang mencipta, jembatan ke LLM \\
-    \bottomrule
-  \end{tabular}%
-  }
-  \end{center}
-\end{frame}
-
-% Slide 27 — Lanjutan
-\begin{frame}{Lanjutan: Modul 03 -- NLP}
-  \begin{itemize}
-    \item[\textcolor{nvgreen}{\checkmark}] Module 03: \textbf{NLP} --- memproses bahasa manusia
-    \item[\textcolor{nvgreen}{\checkmark}] Module 04: \textbf{LLM} (Large Language Models)
-    \item[\textcolor{nvgreen}{\checkmark}] Module 05: \textbf{RAG} \quad $\cdot$ \quad Module 06: \textbf{NVIDIA ecosystem}
-  \end{itemize}
-  \vspace{0.8em}
-  \begin{center}
-  \begin{tikzpicture}[scale=0.9, every node/.style={transform shape},
-      b/.style={draw=nvcard, fill=nvcard, rounded corners=6pt, text=white, font=\small, minimum width=2.2cm, minimum height=0.8cm, align=center}]
-    \node[b] (dl) {Deep Learning\\(kita di sini)};
-    \node[b, right=1cm of dl] (nlp) {NLP\\(selanjutnya)};
-    \node[b, right=1cm of nlp] (llm) {LLM};
-    \draw[->,thick,color=nvgreen] (dl) -- (nlp);
-    \draw[->,thick,color=nvgreen] (nlp) -- (llm);
+  \begin{tikzpicture}[font=\scriptsize,
+    lay/.style={fill=nvcard, rounded corners=4pt, text=nvwhite, inner sep=6pt,
+                minimum height=0.9cm, minimum width=1.5cm}]
+    \node[lay] (l1) at (0,0)    {$W_1, b_1$};
+    \node[lay] (l2) at (2.1,0)  {$W_2, b_2$};
+    \node[lay] (l3) at (4.2,0)  {$W_3, b_3$};
+    \draw[nvgreen, -{Stealth[length=4pt]}] (l1) -- (l2);
+    \draw[nvgreen, -{Stealth[length=4pt]}] (l2) -- (l3);
+    \node[text=nvorange, font=\Large] at (5.75,0) {$=$};
+    \node[lay, draw=nvorange] (one) at (7.5,0) {$W, b$};
+    \node[text=nvgray, anchor=north, align=center] at (2.1,-0.7)
+      {tiga layer linear ditumpuk};
+    \node[text=nvgray, anchor=north, align=center] at (7.5,-0.7)
+      {satu layer linear};
   \end{tikzpicture}
   \end{center}
+  \vspace{0.5em}
+  \begin{center}
+    \color{nvlightgreen}$W_2\left(W_1x + b_1\right) + b_2 = \left(W_2W_1\right)x + \left(W_2b_1 + b_2\right)$
+  \end{center}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.32em}
+    \item Hasil dua layer linear bisa ditulis ulang sebagai satu layer linear,
+          jadi menambah layer tidak menambah bentuk yang bisa dipelajari.
+    \item nb02 memakai model tanpa aktivasi sebagai baseline linear, lalu membandingkannya
+          dengan model yang beraktivasi.
+  \end{itemize}
 \end{frame}
 
-% Slide 28 — Thank You
-\begin{frame}[plain]
-  \vspace{2cm}
+% ----------------------------------------------------------
+% FRAME 20 — Empat aktivasi dan turunannya
+% ----------------------------------------------------------
+\begin{frame}{Empat aktivasi dan turunannya}
+  \vspace{0.1em}
   \begin{center}
-    {\color{nvgreen}\Huge\bfseries Terima Kasih!}\\[1.5em]
-    {\color{nvgray}\Large Pertanyaan? Diskusi?}\\[2em]
-    \begin{beamercolorbox}[rounded=true,shadow=false,sep=8pt,wd=11cm]{block body}
-      \centering\color{white}
-      \textbf{Deep Learning Fundamentals} \quad $\cdot$ \quad Modul 02 \\
-      Navasena Gen-ML Course
-    \end{beamercolorbox}
+    \includegraphics[width=0.94\textwidth, height=4.5cm, keepaspectratio]{figures/activations.pdf}
   \end{center}
+  \vspace{0.15em}
+  \begin{itemize}\setlength\itemsep{0.28em}
+    \item Baris atas fungsinya, baris bawah turunannya. Turunan inilah yang dipakai backprop.
+    \item Daerah merah menandai tempat turunannya mendekati nol; bobot di sana hampir tidak
+          berubah.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 21 — Intuisi: vanishing gradient
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Vanishing gradient: pesan yang habis di jalan}
+  \vspace{0.5em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    lay/.style={fill=nvcard, rounded corners=4pt, text=nvwhite, inner sep=6pt,
+                minimum height=0.9cm, minimum width=1.7cm}]
+    \node[lay] (l1) at (0,0)   {layer 1};
+    \node[lay] (l2) at (2.9,0) {layer 2};
+    \node[lay] (l3) at (5.8,0) {layer 3};
+    \node[lay] (l4) at (8.7,0) {layer 4};
+    \node[fill=nvorange!30!nvbg, draw=nvorange, rounded corners=4pt, text=nvwhite,
+          inner sep=5pt] (ls) at (11.2,0) {loss};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (ls) -- (l4)
+      node[midway, above, text=nvorange, font=\tiny] {1};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (l4) -- (l3)
+      node[midway, above, text=nvorange, font=\tiny] {$\times$ 0,25};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (l3) -- (l2)
+      node[midway, above, text=nvorange, font=\tiny] {$\times$ 0,25};
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (l2) -- (l1)
+      node[midway, above, text=nvorange, font=\tiny] {$\times$ 0,25};
+    \node[text=nvgray, anchor=north] at (1.45,-0.65) {yang sampai ke layer 1: sekitar 0,016};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.5em}
+  \nvbox{Intinya}{Turunan sigmoid paling besar 0,25. Saat kesalahan dibagi ke belakang
+  melewati banyak layer, angkanya dikalikan berulang dan mengecil cepat, sehingga layer
+  paling awal hampir tidak ikut belajar.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 22 — ReLU dan Leaky ReLU
+% ----------------------------------------------------------
+\begin{frame}{ReLU: turunannya tetap 1 di sisi positif}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.34\textwidth}
+      \centering
+      \textbf{\color{nvgreen}ReLU}\\[0.3em]
+      \begin{tikzpicture}[scale=0.78, font=\tiny]
+        \draw[nvgray, ->] (-1.7,0) -- (1.9,0) node[below left, text=nvgray] {$x$};
+        \draw[nvgray, ->] (0,-0.7) -- (0,1.9) node[left, text=nvgray] {$f(x)$};
+        \draw[nvgreen, line width=1.3pt] (-1.6,0) -- (0,0) -- (1.7,1.7);
+      \end{tikzpicture}\\[0.3em]
+      {\scriptsize $f(x)=\max(0,\,x)$}\\[0.5em]
+      \textbf{\color{nvlightgreen}Leaky ReLU}\\[0.3em]
+      \begin{tikzpicture}[scale=0.78, font=\tiny]
+        \draw[nvgray, ->] (-1.7,0) -- (1.9,0) node[below left, text=nvgray] {$x$};
+        \draw[nvgray, ->] (0,-0.7) -- (0,1.9) node[left, text=nvgray] {$f(x)$};
+        \draw[nvlightgreen, line width=1.3pt] (-1.6,-0.16) -- (0,0) -- (1.7,1.7);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.62\textwidth}
+      \vspace{0.2em}
+      \begin{itemize}\setlength\itemsep{0.35em}
+        \item ReLU meneruskan nilai positif apa adanya dan menolkan yang negatif.
+              Turunannya 1 di sisi positif, jadi kesalahan tidak menyusut saat dibagi
+              ke belakang.
+        \item Perhitungannya juga murah: satu perbandingan dengan nol per neuron.
+        \item Sisi negatifnya nol. Neuron yang masukannya negatif terus berhenti
+              diperbarui, dan keadaan itu disebut dead ReLU.
+        \item Leaky ReLU memberi kemiringan kecil di sisi negatif, 0,1 pada gambar
+              sebelumnya, sehingga masih ada gradient yang mengalir.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 23 — Softmax
+% ----------------------------------------------------------
+\begin{frame}{Softmax: skor mentah menjadi probabilitas}
+  \vspace{0.2em}
+  \begin{center}
+    \includegraphics[width=0.63\textwidth, height=3.25cm, keepaspectratio]{figures/softmax.pdf}
+  \end{center}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.34em}
+    \item Softmax bekerja pada seluruh output layer sekaligus: skor 2,0; 1,0; dan 0,1
+          menjadi 0,66; 0,24; dan 0,10, dengan total tepat 1.
+    \item Selisih skor satu poin menjadi selisih probabilitas yang cukup besar, karena
+          skornya lewat fungsi eksponensial dulu.
+    \item Untuk dua kelas, satu keluaran dengan sigmoid sudah cukup. Untuk regresi, output
+          layer dibiarkan tanpa aktivasi.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 24 — Intuisi: optimizer
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Optimizer: cara berbeda menuruni bukit yang sama}
+  \vspace{0.3em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize]
+    \foreach \r in {0.45,0.8,1.15,1.5}
+      \draw[nvgray!55!nvbg, line width=0.8pt] (0,0) ellipse ({\r*2.1} and {\r*1.05});
+    \fill[nvwhite] (0,0) circle (1.8pt);
+    \node[text=nvgray, anchor=west, font=\tiny] at (0.16,0.02) {minimum};
+    \draw[nvred, line width=1pt]
+      (-2.85,1.15) -- (-2.05,-0.35) -- (-1.35,0.7) -- (-0.7,-0.3) -- (-0.25,0.25) -- (0,0);
+    \draw[nvorange, line width=1pt]
+      (-2.85,1.15) -- (-1.75,0.05) -- (-0.9,0.3) -- (-0.28,-0.08) -- (0,0);
+    \draw[nvgreen, line width=1.3pt]
+      (-2.85,1.15) .. controls (-1.6,0.5) and (-0.7,0.1) .. (0,0);
+    \node[text=nvred, anchor=west] at (3.45,1.1) {SGD};
+    \node[text=nvorange, anchor=west] at (3.45,0.65) {SGD + momentum};
+    \node[text=nvgreen, anchor=west] at (3.45,0.2) {Adam};
+    \node[text=nvgray, anchor=west, font=\tiny, align=left] at (3.45,-0.55)
+      {garis oval = tempat\\ dengan loss sama};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.3em}
+  \nvbox{Intinya}{SGD melangkah menurut kemiringan saat itu saja. Momentum menambahkan
+  sisa arah langkah sebelumnya, sehingga jalurnya tidak banyak berbelok. Adam menyimpan
+  rata-rata arah dan besar gradient, lalu menyesuaikan ukuran langkah tiap parameter.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 25 — Kapan mengganti default & jebakan
+% ----------------------------------------------------------
+\begin{frame}{Kapan mengganti aktivasi atau optimizer default}
+  \vspace{0.3em}
+  \kapan{
+    \item banyak neuron ReLU berhenti aktif, keluarannya nol terus
+    \item loss diam sejak epoch awal padahal datanya sudah dinormalisasi
+    \item jaringannya dalam dan layer awalnya hampir tidak berubah
+  }{
+    \item lossnya belum turun karena learning ratenya belum disesuaikan
+    \item perbandingannya belum diuji di data validation
+    \item modelnya masih underfit dan layernya memang terlalu sedikit
+  }
+  \vspace{0.7em}
+  \jebakan{Dead ReLU biasanya berawal dari learning rate yang terlalu besar, bukan dari
+  ReLU itu sendiri. Kalau lossnya tidak turun, ganti learning ratenya dulu, sebelum
+  arsitekturnya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 26 — Ringkasan Act 2
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 2}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.46em}
+    \item Aktivasi adalah bagian yang membuat tumpukan layer bisa mempelajari pola
+          melengkung. Tanpa aktivasi, hasil akhirnya tetap satu layer linear.
+    \item Sigmoid dan tanh punya turunan yang mengecil di kedua ujung, sehingga kesalahan
+          menyusut saat dibagi ke belakang melewati banyak layer.
+    \item ReLU menjaga turunannya tetap 1 di sisi positif dan murah dihitung, jadi dipakai
+          sebagai pilihan awal untuk hidden layer. Leaky ReLU menyisakan gradient kecil di
+          sisi negatif.
+    \item Softmax dipakai di output layer klasifikasi banyak kelas; sigmoid untuk dua
+          kelas; tanpa aktivasi untuk regresi.
+    \item Optimizer hanya mengubah cara melangkah, bukan bukitnya. Adam menjadi titik
+          awal yang wajar, dan learning ratenya tetap perlu diperiksa.
+  \end{itemize}
 \end{frame}
 
 \end{document}
