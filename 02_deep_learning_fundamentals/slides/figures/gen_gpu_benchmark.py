@@ -1,104 +1,84 @@
 """
-Generate figures/gpu_benchmark.pdf - perbandingan CPU vs GPU (waktu relatif)
-untuk Training dan Inference dalam 2 subplot bar chart, tema gelap untuk slide.
-Angka ILUSTRATIF (hardcoded). Run from the directory yang berisi folder figures/:
-    python3 gen_gpu_benchmark.py
+Generate figures/gpu_benchmark.pdf dari ../../gpu_results_m02.json (hasil
+nb05 dijalankan di Colab T4): {"algorithms": [...], "cpu_times": [...],
+"gpu_times": [...], "device_gpu": "...", "device_cpu": "...", "measured": "..."}.
+Jika file belum ada, gambar placeholder gelap (belum diukur) dan exit 0.
+Run dari direktori slides/: python3 figures/gen_gpu_benchmark.py
 """
-
 import os
+import json
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Output path RELATIF
-OUTPUT_DIR = "figures"
-OUTPUT_PATH = os.path.join(OUTPUT_DIR, "gpu_benchmark.pdf")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-# Tema gelap
 BG_COLOR = "#1A1A2E"
 TEXT_COLOR = "white"
 GRID_COLOR = "#333355"
 PANEL_COLOR = "#2A2A4E"
+CPU_COLOR = "#EF5350"
+GPU_COLOR = "#76B900"
 
-# Warna bar
-CPU_COLOR = "#EF5350"     # CPU (merah)
-GPU_COLOR = "#76B900"     # GPU aksen hijau NVIDIA
-ANNOT_COLOR = "#A3D944"   # anotasi speedup
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_PATH = os.path.join(SCRIPT_DIR, "gpu_benchmark.pdf")
+RESULTS_PATH = os.path.join(SCRIPT_DIR, "..", "..", "gpu_results_m02.json")
 
-# Data ILUSTRATIF hardcoded (waktu relatif, CPU = baseline 1.0 di tiap panel)
-# Training: GPU ~15x lebih cepat; Inference: GPU ~8x lebih cepat
-labels = ["CPU", "GPU"]
-training_times = [15.0, 1.0]    # waktu relatif
-inference_times = [8.0, 1.0]    # waktu relatif
-
-panels = [
-    ("Training", training_times),
-    ("Inference", inference_times),
-]
-
-x = np.arange(len(labels))
-bar_width = 0.55
-
-fig, axes = plt.subplots(1, 2, figsize=(9, 5), sharey=False)
-fig.patch.set_facecolor(BG_COLOR)
-
-for ax, (panel_title, times) in zip(axes, panels):
+if not os.path.isfile(RESULTS_PATH):
+    fig, ax = plt.subplots(figsize=(9, 5))
+    fig.patch.set_facecolor(BG_COLOR)
     ax.set_facecolor(BG_COLOR)
+    ax.axis("off")
+    ax.text(0.5, 0.58, "Hasil benchmark GPU belum diukur", color=TEXT_COLOR,
+            fontsize=30, fontweight="bold", ha="center", va="center", wrap=True)
+    ax.text(0.5, 0.38, "Diisi setelah nb05 dijalankan di Colab T4", color=TEXT_COLOR,
+            fontsize=30, ha="center", va="center", wrap=True)
+    fig.savefig(OUTPUT_PATH, format="pdf", bbox_inches="tight", facecolor=BG_COLOR)
+    print(f"Saved placeholder: {OUTPUT_PATH}")
+    raise SystemExit(0)
 
-    colors = [CPU_COLOR, GPU_COLOR]
-    bars = ax.bar(x, times, bar_width, color=colors, zorder=3)
+with open(RESULTS_PATH) as f:
+    data = json.load(f)
 
-    # Label nilai di atas tiap bar
-    for rect, t in zip(bars, times):
-        ax.text(rect.get_x() + rect.get_width() / 2,
-                t + max(times) * 0.02,
-                f"{t:.0f}x", ha="center", va="bottom",
-                color=TEXT_COLOR, fontsize=10, fontweight="bold")
+algorithms = data["algorithms"]
+cpu_times = np.array(data["cpu_times"], dtype=float)
+gpu_times = np.array(data["gpu_times"], dtype=float)
+device_gpu = data.get("device_gpu", "GPU")
+device_cpu = data.get("device_cpu", "CPU")
+measured = data.get("measured", "")
 
-    # Anotasi "~Nx lebih cepat" (CPU / GPU)
-    speedup = times[0] / times[1]
-    ax.annotate(
-        f"~{speedup:.0f}x lebih cepat",
-        xy=(1, times[1]), xytext=(0.5, max(times) * 0.6),
-        ha="center", va="center",
-        color=ANNOT_COLOR, fontsize=11, fontweight="bold",
-        arrowprops=dict(arrowstyle="->", color=ANNOT_COLOR, lw=1.6),
-    )
+x = np.arange(len(algorithms))
+width = 0.35
 
-    # Styling axes
-    ax.set_title(panel_title, color=TEXT_COLOR, fontsize=12,
-                 fontweight="bold", pad=10)
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, color=TEXT_COLOR, fontsize=11)
-    ax.set_ylabel("Waktu relatif", color=TEXT_COLOR, fontsize=10)
-    ax.set_ylim(0, max(times) * 1.25)
-    ax.tick_params(axis="x", colors=TEXT_COLOR)
-    ax.tick_params(axis="y", colors=TEXT_COLOR)
-    for spine in ax.spines.values():
-        spine.set_edgecolor("#444466")
+fig, ax = plt.subplots(figsize=(9, 5))
+fig.patch.set_facecolor(BG_COLOR)
+ax.set_facecolor(BG_COLOR)
 
-    ax.yaxis.grid(True, color=GRID_COLOR, linestyle="--", linewidth=0.6, zorder=0)
-    ax.set_axisbelow(True)
+bars_cpu = ax.bar(x - width / 2, cpu_times, width, color=CPU_COLOR, label=device_cpu, zorder=3)
+bars_gpu = ax.bar(x + width / 2, gpu_times, width, color=GPU_COLOR, label=device_gpu, zorder=3)
 
-# Judul utama
-fig.suptitle("CPU vs GPU", color=TEXT_COLOR, fontsize=15,
-             fontweight="bold", y=0.99)
+for rect, t in zip(bars_cpu, cpu_times):
+    ax.text(rect.get_x() + rect.get_width() / 2, t + max(cpu_times) * 0.02,
+            f"{t:.2f}s", ha="center", va="bottom", color=TEXT_COLOR, fontsize=9)
+for rect, t in zip(bars_gpu, gpu_times):
+    ax.text(rect.get_x() + rect.get_width() / 2, t + max(cpu_times) * 0.02,
+            f"{t:.2f}s", ha="center", va="bottom", color=TEXT_COLOR, fontsize=9)
 
-# Legend bersama
-handles = [
-    plt.Rectangle((0, 0), 1, 1, color=CPU_COLOR),
-    plt.Rectangle((0, 0), 1, 1, color=GPU_COLOR),
-]
-fig.legend(handles, ["CPU", "GPU NVIDIA"],
-           loc="lower center", ncol=2, framealpha=0.3,
-           facecolor=PANEL_COLOR, edgecolor="#555577",
-           labelcolor=TEXT_COLOR, fontsize=10,
-           bbox_to_anchor=(0.5, -0.02))
+ax.set_xticks(x)
+ax.set_xticklabels(algorithms, color=TEXT_COLOR, fontsize=10)
+ax.set_ylabel("Waktu (detik)", color=TEXT_COLOR, fontsize=11)
+title = f"CPU vs GPU ({measured})" if measured else "CPU vs GPU"
+ax.set_title(title, color=TEXT_COLOR, fontsize=15, fontweight="bold", pad=12)
+ax.tick_params(axis="y", colors=TEXT_COLOR)
+for spine in ax.spines.values():
+    spine.set_edgecolor("#444466")
+ax.yaxis.grid(True, color=GRID_COLOR, linestyle="--", linewidth=0.6, zorder=0)
+ax.set_axisbelow(True)
+leg = ax.legend(loc="upper right", framealpha=0.3, facecolor=PANEL_COLOR,
+                 edgecolor="#555577", labelcolor=TEXT_COLOR, fontsize=10)
 
-plt.tight_layout(rect=(0, 0.04, 1, 0.95))
-plt.savefig(OUTPUT_PATH, format="pdf", bbox_inches="tight",
-            facecolor=fig.get_facecolor())
-plt.close()
+plt.tight_layout(pad=1.0)
+fig.savefig(OUTPUT_PATH, format="pdf", bbox_inches="tight", facecolor=BG_COLOR)
 print(f"Saved: {OUTPUT_PATH}")
+speedups = cpu_times / gpu_times
+for algo, s in zip(algorithms, speedups):
+    print(f"{algo}: speedup={s:.2f}x")
