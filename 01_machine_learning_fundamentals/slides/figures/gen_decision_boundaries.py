@@ -70,7 +70,7 @@ for ax, (title, clf) in zip(axes, models):
     ax.set_facecolor(BG_COLOR)
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
-    ax.set_title(f"{title}\nAcc={acc:.3f}", color="white",
+    ax.set_title(f"{title}\nAkurasi = {acc:.3f}", color="white",
                  fontsize=11, fontweight="bold", pad=6)
     ax.tick_params(colors="white", labelsize=7)
     for spine in ax.spines.values():

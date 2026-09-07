@@ -59,7 +59,7 @@ ax0.set_xticklabels(labels_cls, color=TEXT_COLOR, fontsize=9)
 ax0.set_yticklabels(labels_cls, color=TEXT_COLOR, fontsize=9)
 ax0.set_xlabel("Prediksi", color=TEXT_COLOR, fontsize=10)
 ax0.set_ylabel("Aktual", color=TEXT_COLOR, fontsize=10)
-ax0.set_title("Confusion Matrix", color=TEXT_COLOR, fontsize=11, fontweight="bold")
+ax0.set_title("Confusion matrix", color=TEXT_COLOR, fontsize=11, fontweight="bold")
 vmax = cm.max()
 for i in range(2):
     for j in range(2):
@@ -74,9 +74,9 @@ ax1 = axes[1]
 ax1.set_facecolor(BG_COLOR)
 ax1.plot(fpr, tpr, color=ACCENT, linewidth=2.5, label=f"AUC = {auc:.3f}")
 ax1.plot([0, 1], [0, 1], color="#777799", linestyle="--", linewidth=1.2, label="Tebakan acak")
-ax1.set_xlabel("False Positive Rate", color=TEXT_COLOR, fontsize=10)
-ax1.set_ylabel("True Positive Rate", color=TEXT_COLOR, fontsize=10)
-ax1.set_title("ROC Curve", color=TEXT_COLOR, fontsize=11, fontweight="bold")
+ax1.set_xlabel("Proporsi false positive", color=TEXT_COLOR, fontsize=10)
+ax1.set_ylabel("Proporsi true positive", color=TEXT_COLOR, fontsize=10)
+ax1.set_title("Kurva ROC", color=TEXT_COLOR, fontsize=11, fontweight="bold")
 ax1.tick_params(colors=TEXT_COLOR, labelsize=8)
 for spine in ax1.spines.values():
     spine.set_edgecolor("#444466")

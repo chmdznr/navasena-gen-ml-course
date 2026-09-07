@@ -24,7 +24,10 @@ if LOG.exists():
 else:
     errs.append("log tidak ada")
 
-n_frames = len(re.findall(r"\\begin\{frame\}", src)) + len(re.findall(r"\\acttitle\{", src))
+# Hitung hanya di badan dokumen: preambul memuat \begin{frame} di dalam makro \acttitle
+# dan satu contoh \acttitle{...} di komentar, yang bukan halaman deck.
+body = src.split(r"\begin{document}", 1)[-1]
+n_frames = len(re.findall(r"\\begin\{frame\}", body)) + len(re.findall(r"\\acttitle\{", body))
 if not 80 <= n_frames <= 92:
     (warns if PARTIAL else errs).append(f"{n_frames} frame (mau 80–92)")
 n_int = len(re.findall(r"\\intuisi\{", src))

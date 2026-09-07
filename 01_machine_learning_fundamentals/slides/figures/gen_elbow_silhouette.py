@@ -50,7 +50,7 @@ ax0.plot(list(k_range), inertias, marker="o", color=LINE_COLOR,
          markerfacecolor=MARK_COLOR, linewidth=2)
 ax0.set_xlabel("K (jumlah kelompok)", color=TEXT_COLOR, fontsize=10)
 ax0.set_ylabel("Inertia", color=TEXT_COLOR, fontsize=10)
-ax0.set_title("Elbow Method", color=TEXT_COLOR, fontsize=11, fontweight="bold")
+ax0.set_title("Kurva inertia", color=TEXT_COLOR, fontsize=11, fontweight="bold")
 ax0.tick_params(colors=TEXT_COLOR, labelsize=9)
 for spine in ax0.spines.values():
     spine.set_edgecolor("#444466")
@@ -63,8 +63,8 @@ ax1.plot(list(k_range), silhouettes, marker="o", color=LINE_COLOR,
 ax1.axvline(best_k, color=BEST_COLOR, linestyle="--", linewidth=1.5,
             label=f"Terbaik: K={best_k}")
 ax1.set_xlabel("K (jumlah kelompok)", color=TEXT_COLOR, fontsize=10)
-ax1.set_ylabel("Silhouette score", color=TEXT_COLOR, fontsize=10)
-ax1.set_title("Silhouette Score", color=TEXT_COLOR, fontsize=11, fontweight="bold")
+ax1.set_ylabel("Skor silhouette", color=TEXT_COLOR, fontsize=10)
+ax1.set_title("Skor silhouette", color=TEXT_COLOR, fontsize=11, fontweight="bold")
 ax1.tick_params(colors=TEXT_COLOR, labelsize=9)
 for spine in ax1.spines.values():
     spine.set_edgecolor("#444466")

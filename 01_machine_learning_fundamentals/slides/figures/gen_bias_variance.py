@@ -49,8 +49,8 @@ for ax, deg, title in zip(axes, degrees, titles):
     y_plot = model.predict(x_plot.reshape(-1, 1))
 
     ax.set_facecolor(BG_COLOR)
-    ax.scatter(X_train, y_train, color=TRAIN_COLOR, s=25, label="Train", zorder=3)
-    ax.scatter(X_test, y_test, color=TEST_COLOR, s=25, label="Test", zorder=3)
+    ax.scatter(X_train, y_train, color=TRAIN_COLOR, s=25, label="Data train", zorder=3)
+    ax.scatter(X_test, y_test, color=TEST_COLOR, s=25, label="Data test", zorder=3)
     ax.plot(x_plot, y_plot, color=LINE_COLOR, linewidth=2)
     ax.set_ylim(-2, 2)
     ax.set_title(f"{title}\nRMSE train={train_rmse:.2f}, test={test_rmse:.2f}",

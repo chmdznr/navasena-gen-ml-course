@@ -9,6 +9,12 @@
 \usepackage{fontspec}
 \usepackage[sfdefault]{FiraSans}
 
+% ---- Bahasa (pola pemenggalan Indonesia) --------------------
+\usepackage[indonesian]{babel}
+
+% Kata Inggris yang dipenggal salah oleh pola Indonesia
+\hyphenation{train vari-ance scal-ing de-ci-sion boost-ing}
+
 % ---- Core packages ------------------------------------------
 \usepackage{graphicx}
 \usepackage{tikz}
@@ -297,9 +303,10 @@
 % ----------------------------------------------------------
 \begin{frame}{Tiga jenis machine learning}
   \begin{center}
-    \includegraphics[width=0.62\textwidth, height=3.4cm, keepaspectratio]{figures/ml_types.pdf}
+    \includegraphics[width=0.80\textwidth, height=3.75cm, keepaspectratio]{figures/ml_types.pdf}
   \end{center}
-  \begin{itemize}\setlength\itemsep{0.35em}
+  \vspace{-0.2em}
+  \begin{itemize}\setlength\itemsep{0.18em}
     \item \textbf{\color{nvgreen}Supervised}: setiap contoh punya jawabannya. Sembilan notebook
           pertama ada di sini.
     \item \textbf{\color{nvlightgreen}Unsupervised}: tanpa jawaban, model mencari struktur dalam
@@ -482,15 +489,15 @@
 % ----------------------------------------------------------
 % FRAME 13 — Scaling
 % ----------------------------------------------------------
-\begin{frame}{Scaling: menyamakan rentang antar feature}
+\begin{frame}{Scaling: menyamakan skala antar feature}
   \vspace{0.2em}
   \begin{center}
     \includegraphics[width=0.88\textwidth, height=4.3cm, keepaspectratio]{figures/knn_scaling.pdf}
   \end{center}
   \vspace{0.2em}
   \begin{itemize}\setlength\itemsep{0.35em}
-    \item Nilai gaji ada di puluhan ribu, umur di puluhan tahun. Tanpa scaling, selisih
-          gaji mendominasi perhitungan jarak.
+    \item Di data ini nilai gaji ada di puluhan ribu, umur di puluhan tahun. Tanpa scaling,
+          selisih gaji mendominasi perhitungan jarak.
     \item Model berbasis jarak (KNN, SVM) dan model dengan penalti koefisien (logistic
           regression) butuh scaling; decision tree dan random forest tidak.
   \end{itemize}
@@ -511,10 +518,12 @@
         \draw[nvgreen, line width=1.2pt] (0.4,0.9) -- (7.6,4.6);
         \foreach \x/\y/\yh in {1.2/1.9/1.31, 2.4/1.6/1.93, 3.6/3.0/2.55,
                                4.8/2.6/3.17, 6.0/4.4/3.79, 7.0/3.9/4.30} {
-          \draw[nvorange, dashed, line width=0.7pt] (\x,\y) -- (\x,\yh);
+          \draw[nvorange, line width=1.2pt, dash pattern=on 2.2pt off 1.6pt]
+            (\x,\y) -- (\x,\yh);
+          \fill[nvgreen] (\x,\yh) circle (2.2pt);
           \fill[nvlightgreen] (\x,\y) circle (3.4pt);
         }
-        \node[text=nvorange, font=\scriptsize] at (5.6,1.2) {error prediksi};
+        \node[text=nvorange, font=\scriptsize, anchor=east] at (5.85,4.15) {error prediksi};
       \end{tikzpicture}
       \end{center}
     \end{column}
@@ -700,8 +709,8 @@
   \end{tikzpicture}
   \end{center}
   \vspace{0.4em}
-  {\footnotesize\color{nvgray}Akurasi menjumlahkan dua kotak hijau saja. Dua kotak sisanya punya
-  biaya yang berbeda, dan itu yang menentukan metrik mana yang kita pakai.}
+  {\footnotesize\color{nvgray}Akurasi membagi jumlah dua kotak hijau dengan seluruh baris. Dua
+  kotak sisanya punya biaya yang berbeda, dan itu yang menentukan metrik mana yang kita pakai.}
 \end{frame}
 
 % ----------------------------------------------------------
@@ -719,7 +728,7 @@
         \item \textbf{F1}: rata-rata harmonik precision dan recall, turun tajam kalau salah satu
               rendah.
         \item \textbf{ROC-AUC}: peluang model memberi skor lebih tinggi pada satu contoh positif
-              dibanding satu contoh negatif.
+              dibanding satu contoh negatif yang diambil acak.
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
@@ -1010,20 +1019,20 @@
     \begin{column}{0.48\textwidth}
       \centering
       \textbf{\color{nvorange}Regresi}\\[0.3em]
-      \begin{tikzpicture}[scale=0.85, font=\scriptsize]
+      \begin{tikzpicture}[scale=0.80, font=\scriptsize]
         \draw[nvgray, ->] (0,0) -- (4.2,0) node[below left, text=nvgray] {feature};
         \draw[nvgray, ->] (0,0) -- (0,3.1) node[above right, text=nvgray] {target};
         \draw[nvgreen, line width=1.1pt] (0.3,0.4) -- (3.7,2.7);
         \foreach \x/\y in {0.5/0.7, 1.0/1.1, 1.5/1.3, 2.0/1.8, 2.5/2.0, 3.0/2.3, 3.5/2.6}
           \fill[nvlightgreen] (\x,\y) circle (2.6pt);
-      \end{tikzpicture}\\[0.4em]
+      \end{tikzpicture}\\{\tiny\phantom{batas keputusan}}\\[0.4em]
       {\small Keluarannya satu angka}\\[0.2em]
       {\footnotesize\color{nvgray}lama waktu tempuh, penjualan}
     \end{column}
     \begin{column}{0.48\textwidth}
       \centering
       \textbf{\color{nvgreen}Klasifikasi}\\[0.3em]
-      \begin{tikzpicture}[scale=0.85, font=\scriptsize]
+      \begin{tikzpicture}[scale=0.80, font=\scriptsize]
         \draw[nvgray, ->] (0,0) -- (4.2,0) node[below left, text=nvgray] {feature 1};
         \draw[nvgray, ->] (0,0) -- (0,3.1) node[above right, text=nvgray] {feature 2};
         \foreach \x/\y in {0.5/0.5, 0.8/0.9, 1.2/0.6, 1.5/1.1, 0.9/1.4}
@@ -1076,8 +1085,8 @@
   \begin{itemize}\setlength\itemsep{0.45em}
     \item Keluaran modelnya probabilitas. Label kelas muncul setelah probabilitas itu
           dibandingkan dengan sebuah threshold; \texttt{predict()} memakai 0,5.
-    \item Menurunkan threshold menaikkan recall dan menurunkan precision. Menaikkannya
-          melakukan yang sebaliknya. Jadi threshold adalah pilihan, bukan angka baku.
+    \item Menurunkan threshold menaikkan recall dan biasanya menurunkan precision.
+          Menaikkannya memberi efek sebaliknya. Jadi threshold adalah pilihan, bukan angka baku.
     \item Pilih thresholdnya dari data validation, mengikuti biaya kesalahan yang sudah
           disepakati.
     \item Kalau satu kelas jauh lebih banyak, \texttt{class\_weight='balanced'} memperbesar
@@ -1150,7 +1159,8 @@
   \begin{itemize}\setlength\itemsep{0.45em}
     \item Di tiap simpul, model mencoba banyak pasangan feature dan ambang, lalu memilih
           pasangan yang paling memisahkan kelas.
-    \item Ukuran pemisahannya adalah \textbf{gini}: makin kecil, makin murni isi tiap cabang.
+    \item Ukuran pemisahannya bisa dipilih; ukuran default di scikit-learn adalah
+          \textbf{gini}: makin kecil, makin murni isi tiap cabang.
     \item Proses itu diulang pada tiap cabang sampai simpulnya murni atau batas yang kamu
           pasang tercapai.
     \item Batasnya yang penting: \texttt{max\_depth} (kedalaman) dan
@@ -1169,7 +1179,7 @@
   \kapan{
     \item aturan hasilnya perlu dibaca orang lain
     \item feature bercampur angka dan kategori
-    \item scaling tidak dilakukan; pohon tidak membutuhkannya
+    \item kamu ingin melewati scaling; pohon tidak membutuhkannya
   }{
     \item batas antar kelas miring atau melengkung halus
     \item datanya sedikit dan pohonnya dibiarkan tumbuh bebas
@@ -1220,20 +1230,20 @@
 % FRAME 43 — Mekanisme KNN
 % ----------------------------------------------------------
 \begin{frame}{KNN: jarak, K, dan suara mayoritas}
-  \vspace{0.2em}
+  \vspace{0.1em}
   \begin{center}
     \nvbox{Jarak Euclidean antara dua baris data}{
       \centerline{$\displaystyle d(a,b) \;=\; \sqrt{\sum_{j=1}^{m}\bigl(a_j - b_j\bigr)^2}$}
     }
   \end{center}
-  \vspace{0.2em}
-  \begin{itemize}\setlength\itemsep{0.3em}
+  \vspace{0.1em}
+  \begin{itemize}\setlength\itemsep{0.1em}
     \item $a$ dan $b$ dua baris data, $m$ jumlah feature, dan $K$ jumlah tetangga yang dilihat.
     \item Hitung jarak data baru ke data train, ambil K yang terdekat, lalu pakai kelas
           terbanyak di antara mereka.
     \item K kecil membuat prediksi mengikuti tiap variasi acak di sekitarnya. K besar membuat
           batasnya terlalu rata dan pola lokal hilang.
-    \item Tidak ada parameter yang dilatih. Semua pekerjaan terjadi saat prediksi.
+    \item Tidak ada parameter yang dilatih. Hampir semua pekerjaan terjadi saat prediksi.
   \end{itemize}
 \end{frame}
 
@@ -1241,15 +1251,15 @@
 % FRAME 44 — Kapan pakai & jebakan KNN
 % ----------------------------------------------------------
 \begin{frame}{KNN: kapan layak dicoba}
-  \vspace{0.7em}
-  \begin{itemize}\setlength\itemsep{0.7em}
+  \vspace{0.4em}
+  \begin{itemize}\setlength\itemsep{0.6em}
     \item Mulai dari data kecil dengan sedikit feature yang relevan.
     \item Prediksi dapat melambat saat data train membesar, karena pencarian tetangga
           dilakukan setiap kali memprediksi.
     \item Jika skala feature berbeda, lakukan scaling agar perhitungan jarak tidak didominasi
           satu feature.
   \end{itemize}
-  \vspace{1.0em}
+  \vspace{0.7em}
   \jebakan{gaji ditulis dalam juta rupiah dan umur dalam tahun. Tanpa scaling, selisih gaji
   yang rentang nilainya jauh lebih besar hampir menentukan seluruh jaraknya.}
 \end{frame}
@@ -1394,8 +1404,8 @@
           \fill[nvgray] (\x,\y) circle (2.6pt);
         \draw[nvgreen, line width=1.2pt] (3.3,-0.25) -- (3.3,2.15);
         \node[text=nvgreen, anchor=south, font=\tiny] at (3.3,2.15) {berat sebenarnya};
-        \draw[nvlightgreen, line width=1.2pt, dashed] (3.12,-0.25) -- (3.12,1.75);
-        \node[text=nvlightgreen, anchor=east, font=\tiny] at (2.95,1.78) {rata-rata semua tebakan};
+        \draw[nvlightgreen, line width=1.2pt, dashed] (3.07,-0.25) -- (3.07,1.75);
+        \node[text=nvlightgreen, anchor=east, font=\tiny] at (2.90,1.78) {rata-rata semua tebakan};
         \fill[nvred] (5.5,1.05) circle (3.6pt);
         \node[text=nvred, anchor=south, font=\tiny] at (5.5,1.25) {satu penebak};
       \end{tikzpicture}}
@@ -1550,14 +1560,15 @@
 % ----------------------------------------------------------
 \begin{frame}
   \intuisi{Boosting: model berikutnya mengerjakan yang masih salah}
-  \vspace{0.6em}
+  \vspace{0.3em}
   \begin{center}
-    \includegraphics[width=\textwidth, height=3.1cm, keepaspectratio]{figures/boosting.pdf}
+    \includegraphics[width=\textwidth, height=2.6cm, keepaspectratio]{figures/boosting.pdf}
   \end{center}
-  \vspace{0.6em}
-  \nvbox{Intinya}{Modelnya dilatih berurutan, bukan bersamaan. Baris yang masih salah diberi
-  bobot lebih besar untuk model berikutnya, sehingga tiap tambahan model menutup sisa kesalahan
-  model sebelumnya.}
+  \vspace{0.3em}
+  \nvbox{Intinya}{Modelnya dilatih berurutan, bukan bersamaan, sehingga tiap tambahan model
+  menutup sisa kesalahan model sebelumnya. Caranya ada dua: di AdaBoost bobot baris yang salah
+  dinaikkan, sedangkan di gradient boosting (termasuk XGBoost) model berikutnya mempelajari sisa
+  error (residual) model sebelumnya.}
 \end{frame}
 
 % ----------------------------------------------------------
@@ -1876,8 +1887,8 @@
         \item Silhouette mengukur seberapa dekat satu baris ke anggota kelompoknya sendiri
               dibanding ke kelompok tetangga terdekat. Rentangnya $-1$ sampai $1$.
         \item Di data ini silhouette memilih K = 2.
-        \item Kalau kebutuhan bisnis butuh segmen yang lebih halus, K = 3--4 masih wajar;
-              skornya turun sedikit, dan penurunan itu bagian dari keputusan.
+        \item Kalau kebutuhan bisnis butuh segmen yang lebih halus, K = 3 masih wajar; di
+              K = 4 skornya turun jelas, dan penurunan itu bagian dari keputusan.
       \end{itemize}
     \end{column}
   \end{columns}
@@ -1937,7 +1948,7 @@
   \begin{columns}[T]
     \begin{column}{0.42\textwidth}
       \begin{center}
-      \begin{tikzpicture}[scale=0.78, font=\tiny]
+      \begin{tikzpicture}[scale=0.95, font=\tiny]
         \foreach \x/\y in {0.3/2.5, 0.6/2.8, 0.5/2.2, 0.9/2.6, 0.7/3.0, 1.0/2.9}
           \fill[nvgreen] (\x,\y) circle (2.8pt);
         \foreach \x/\y in {3.0/2.0, 3.3/2.4, 3.1/2.8, 3.6/2.2, 3.4/2.7, 3.7/3.0}
@@ -1954,8 +1965,9 @@
     \begin{column}{0.55\textwidth}
       \vspace{0.2em}
       \begin{itemize}\setlength\itemsep{0.3em}
-        \item Baris yang punya paling sedikit \texttt{min\_samples} tetangga dalam radius
-              \texttt{eps} menjadi inti kelompok; tetangganya ikut bergabung.
+        \item Baris yang punya paling sedikit \texttt{min\_samples} titik di dalam radius
+              \texttt{eps} --- titik itu sendiri ikut dihitung --- menjadi inti kelompok;
+              tetangganya ikut bergabung.
         \item Baris yang tidak masuk kelompok mana pun ditandai sebagai outlier (pencilan),
               bukan dipaksa masuk.
         \item Jumlah kelompok tidak ditentukan di awal, dan bentuknya bebas.
@@ -2081,7 +2093,7 @@
 % ----------------------------------------------------------
 % FRAME 79 — cuML
 % ----------------------------------------------------------
-\begin{frame}[fragile]{cuML: yang berubah hanya barisnya import}
+\begin{frame}[fragile]{cuML: yang berubah hanya baris import-nya}
   \vspace{0.3em}
 \begin{lstlisting}[language=Python, numbers=none, basicstyle=\ttfamily\small\color{nvwhite}]
 # CPU -- scikit-learn
@@ -2153,18 +2165,18 @@ model_gpu = XGBClassifier(n_estimators=300, device="cuda")
         \includegraphics[width=\textwidth, height=4.3cm, keepaspectratio]{figures/gpu_speedup.pdf}
       \end{center}
       \vspace{0.1em}
-      {\scriptsize\color{nvgray}Angka diisi dari hasil Colab T4 di nb10.}
+      {\scriptsize\color{nvgray}Panel kiri akan diisi dari hasil Colab T4 di nb10.}
     \end{column}
     \begin{column}{0.47\textwidth}
-      \vspace{0.2em}
-      \begin{itemize}\setlength\itemsep{0.35em}
+      \vspace{0.1em}
+      \begin{itemize}\setlength\itemsep{0.25em}
         \item \textbf{Tugas}: Random Forest 200 pohon, KNN, K-Means, dan XGBoost.
-        \item \textbf{Data}: Covertype, 581.012 baris.
+        \item \textbf{Data}: Covertype, 581.012 baris (KNN: subset 100.000 baris train).
         \item \textbf{Yang diukur}: waktu \texttt{fit()}, setelah warm-up.
         \item \textbf{Perangkat}: satu GPU Tesla T4 di Google Colab, dibandingkan CPU pada
               runtime yang sama.
       \end{itemize}
-      \vspace{0.4em}
+      \vspace{0.25em}
       {\footnotesize\color{nvgray}Selama angkanya belum diukur di perangkat itu, tidak ada rasio
       percepatan yang bisa disebut di sini.}
     \end{column}
@@ -2192,7 +2204,7 @@ model_gpu = XGBClassifier(n_estimators=300, device="cuda")
     \bottomrule
   \end{tabular}}
   \end{center}
-  \vspace{0.6em}
+  \vspace{0.2em}
   {\footnotesize\color{nvgray}Hari ini yang dipakai hanya cuML dan XGBoost GPU. TensorRT, NeMo,
   dan Triton dibahas di Modul 6.}
 \end{frame}
@@ -2207,7 +2219,7 @@ model_gpu = XGBClassifier(n_estimators=300, device="cuda")
           banyak baris.
     \item Perubahan kodenya kecil: satu baris import untuk cuML, satu argumen \texttt{device}
           untuk XGBoost.
-    \item Ada keadaan di mana CPU lebih cepat, dan itu bukan kesalahan pengukuran: data kecil,
+    \item Ada keadaan ketika CPU lebih cepat, dan itu bukan kesalahan pengukuran: data kecil,
           alur bercabang, atau data yang bolak-balik dipindah.
     \item Setiap klaim kecepatan menyebut tugasnya, ukuran datanya, perangkatnya, dan bagian
           mana yang diukur.

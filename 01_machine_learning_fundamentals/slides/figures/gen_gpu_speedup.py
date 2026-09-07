@@ -47,9 +47,12 @@ ax.set_facecolor(BG_COLOR)
 
 if not os.path.isfile(RESULTS_PATH):
     # Placeholder: belum ada hasil pengukuran Colab nb10.
-    ax.text(0.5, 0.5, "Hasil benchmark GPU: menyusul\n(diisi dari pengukuran nb10 di Colab T4)",
-            ha="center", va="center", color=TEXT_COLOR, fontsize=14,
-            transform=ax.transAxes, wrap=True)
+    ax.text(0.5, 0.58, "Hasil benchmark GPU belum diukur",
+            ha="center", va="center", color=TEXT_COLOR, fontsize=34,
+            transform=ax.transAxes)
+    ax.text(0.5, 0.40, "Diisi setelah nb10 dijalankan di Colab T4",
+            ha="center", va="center", color=TEXT_COLOR, fontsize=30,
+            transform=ax.transAxes)
     ax.set_xticks([])
     ax.set_yticks([])
     for spine in ax.spines.values():

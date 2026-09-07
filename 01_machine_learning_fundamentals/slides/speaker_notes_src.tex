@@ -1,5 +1,9 @@
 \documentclass[11pt]{article}
 \usepackage{fontspec}
+\usepackage[indonesian]{babel}
+
+% Kata Inggris yang dipenggal salah oleh pola Indonesia
+\hyphenation{train vari-ance scal-ing de-ci-sion boost-ing}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage[a4paper,margin=2.2cm]{geometry}
@@ -125,7 +129,7 @@ $\Rightarrow$ & ``maka'' \\
 \addcontentsline{toc}{subsection}{Slide 12: Intuisi: Leakage}
 \textbf{Ucapkan:} "Bayangkan kamu sudah melihat kunci jawaban sebelum ujian. Nilainya tinggi, tetapi tidak lagi menunjukkan kemampuanmu menjawab soal baru. Masalah serupa muncul kalau model memakai informasi yang belum tersedia saat prediksi dibutuhkan. Di data bank ini tujuannya memprediksi respons nasabah sebelum telepon dilakukan. Kolom \texttt{duration}, lama panggilan, baru lengkap setelah panggilan berakhir. Lihat selisih kedua batang di kanan: dengan \texttt{duration}, A U C-nya nol koma sembilan tiga delapan; tanpa kolom itu, nol koma tujuh sembilan tiga. Batang kiri itu bukan model yang lebih baik, tetapi evaluasi yang memakai informasi yang tidak akan ada saat modelnya dipakai. Ini salah satu bentuk leakage. Bentuk lain, misalnya scaling yang dihitung dari seluruh data sebelum split, kita bahas di nb02."\\[2pt]
 
-\subsection*{\framebox{Slide 13/88}\quad Scaling: menyamakan rentang antar feature}
+\subsection*{\framebox{Slide 13/88}\quad Scaling: menyamakan skala antar feature}
 \addcontentsline{toc}{subsection}{Slide 13: Scaling}
 \textbf{Ucapkan:} "Dua panel, model yang sama, data yang sama. Yang berbeda hanya satuan sumbunya. Di kiri gaji ada di puluhan ribu dan umur di puluhan tahun, jadi saat jarak antar dua orang dihitung, selisih gaji hampir menentukan seluruh angkanya; selisih umur sepuluh tahun tidak terasa apa-apa dibanding selisih gaji sepuluh ribu. Akurasi test di panel kiri nol koma tujuh enam dua. Setelah kedua kolom disetarakan dengan \texttt{StandardScaler}, panel kanan, akurasinya nol koma sembilan. Yang berubah bukan modelnya, tetapi arti jaraknya. Model berbasis jarak seperti KNN dan SVM, dan model dengan penalti koefisien seperti logistic regression, terpengaruh scaling. Decision tree dan random forest tidak, karena tiap pertanyaannya hanya membandingkan satu kolom dengan satu angka."\\[2pt]
 
@@ -170,7 +174,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 21/88}\quad Confusion matrix: dua jenis kesalahan}
 \addcontentsline{toc}{subsection}{Slide 21: Confusion matrix}
-\textbf{Ucapkan:} "Sebelum membaca kotaknya, satu kesepakatan dulu: positif berarti kondisi yang ingin dideteksi, bukan hasil yang baik. Pada uji penyakit, positif berarti sakit. Pada data bank, positif berarti nasabah merespons. Dua kotak hijau adalah prediksi yang benar. Dua kotak sisanya adalah dua jenis kesalahan yang sama sekali tidak setara. False positive, kotak oranye, berarti kita bilang ya padahal tidak: alarm palsu, biayanya satu telepon yang sia-sia. False negative, kotak merah, berarti kita bilang tidak padahal ya: kasus yang terlewat, dan pada uji penyakit itu pasien yang pulang tanpa penanganan. Akurasi menjumlahkan dua kotak hijau saja dan menganggap dua kesalahan itu sama harganya. Karena biayanya berbeda, di banyak kasus yang kita pakai bukan akurasi."\\[2pt]
+\textbf{Ucapkan:} "Sebelum membaca kotaknya, satu kesepakatan dulu: positif berarti kondisi yang ingin dideteksi, bukan hasil yang baik. Pada uji penyakit, positif berarti sakit. Pada data bank, positif berarti nasabah merespons. Dua kotak hijau adalah prediksi yang benar. Dua kotak sisanya adalah dua jenis kesalahan yang sama sekali tidak setara. False positive, kotak oranye, berarti kita bilang ya padahal tidak: alarm palsu, biayanya satu telepon yang sia-sia. False negative, kotak merah, berarti kita bilang tidak padahal ya: kasus yang terlewat, dan pada uji penyakit itu pasien yang pulang tanpa penanganan. Akurasi membagi jumlah dua kotak hijau dengan seluruh baris, dan dengan begitu menganggap dua kesalahan itu sama harganya. Karena biayanya berbeda, di banyak kasus yang kita pakai bukan akurasi."\\[2pt]
 
 \subsection*{\framebox{Slide 22/88}\quad Precision, recall, F1, dan ROC-AUC}
 \addcontentsline{toc}{subsection}{Slide 22: Precision, recall, F1, ROC-AUC}
@@ -221,7 +225,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 29/88}\quad Intuisi: Time series: urutan waktunya ikut menentukan}
 \addcontentsline{toc}{subsection}{Slide 29: Intuisi: time series}
-\textbf{Ucapkan:} "Data penumpang bulanan dari SeaPlaneTravel, dari sekitar tahun dua ribu empat sampai dua ribu empat belas. Panel atas: garis tipis data bulanan, garis tebal rata-rata bergerak dua belas bulan. Ada tiga hal yang bercampur di satu garis. Trend, arah jangka panjangnya, di sini naik terus. Pola musiman, naik-turun yang berulang tiap dua belas bulan; panel bawah merata-ratakan per bulan, dan bulan-bulan pertengahan tahun terlihat paling tinggi. Sisanya noise, gerakan yang tidak dijelaskan keduanya. Yang membuat data seperti ini berbeda dari data tabular biasa: urutan waktunya bagian dari datanya. Jadi barisnya tidak boleh diacak, dan itu mengubah cara kita membagi data train dan test."\\[2pt]
+\textbf{Ucapkan:} "Data penumpang bulanan dari SeaPlaneTravel, dari Januari dua ribu tiga sampai Desember dua ribu empat belas. Panel atas: garis tipis data bulanan, garis tebal rata-rata bergerak dua belas bulan. Ada tiga hal yang bercampur di satu garis. Trend, arah jangka panjangnya, di sini naik terus. Pola musiman, naik-turun yang berulang tiap dua belas bulan; panel bawah merata-ratakan per bulan, dan bulan-bulan pertengahan tahun terlihat paling tinggi. Sisanya noise, gerakan yang tidak dijelaskan keduanya. Yang membuat data seperti ini berbeda dari data tabular biasa: urutan waktunya bagian dari datanya. Jadi barisnya tidak boleh diacak, dan itu mengubah cara kita membagi data train dan test."\\[2pt]
 
 \subsection*{\framebox{Slide 30/88}\quad Stasioner dan differencing}
 \addcontentsline{toc}{subsection}{Slide 30: Stasioner dan differencing}
@@ -265,7 +269,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 37/88}\quad Logistic regression: threshold dan data timpang}
 \addcontentsline{toc}{subsection}{Slide 37: Threshold dan data timpang}
-\textbf{Ucapkan:} "Keluaran model itu probabilitas, bukan label. Label baru muncul setelah probabilitasnya dibandingkan dengan sebuah threshold, dan \texttt{predict()} di scikit-learn memakai nol koma lima. Angka itu bawaan, bukan angka baku. Kalau threshold diturunkan, lebih banyak baris diprediksi positif, jadi recall naik dan precision turun. Kalau dinaikkan, kebalikannya. Jadi threshold adalah pilihan yang mengikuti biaya kesalahan yang sudah kita sepakati, dan dipilih dari data validation, bukan dari data test. Satu lagi, kalau satu kelas jauh lebih banyak, \texttt{class\_weight='balanced'} memperbesar bobot kelas minoritas saat melatih, sehingga kesalahan pada kelas kecil dihitung lebih mahal. Di nb02 kita coba keduanya dan lihat pengaruhnya ke precision dan recall."\\[2pt]
+\textbf{Ucapkan:} "Keluaran model itu probabilitas, bukan label. Label baru muncul setelah probabilitasnya dibandingkan dengan sebuah threshold, dan \texttt{predict()} di scikit-learn memakai nol koma lima. Angka itu bawaan, bukan angka baku. Kalau threshold diturunkan, lebih banyak baris diprediksi positif, jadi recall naik dan precision biasanya turun. Kalau dinaikkan, efeknya berbalik. Jadi threshold adalah pilihan yang mengikuti biaya kesalahan yang sudah kita sepakati, dan dipilih dari data validation, bukan dari data test. Satu lagi, kalau satu kelas jauh lebih banyak, \texttt{class\_weight='balanced'} memperbesar bobot kelas minoritas saat melatih, sehingga kesalahan pada kelas kecil dihitung lebih mahal. Di nb02 kita coba keduanya dan lihat pengaruhnya ke precision dan recall."\\[2pt]
 
 \subsection*{\framebox{Slide 38/88}\quad Logistic regression: kapan pakai dan jebakannya}
 \addcontentsline{toc}{subsection}{Slide 38: Logistic regression (kapan pakai)}
@@ -277,7 +281,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 40/88}\quad Decision tree: bagaimana pertanyaannya dipilih}
 \addcontentsline{toc}{subsection}{Slide 40: Decision tree (mekanisme)}
-\textbf{Ucapkan:} "Pertanyaan di tiap simpul tidak ditulis manusia. Model mencoba banyak pasangan feature dan ambang, lalu memilih pasangan yang paling memisahkan kelas. Ukuran pemisahannya gini: makin kecil, makin murni isi tiap cabang, artinya satu cabang makin didominasi satu kelas. Proses itu diulang di setiap cabang sampai simpulnya murni atau sampai batas yang kamu pasang tercapai. Dua batas yang paling sering dipakai: \texttt{max\_depth} untuk kedalaman, dan \texttt{min\_samples\_leaf} untuk isi minimum tiap ujung. Satu akibat dari cara kerja ini: karena tiap pertanyaan hanya membandingkan satu feature dengan satu angka, batas keputusannya selalu sejajar sumbu feature. Itu yang nanti terlihat di panel decision tree pada gambar perbandingan."\\[2pt]
+\textbf{Ucapkan:} "Pertanyaan di tiap simpul tidak ditulis manusia. Model mencoba banyak pasangan feature dan ambang, lalu memilih pasangan yang paling memisahkan kelas. Ukuran pemisahannya bisa dipilih, dan default di scikit-learn adalah gini: makin kecil, makin murni isi tiap cabang, artinya satu cabang makin didominasi satu kelas. Proses itu diulang di setiap cabang sampai simpulnya murni atau sampai batas yang kamu pasang tercapai. Dua batas yang paling sering dipakai: \texttt{max\_depth} untuk kedalaman, dan \texttt{min\_samples\_leaf} untuk isi minimum tiap ujung. Satu akibat dari cara kerja ini: karena tiap pertanyaan hanya membandingkan satu feature dengan satu angka, batas keputusannya selalu sejajar sumbu feature. Itu yang nanti terlihat di panel decision tree pada gambar perbandingan."\\[2pt]
 
 \subsection*{\framebox{Slide 41/88}\quad Decision tree: kapan pakai dan jebakannya}
 \addcontentsline{toc}{subsection}{Slide 41: Decision tree (kapan pakai)}
@@ -289,7 +293,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 43/88}\quad KNN: jarak, K, dan suara mayoritas}
 \addcontentsline{toc}{subsection}{Slide 43: KNN (mekanisme)}
-\textbf{Ucapkan:} "Jaraknya biasanya Euclidean, yaitu jarak lurus yang kita kenal: selisih di tiap feature dikuadratkan, dijumlahkan, lalu diakar. Prosedurnya tiga langkah: hitung jarak data baru ke data train, ambil K yang terdekat, pakai kelas terbanyak di antara mereka. K itu pilihan kita. K kecil, misalnya satu, membuat prediksi mengikuti tiap variasi acak di sekitarnya. K besar membuat batasnya terlalu rata sehingga pola lokal hilang. Di nb04 kita sapu K sampai seratus dengan cross-validation dan lihat kurvanya. Satu sifat yang unik: tidak ada parameter yang dilatih di sini. \texttt{fit()} hampir hanya menyimpan data. Semua pekerjaan terjadi saat prediksi."\\[2pt]
+\textbf{Ucapkan:} "Jaraknya biasanya Euclidean, yaitu jarak lurus yang kita kenal: selisih di tiap feature dikuadratkan, dijumlahkan, lalu diakar. Prosedurnya tiga langkah: hitung jarak data baru ke data train, ambil K yang terdekat, pakai kelas terbanyak di antara mereka. K itu pilihan kita. K kecil, misalnya satu, membuat prediksi mengikuti tiap variasi acak di sekitarnya. K besar membuat batasnya terlalu rata sehingga pola lokal hilang. Di nb04 kita sapu K sampai seratus dengan cross-validation dan lihat kurvanya. Satu sifat yang unik: tidak ada parameter yang dilatih di sini. \texttt{fit()} hampir hanya menyimpan data, atau membangun struktur pencarian tetangga. Hampir semua pekerjaan terjadi saat prediksi."\\[2pt]
 \textbf{Baca rumus:}\\[2pt]
 \begin{itemize}\setlength\itemsep{0.2em}
 \item $d(a,b) = \sqrt{\sum_{j=1}^{m}\bigl(a_j - b_j\bigr)^2}$: ``d dari a dan b sama dengan akar dari, sigma, j dari satu sampai m, a ke-j kurang b ke-j, dikuadratkan''.
@@ -352,7 +356,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 57/88}\quad Intuisi: Boosting: model berikutnya mengerjakan yang masih salah}
 \addcontentsline{toc}{subsection}{Slide 57: Intuisi: boosting}
-\textbf{Ucapkan:} "Bandingkan dengan random forest tadi. Di random forest semua pohon bekerja bersamaan dan tidak saling tahu. Di boosting modelnya berurutan. Model satu dilatih dulu dan banyak salahnya. Baris yang masih salah diberi bobot lebih besar, sehingga model dua memusatkan perhatian ke sana. Sisa kesalahan model dua diserahkan ke model tiga, begitu seterusnya. Jadi tiap tambahan model menutup sisa kesalahan model sebelumnya, bukan mengulang pekerjaan yang sama. Satu catatan tentang gambar: label di panel terakhir hanya penanda arah cerita, bukan hasil pengukuran. Seberapa jauh boosting membaik, dan sampai model ke berapa, itu yang kita ukur di nb07 dengan data validation."\\[2pt]
+\textbf{Ucapkan:} "Bandingkan dengan random forest tadi. Di random forest semua pohon bekerja bersamaan dan tidak saling tahu. Di boosting modelnya berurutan. Model satu dilatih dulu dan banyak salahnya. Baris yang masih salah diberi bobot lebih besar, sehingga model dua memusatkan perhatian ke sana. Sisa kesalahan model dua diserahkan ke model tiga, begitu seterusnya. Jadi tiap tambahan model menutup sisa kesalahan model sebelumnya, bukan mengulang pekerjaan yang sama. Satu pembedaan yang perlu disebut sekarang, karena tiga slide berikutnya soal XGBoost: yang saya jelaskan tadi, menaikkan bobot baris yang salah, itu cara AdaBoost. Di gradient boosting, yang dipakai XGBoost, bobot barisnya tidak diubah; model berikutnya justru dilatih untuk mempelajari sisa error, residual, dari model sebelumnya. Satu catatan tentang gambar: label di panel terakhir hanya penanda arah cerita, bukan hasil pengukuran. Seberapa jauh boosting membaik, dan sampai model ke berapa, itu yang kita ukur di nb07 dengan data validation."\\[2pt]
 
 \subsection*{\framebox{Slide 58/88}\quad Bagging dan boosting pada data yang sama}
 \addcontentsline{toc}{subsection}{Slide 58: Bagging dan boosting berdampingan}
@@ -410,7 +414,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 71/88}\quad Memilih K: skor silhouette}
 \addcontentsline{toc}{subsection}{Slide 71: Memilih K (silhouette)}
-\textbf{Ucapkan:} "Cara kedua menanyakan hal yang lebih tepat. Silhouette mengukur, untuk setiap baris, seberapa dekat baris itu ke anggota kelompoknya sendiri dibanding ke kelompok tetangga terdekat. Rentangnya minus satu sampai satu; makin tinggi makin jelas pemisahannya. Di data ini skornya paling tinggi di K sama dengan dua, sekitar nol koma dua delapan, lalu turun untuk K yang lebih besar. Yang perlu diingat, angka ini satu bahan pertimbangan, bukan perintah. Kalau kebutuhan bisnis meminta segmen yang lebih halus, K tiga sampai empat masih wajar; skornya turun sedikit, dan penurunan itu bagian dari keputusan yang kita ambil sadar. Yang tidak boleh: memilih K dari skor lalu menceritakannya sebagai jumlah kelompok yang sebenarnya ada."\\[2pt]
+\textbf{Ucapkan:} "Cara kedua menanyakan hal yang lebih tepat. Silhouette mengukur, untuk setiap baris, seberapa dekat baris itu ke anggota kelompoknya sendiri dibanding ke kelompok tetangga terdekat. Rentangnya minus satu sampai satu; makin tinggi makin jelas pemisahannya. Di data ini skornya paling tinggi di K sama dengan dua, sekitar nol koma dua sembilan, lalu turun untuk K yang lebih besar. Yang perlu diingat, angka ini satu bahan pertimbangan, bukan perintah. Kalau kebutuhan bisnis meminta segmen yang lebih halus, K sama dengan tiga masih wajar, skornya sekitar nol koma dua enam; tetapi di K sama dengan empat skornya turun jelas ke sekitar nol koma satu sembilan, dan penurunan itu bagian dari keputusan yang kita ambil sadar. Yang tidak boleh: memilih K dari skor lalu menceritakannya sebagai jumlah kelompok yang sebenarnya ada."\\[2pt]
 \textbf{Baca rumus:}\\[2pt]
 \begin{itemize}\setlength\itemsep{0.2em}
 \item Rumusnya tidak ditampilkan di slide. Kalau ada yang bertanya: $s = \dfrac{b - a}{\max(a,\,b)}$ dibaca ``s sama dengan b kurang a, per, maksimum dari a dan b''.
@@ -423,7 +427,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 73/88}\quad DBSCAN: kelompok dari kepadatan, sisanya outlier}
 \addcontentsline{toc}{subsection}{Slide 73: DBSCAN}
-\textbf{Ucapkan:} "Metode ketiga berangkat dari kepadatan, bukan dari jarak ke pusat. Aturannya: baris yang punya paling sedikit \texttt{min\_samples} tetangga di dalam radius \texttt{eps}, lingkaran oranye itu, menjadi inti kelompok, dan tetangganya ikut bergabung. Kelompok tumbuh dari inti ke inti. Dua sifat yang membedakannya dari k-means. Pertama, baris yang tidak masuk kelompok mana pun ditandai sebagai outlier, tanda silang merah itu, bukan dipaksa masuk ke kelompok terdekat. Kedua, jumlah kelompoknya tidak ditentukan di awal dan bentuknya bebas, jadi kelompok memanjang pun bisa ditemukan. Harganya: dua parameter yang harus dipilih. \texttt{eps} diambil dari k-distance plot, yaitu urutkan jarak ke tetangga ke-k lalu ambil nilai di tempat kurvanya mulai menanjak."\\[2pt]
+\textbf{Ucapkan:} "Metode ketiga berangkat dari kepadatan, bukan dari jarak ke pusat. Aturannya: baris yang punya paling sedikit \texttt{min\_samples} titik di dalam radius \texttt{eps}, lingkaran oranye itu, menjadi inti kelompok, dan tetangganya ikut bergabung. Titik yang di tengah lingkaran itu ikut dihitung sebagai salah satunya, jadi \texttt{min\_samples} sama dengan lima berarti titik itu sendiri tambah empat tetangga. Kelompok tumbuh dari inti ke inti. Dua sifat yang membedakannya dari k-means. Pertama, baris yang tidak masuk kelompok mana pun ditandai sebagai outlier, tanda silang merah itu, bukan dipaksa masuk ke kelompok terdekat. Kedua, jumlah kelompoknya tidak ditentukan di awal dan bentuknya bebas, jadi kelompok memanjang pun bisa ditemukan. Harganya: dua parameter yang harus dipilih. \texttt{eps} diambil dari k-distance plot, yaitu urutkan jarak ke tetangga ke-k lalu ambil nilai di tempat kurvanya mulai menanjak."\\[2pt]
 
 \subsection*{\framebox{Slide 74/88}\quad Clustering di data nyata: yang mudah terlewat}
 \addcontentsline{toc}{subsection}{Slide 74: Clustering di data nyata}
@@ -447,9 +451,9 @@ $\Rightarrow$ & ``maka'' \\
 \addcontentsline{toc}{subsection}{Slide 78: Yang cocok di GPU}
 \textbf{Ucapkan:} "Tiga syarat di kolom kiri, dan ketiganya perlu terpenuhi bersama. Operasinya sama untuk semua baris, misalnya perkalian matriks atau perhitungan jarak seperti di KNN dan k-means. Barisnya banyak, sehingga semua core punya bagian. Dan datanya sudah berada di memori GPU. Kolom kanan kebalikannya: data kecil beberapa ribu baris, alur yang bercabang berbeda-beda per baris, atau data yang harus bolak-balik dipindah antara CPU dan GPU. Untuk hari ini, yang dijalankan di GPU pada nb10 ada empat: Random Forest dan KNN dari cuML, K-Means, serta XGBoost dengan \texttt{device=\textquotedbl{}cuda\textquotedbl{}}. Keempatnya masuk kategori kolom kiri, dan itu bukan kebetulan."\\[2pt]
 
-\subsection*{\framebox{Slide 79/88}\quad cuML: yang berubah hanya barisnya import}
+\subsection*{\framebox{Slide 79/88}\quad cuML: yang berubah hanya baris import-nya}
 \addcontentsline{toc}{subsection}{Slide 79: cuML}
-\textbf{Ucapkan:} "Ini satu-satunya slide kode di deck ini, dan sengaja, karena yang mau saya tunjukkan justru betapa sedikit yang berubah. Dua baris import di atas: yang pertama dari \texttt{sklearn.ensemble}, yang kedua dari \texttt{cuml.ensemble}. Nama kelasnya sama, \texttt{RandomForestClassifier}. Tiga baris di bawahnya, membuat model, \texttt{fit()}, lalu \texttt{predict()}, tidak berubah sama sekali. Jadi kode setelah import bisa dibiarkan apa adanya. Dua hal yang perlu disiapkan sebelum kaget di notebook. Tidak semua argumen scikit-learn tersedia di cuML, jadi sebagian pengaturan perlu dicek di dokumentasinya. Dan hasilnya bisa berbeda sedikit dari versi CPU karena urutan perhitungannya berbeda."\\[2pt]
+\textbf{Ucapkan:} "Ini slide kode pertama dari dua di deck ini, dan sengaja hanya dua, karena yang mau saya tunjukkan justru betapa sedikit yang berubah. Dua baris import di atas: yang pertama dari \texttt{sklearn.ensemble}, yang kedua dari \texttt{cuml.ensemble}. Nama kelasnya sama, \texttt{RandomForestClassifier}. Tiga baris di bawahnya, membuat model, \texttt{fit()}, lalu \texttt{predict()}, tidak berubah sama sekali. Jadi kode setelah import bisa dibiarkan apa adanya. Dua hal yang perlu disiapkan sebelum kaget di notebook. Tidak semua argumen scikit-learn tersedia di cuML, jadi sebagian pengaturan perlu dicek di dokumentasinya. Dan hasilnya bisa berbeda sedikit dari versi CPU karena urutan perhitungannya berbeda."\\[2pt]
 
 \subsection*{\framebox{Slide 80/88}\quad XGBoost di GPU: satu argumen}
 \addcontentsline{toc}{subsection}{Slide 80: XGBoost di GPU}
@@ -461,7 +465,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 82/88}\quad Benchmark: syarat pengukurannya disebut}
 \addcontentsline{toc}{subsection}{Slide 82: Benchmark}
-\textbf{Ucapkan:} "Slide ini sengaja tidak menyebut angka percepatan, dan itu bagian dari pesannya. Angka di panel kiri diisi dari hasil pengukuran nb10 di Colab dengan Tesla T4, jadi selama sesi ini belum menjalankan notebooknya, tidak ada rasio yang bisa saya sebutkan. Yang bisa disebut sekarang syarat pengukurannya, dan justru itu yang perlu kamu tiru. Tugasnya: Random Forest dua ratus pohon, KNN, K-Means, dan XGBoost. Datanya Covertype, lima ratus delapan puluh satu ribu baris. Yang diukur: waktu \texttt{fit()} saja, dan diambil setelah warm-up. Perangkatnya satu GPU Tesla T4 di Google Colab, dibandingkan CPU pada runtime yang sama. Nanti setelah nb10 jalan, kita isi angkanya bersama dan lihat mana yang tidak sesuai dugaan."\\[2pt]
+\textbf{Ucapkan:} "Slide ini sengaja tidak menyebut angka percepatan, dan itu bagian dari pesannya. Angka di panel kiri akan diisi dari hasil pengukuran nb10 di Colab dengan Tesla T4, jadi selama sesi ini belum menjalankan notebooknya, tidak ada rasio yang bisa saya sebutkan. Yang bisa disebut sekarang syarat pengukurannya, dan justru itu yang perlu kamu tiru. Tugasnya: Random Forest dua ratus pohon, KNN, K-Means, dan XGBoost. Datanya Covertype, lima ratus delapan puluh satu ribu baris; khusus KNN dipakai subset seratus ribu baris train supaya selnya tidak berjalan terlalu lama. Yang diukur: waktu \texttt{fit()} saja, dan diambil setelah warm-up. Perangkatnya satu GPU Tesla T4 di Google Colab, dibandingkan CPU pada runtime yang sama. Nanti setelah nb10 jalan, kita isi angkanya bersama dan lihat mana yang tidak sesuai dugaan."\\[2pt]
 
 \subsection*{\framebox{Slide 83/88}\quad Ekosistem NVIDIA di sekitar pekerjaan ini}
 \addcontentsline{toc}{subsection}{Slide 83: Ekosistem NVIDIA}
@@ -469,7 +473,7 @@ $\Rightarrow$ & ``maka'' \\
 
 \subsection*{\framebox{Slide 84/88}\quad Ringkasan Act 7}
 \addcontentsline{toc}{subsection}{Slide 84: Ringkasan Act 7}
-\textbf{Ucapkan:} "Empat hal dari blok ini. GPU membantu kalau pekerjaannya besar, seragam, dan bisa dikerjakan serentak pada banyak baris. Perubahan kodenya kecil: satu baris import untuk cuML, satu argumen \texttt{device} untuk XGBoost. Ada keadaan di mana CPU lebih cepat, dan itu bukan kesalahan pengukuran: data kecil, alur bercabang, atau data yang bolak-balik dipindah. Dan yang terakhir ini kebiasaan, bukan pengetahuan: setiap klaim kecepatan menyebut tugasnya, ukuran datanya, perangkatnya, dan bagian mana yang diukur. Kalau salah satu tidak disebut, angkanya belum bisa dibandingkan dengan apa pun."\\[2pt]
+\textbf{Ucapkan:} "Empat hal dari blok ini. GPU membantu kalau pekerjaannya besar, seragam, dan bisa dikerjakan serentak pada banyak baris. Perubahan kodenya kecil: satu baris import untuk cuML, satu argumen \texttt{device} untuk XGBoost. Ada keadaan ketika CPU lebih cepat, dan itu bukan kesalahan pengukuran: data kecil, alur bercabang, atau data yang bolak-balik dipindah. Dan yang terakhir ini kebiasaan, bukan pengetahuan: setiap klaim kecepatan menyebut tugasnya, ukuran datanya, perangkatnya, dan bagian mana yang diukur. Kalau salah satu tidak disebut, angkanya belum bisa dibandingkan dengan apa pun."\\[2pt]
 
 \section{Penutup}
 
