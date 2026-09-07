@@ -2,7 +2,7 @@
 import re
 
 FORBIDDEN = [
-    r"\bTurbo\b", r"\bbersinar\b", r"titik manis", r"\bharmonis\b", r"\bsekedar\b", r"\bmenghapal\b",
+    r"(?<!SD-)\bTurbo\b", r"\bbersinar\b", r"titik manis", r"\bharmonis\b", r"\bsekedar\b", r"\bmenghapal\b",
     r"(?i)data latihan", r"(?i)data ujian", r"kolom ikut dilatih",
     r"\bkalian\b", r"\bAnda\b", r"10-50x", r"10–50x",
     r"kotak-kotak", r"(?i)scaling wajib", r"(?i)senjata rahasia", r"Perbandingan Besar",
