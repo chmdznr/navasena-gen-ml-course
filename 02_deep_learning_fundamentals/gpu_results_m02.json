@@ -1,0 +1,23 @@
+{
+  "_note": "nb05 di Google Colab, Tesla T4, 7 Sep 2026, mode penuh, setelah warm-up. Matmul 8000x8000 float32; CNN 3 epoch pada 10.000 gambar CIFAR-10 batch 64; inferensi 1.000 gambar. Tambahan (tidak digambar, GPU vs GPU): mixed precision 14.0 s vs float32 9.5 s; TensorRT FP16 14.5 ms vs TF FP32 117.9 ms.",
+  "dataset": "CIFAR-10 / matriks acak",
+  "n_rows": "10.000 gambar",
+  "device_cpu": "CPU Colab",
+  "device_gpu": "Tesla T4",
+  "measured": "eksekusi",
+  "algorithms": [
+    "Training CNN (3 epoch, 10.000 gambar)",
+    "Perkalian matriks 8.000×8.000",
+    "Inferensi CNN (1.000 gambar)"
+  ],
+  "cpu_times": [
+    117.99,
+    9.934,
+    1.333
+  ],
+  "gpu_times": [
+    9.5,
+    0.525,
+    1.139
+  ]
+}
