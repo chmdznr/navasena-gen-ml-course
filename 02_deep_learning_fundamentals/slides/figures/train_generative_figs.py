@@ -26,12 +26,14 @@ x01_test = x_test.astype("float32") / 255.0
 # ---------- Autoencoder (identik dgn notebook) ----------
 LATENT_DIM = 32
 encoder = tf.keras.Sequential([
-    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.Input(shape=(28, 28)),
+    tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(128, activation="relu"),
     tf.keras.layers.Dense(LATENT_DIM, activation="relu"),
 ])
 decoder = tf.keras.Sequential([
-    tf.keras.layers.Dense(128, activation="relu", input_shape=(LATENT_DIM,)),
+    tf.keras.Input(shape=(LATENT_DIM,)),
+    tf.keras.layers.Dense(128, activation="relu"),
     tf.keras.layers.Dense(28 * 28, activation="sigmoid"),
     tf.keras.layers.Reshape((28, 28)),
 ])
@@ -65,7 +67,8 @@ dataset = (tf.data.Dataset.from_tensor_slices(x_gan)
            .shuffle(N_GAN, seed=SEED).batch(BATCH_SIZE))
 
 generator = tf.keras.Sequential([
-    tf.keras.layers.Dense(7 * 7 * 128, use_bias=False, input_shape=(NOISE_DIM,)),
+    tf.keras.Input(shape=(NOISE_DIM,)),
+    tf.keras.layers.Dense(7 * 7 * 128, use_bias=False),
     tf.keras.layers.BatchNormalization(),
     tf.keras.layers.LeakyReLU(),
     tf.keras.layers.Reshape((7, 7, 128)),
@@ -75,7 +78,8 @@ generator = tf.keras.Sequential([
     tf.keras.layers.Conv2DTranspose(1, 5, strides=2, padding="same", activation="tanh"),
 ])
 discriminator = tf.keras.Sequential([
-    tf.keras.layers.Conv2D(64, 5, strides=2, padding="same", input_shape=(28, 28, 1)),
+    tf.keras.Input(shape=(28, 28, 1)),
+    tf.keras.layers.Conv2D(64, 5, strides=2, padding="same"),
     tf.keras.layers.LeakyReLU(),
     tf.keras.layers.Dropout(0.3),
     tf.keras.layers.Conv2D(128, 5, strides=2, padding="same"),
@@ -124,7 +128,7 @@ for row, (ep, imgs) in enumerate(sorted(snapshots.items())):
     axes[row, 0].set_xticks([]); axes[row, 0].set_yticks([])
     for s in axes[row, 0].spines.values():
         s.set_visible(False)
-fig.suptitle("DCGAN di MNIST: noise → digit (noise input sama tiap baris)",
+fig.suptitle("DCGAN di MNIST: noise → digit (noise input sama tiap kolom)",
              color=FG, fontsize=10)
 fig.savefig(os.path.join(OUT, "gan_grid.pdf"), facecolor=BG, bbox_inches="tight")
 plt.close(fig)

@@ -11,18 +11,15 @@ for script in figures/gen_*.py; do
     fi
 done
 
-echo "=== Step 2: Generate Mermaid diagrams ==="
-MMDC=${MMDC:-/opt/homebrew/bin/mmdc}
-for mmd in figures/*.mmd; do
-    if [ -f "$mmd" ]; then
-        out="${mmd%.mmd}.png"
-        echo "  Converting $mmd → $out..."
-        $MMDC -i "$mmd" -o "$out" -s 3 -b transparent 2>/dev/null
-    fi
-done
+echo "=== Step 2: Compile LaTeX ==="
+xelatex -interaction=nonstopmode -halt-on-error module02_slides.tex
+xelatex -interaction=nonstopmode -halt-on-error module02_slides.tex
 
-echo "=== Step 3: Compile LaTeX ==="
-xelatex -interaction=nonstopmode -halt-on-error module02_slides.tex
-xelatex -interaction=nonstopmode -halt-on-error module02_slides.tex
+if [ -f speaker_notes_src.tex ]; then
+    echo "=== Step 3: Compile speaker notes ==="
+    xelatex -interaction=nonstopmode -halt-on-error speaker_notes_src.tex
+    xelatex -interaction=nonstopmode -halt-on-error speaker_notes_src.tex
+    mv speaker_notes_src.pdf speaker_notes.pdf
+fi
 
 echo "=== Done! Output: module02_slides.pdf ==="
