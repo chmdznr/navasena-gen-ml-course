@@ -1903,7 +1903,58 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
 \end{frame}
 
 % ----------------------------------------------------------
-% FRAME 65 — Diffusion
+% FRAME 65 — Intuisi: LSTM menulis teks (nb06 Bagian C)
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{LSTM yang sama, tugas yang digeser}
+  \vspace{0.5em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize,
+    bx/.style={fill=nvcard, rounded corners=3pt, text=nvwhite, inner sep=5pt,
+               minimum height=0.85cm, align=center}]
+    \node[bx, minimum width=3.2cm] (in) at (0,0) {\ttfamily Bahasa Indonesi};
+    \node[bx, draw=nvgreen, minimum width=1.8cm] (m) at (4.0,0) {LSTM};
+    \node[bx, draw=nvorange, minimum width=1.1cm] (out) at (7.0,0) {\ttfamily a};
+    \draw[nvgreen, line width=1pt, -{Stealth[length=5pt]}] (in) -- (m);
+    \draw[nvorange, line width=1pt, -{Stealth[length=5pt]}] (m) -- (out);
+    \node[text=nvgray, anchor=south] at (5.5,0.4) {karakter berikutnya};
+    \draw[nvorange, line width=0.9pt, -{Stealth[length=5pt]}]
+      (out.south) -- (7.0,-1.15) -- (1.6,-1.15) -- (1.6,-0.45);
+    \node[text=nvorange, anchor=north] at (4.3,-1.2)
+      {disambung ke masukan, lalu diulang tiga ratus kali};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.6em}
+  \nvbox{Intinya}{Di nb04 LSTM membaca urutan lalu memprediksi satu hal di ujungnya: nilai
+  sinus berikutnya, atau sentimen sebuah ulasan. Di nb06 tugasnya digeser satu langkah:
+  prediksi karakter berikutnya, sambungkan hasilnya ke masukan, ulangi. Tidak ada noise di
+  sini; yang menghasilkan variasi adalah cara kita mengambil sampel dari keluaran model.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 66 — Mekanisme temperature + jebakan teks
+% ----------------------------------------------------------
+\begin{frame}{Temperature: satu angka yang mengatur keberanian}
+  \vspace{0.3em}
+  \begin{center}
+    {\normalsize\color{nvwhite}$p = \mathrm{softmax}(\text{logit} \,/\, T)$}
+  \end{center}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Logit dibagi $T$ sebelum diubah menjadi probabilitas, lalu karakter diambil acak
+          mengikuti probabilitas itu.
+    \item $T$ rendah (0,3) menajamkan bedanya: hasilnya aman tetapi berulang.
+          $T$ tinggi (1,2) meratakannya: hasilnya beragam tetapi banyak kata rusak.
+    \item Parameter dengan nama yang sama ada di API model bahasa yang kita pakai di Modul 4.
+  \end{itemize}
+  \vspace{0.4em}
+  \jebakan{Keluarannya terdengar Indonesia, tetapi tidak bermakna. Model ini hanya melihat
+  100 karakter ke belakang dan belajar dari korpus 320 ribu karakter, jadi yang ditangkapnya
+  ejaan, akhiran, dan irama kalimat, bukan isi.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 67 — Diffusion
 % ----------------------------------------------------------
 \begin{frame}{Diffusion: noise ditambahkan bertahap, lalu dibalik}
   \vspace{0.05em}
@@ -1938,13 +1989,13 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
 \end{frame}
 
 % ----------------------------------------------------------
-% FRAME 66 — Peta generatif modern
+% FRAME 68 — Peta generatif modern
 % ----------------------------------------------------------
 \begin{frame}{Peta keluarga generatif}
-  \vspace{0.0em}
+  \vspace{-0.6em}
   \begin{center}
-  {\scriptsize\renewcommand{\arraystretch}{1.05}
-  \begin{tabular}{p{2.6cm}p{6.4cm}p{2.6cm}}
+  {\scriptsize\renewcommand{\arraystretch}{0.92}
+  \begin{tabular}{p{3.0cm}p{5.9cm}p{2.7cm}}
     \toprule
     \rowcolor{nvcard}\color{nvgreen}\textbf{Keluarga} &
     \color{nvgreen}\textbf{Ide inti} &
@@ -1954,17 +2005,18 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
     VAE & Representasi probabilistik; sampel dari distribusi latent didekode & Generator wajah \\
     GAN & Generator dan discriminator dilatih dengan tujuan berlawanan & StyleGAN \\
     Diffusion & Belajar mengurangi noise pada berbagai tingkat; generasi bertahap & Stable Diffusion \\
+    RNN/LSTM autoregresif & Memprediksi unit berikutnya dari unit sebelumnya & nb06 Bagian C \\
     Transformer autoregresif & Memprediksi token berikutnya dari token sebelumnya & GPT, Llama \\
     \bottomrule
   \end{tabular}}
   \end{center}
-  \vspace{0.2em}
-  \nvbox{Menuju Modul 4}{Baris terakhir itu yang kita pakai di Modul 4. Pada model bahasa yang
-  akan kita bahas, keluarannya berupa token teks.}
+  \vspace{-0.5em}
+  \nvbox{Menuju Modul 4}{\small Dua baris terakhir memakai mekanisme yang sama: yang atas sudah
+  kamu latih sendiri di nb06, yang bawah kita pakai di Modul 4.}
 \end{frame}
 
 % ----------------------------------------------------------
-% FRAME 67 — Kapan pakai & jebakan generatif
+% FRAME 69 — Kapan pakai & jebakan generatif
 % ----------------------------------------------------------
 \begin{frame}{Kapan model generatif cocok, dan apa jebakannya}
   \vspace{0.3em}
@@ -1984,11 +2036,11 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
 \end{frame}
 
 % ----------------------------------------------------------
-% FRAME 68 — Ringkasan Act 6
+% FRAME 70 — Ringkasan Act 6
 % ----------------------------------------------------------
 \begin{frame}{Ringkasan Act 6}
-  \vspace{0.5em}
-  \begin{itemize}\setlength\itemsep{0.46em}
+  \vspace{0.4em}
+  \begin{itemize}\setlength\itemsep{0.3em}
     \item Model diskriminatif memetakan data ke label; model generatif belajar seperti apa data
           yang wajar, lalu menghasilkan contoh baru.
     \item Autoencoder memampatkan gambar menjadi beberapa angka dan membangunnya ulang.
@@ -1999,6 +2051,9 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
           tetapi rewel dan rentan mode collapse.
     \item Diffusion membalik penambahan noise selangkah demi selangkah: mahal saat training,
           bertahap saat menghasilkan gambar.
+    \item Untuk teks, LSTM memprediksi karakter berikutnya lalu menyambungnya, dan temperature
+          mengatur keberaniannya. Mekanisme itu sudah kamu jalankan sendiri di nb06, dan dipakai
+          lagi di Modul 4.
   \end{itemize}
 \end{frame}
 
@@ -2007,7 +2062,7 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
 % ==========================================================
 
 % ----------------------------------------------------------
-% FRAME 69 — Enam notebook hari ini
+% FRAME 71 — Enam notebook hari ini
 % ----------------------------------------------------------
 \begin{frame}{Enam notebook hari ini}
   \vspace{0.3em}
@@ -2035,7 +2090,7 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
 \end{frame}
 
 % ----------------------------------------------------------
-% FRAME 70 — Apa selanjutnya
+% FRAME 72 — Apa selanjutnya
 % ----------------------------------------------------------
 \begin{frame}{Apa yang menyusul sesudah hari 2}
   \vspace{0.4em}
@@ -2071,7 +2126,7 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
 \end{frame}
 
 % ----------------------------------------------------------
-% FRAME 71 — Latihan mandiri
+% FRAME 73 — Latihan mandiri
 % ----------------------------------------------------------
 \begin{frame}{Latihan mandiri sebelum hari 3}
   \vspace{0.3em}
@@ -2089,7 +2144,7 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
 \end{frame}
 
 % ----------------------------------------------------------
-% FRAME 72 — Terima kasih
+% FRAME 74 — Terima kasih
 % ----------------------------------------------------------
 \begin{frame}[plain]
   \begin{tikzpicture}[remember picture, overlay]
