@@ -2158,22 +2158,21 @@ model_gpu = XGBClassifier(n_estimators=300, device="cuda")
 % FRAME 82 — Benchmark jujur
 % ----------------------------------------------------------
 \begin{frame}{Benchmark: syarat pengukurannya disebut}
-  \vspace{0.2em}
+  \vspace{0.1em}
   \begin{columns}[T]
-    \begin{column}{0.56\textwidth}
+    \begin{column}{0.58\textwidth}
       \begin{center}
-        \includegraphics[width=\textwidth, height=5.0cm, keepaspectratio]{figures/gpu_speedup.pdf}
+        \includegraphics[width=\textwidth, height=5.2cm, keepaspectratio]{figures/gpu_speedup.pdf}
       \end{center}
-      {\scriptsize\color{nvgray}nb10 di Colab: Tesla T4 vs CPU runtime yang sama, 7 September 2026. Sumbu waktu skala log.}
+      {\scriptsize\color{nvgray}nb10 di Colab, 7 September 2026: Tesla T4 vs CPU runtime yang sama, setelah warm-up. Sumbu waktu skala log.}
     \end{column}
-    \begin{column}{0.42\textwidth}
-      \vspace{0.1em}
-      \begin{itemize}\setlength\itemsep{0.2em}
+    \begin{column}{0.40\textwidth}
+      \begin{itemize}\setlength\itemsep{0.15em}\small
         \item \textbf{Tugas}: RF 200 pohon, XGBoost, KNN, K-Means, PCA, regresi linear.
-        \item \textbf{Data}: Covertype, 581.012 baris (KNN: 100.000).
-        \item \textbf{Diukur}: waktu \texttt{fit()}, setelah warm-up.
-        \item \textbf{PCA dan regresi linear kalah} (0,2x dan 0,1x): pekerjaannya terlalu kecil untuk menutup overhead.
-        \item \textbf{Akurasi}: XGBoost, KNN, PCA identik; RF cuML 0,759 vs 0,783 dan K-Means berbeda, implementasinya lain.
+        \item \textbf{Data}: Covertype 581.012 baris; KNN 100.000; regresi linear 20.640.
+        \item \textbf{Diukur}: waktu \texttt{fit()} saja.
+        \item \textbf{Yang kalah}: PCA 0,2x, regresi linear 0,1x; kerjanya terlalu kecil untuk menutup overhead.
+        \item \textbf{Skor}: XGBoost, KNN, PCA identik; RF 0,759 vs 0,783 dan K-Means bergeser, implementasi cuML berbeda.
       \end{itemize}
     \end{column}
   \end{columns}
