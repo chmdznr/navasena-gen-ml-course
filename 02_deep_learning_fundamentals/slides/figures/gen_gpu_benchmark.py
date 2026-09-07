@@ -33,7 +33,7 @@ if not os.path.isfile(RESULTS_PATH):
     ax.axis("off")
     ax.text(0.5, 0.58, "Hasil benchmark GPU belum diukur", color=TEXT_COLOR,
             fontsize=30, fontweight="bold", ha="center", va="center", wrap=True)
-    ax.text(0.5, 0.38, "Diisi setelah nb05 dijalankan di Colab T4", color=TEXT_COLOR,
+    ax.text(0.5, 0.38, "Diisi setelah nb05 dijalankan di runtime sesi ini", color=TEXT_COLOR,
             fontsize=30, ha="center", va="center", wrap=True)
     fig.savefig(OUTPUT_PATH, format="pdf", bbox_inches="tight", facecolor=BG_COLOR)
     print(f"Saved placeholder: {OUTPUT_PATH}")
