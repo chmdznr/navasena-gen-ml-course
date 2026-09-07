@@ -13,21 +13,21 @@ import os
 # Reproducibility
 np.random.seed(42)
 
-# Synthetic data mimicking Advertising dataset pattern
-# TV budget (0-300 k$) vs sales (0-30 k units)
+# Synthetic data: analogi suhu vs jumlah es krim terjual (§2.4 - korelasi,
+# bukan klaim sebab-akibat), suhu 15-35 C vs jumlah es krim terjual per hari
 n = 80
-tv_budget = np.random.uniform(5, 295, n)
-noise = np.random.normal(0, 2.5, n)
-sales = 0.075 * tv_budget + 5.0 + noise
+suhu = np.random.uniform(15, 35, n)
+noise = np.random.normal(0, 8, n)
+es_krim_terjual = 6.0 * suhu - 40 + noise
 
-X = tv_budget.reshape(-1, 1)
-y = sales
+X = suhu.reshape(-1, 1)
+y = es_krim_terjual
 
 # Fit linear regression
 model = LinearRegression()
 model.fit(X, y)
 
-x_line = np.linspace(5, 295, 300).reshape(-1, 1)
+x_line = np.linspace(15, 35, 300).reshape(-1, 1)
 y_line = model.predict(x_line)
 
 # --- Plot ---
@@ -40,11 +40,11 @@ fig, ax = plt.subplots(figsize=(6, 4))
 fig.patch.set_facecolor(BG_COLOR)
 ax.set_facecolor(BG_COLOR)
 
-ax.scatter(tv_budget, sales, color=POINT_COLOR, alpha=0.6, s=30, zorder=3)
+ax.scatter(suhu, es_krim_terjual, color=POINT_COLOR, alpha=0.6, s=30, zorder=3)
 ax.plot(x_line, y_line, color=LINE_COLOR, linewidth=2.5, zorder=4)
 
-ax.set_xlabel("Budget Iklan TV (ribu $)", color=TEXT_COLOR, fontsize=11)
-ax.set_ylabel("Penjualan (ribu unit)", color=TEXT_COLOR, fontsize=11)
+ax.set_xlabel("Suhu (°C)", color=TEXT_COLOR, fontsize=11)
+ax.set_ylabel("Es krim terjual (buah)", color=TEXT_COLOR, fontsize=11)
 
 ax.tick_params(colors=TEXT_COLOR, labelsize=9)
 for spine in ax.spines.values():

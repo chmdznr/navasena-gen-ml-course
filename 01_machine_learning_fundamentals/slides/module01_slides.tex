@@ -9,6 +9,12 @@
 \usepackage{fontspec}
 \usepackage[sfdefault]{FiraSans}
 
+% ---- Bahasa (pola pemenggalan Indonesia) --------------------
+\usepackage[indonesian]{babel}
+
+% Kata Inggris yang dipenggal salah oleh pola Indonesia
+\hyphenation{train vari-ance scal-ing de-ci-sion boost-ing}
+
 % ---- Core packages ------------------------------------------
 \usepackage{graphicx}
 \usepackage{tikz}
@@ -156,6 +162,34 @@
   \end{tikzpicture}%
 }
 
+% \intuisi{Judul} -> frametitle "Judul" + tag kecil "Intuisi" di kanan atas
+\newcommand{\intuisi}[1]{%
+  \frametitle{\makebox[\dimexpr\paperwidth-1.7cm\relax][l]{%
+    #1\hfill{\small\color{nvlightgreen}Intuisi}}}}
+
+% \jebakan{teks} -> kotak oranye
+\newcommand{\jebakan}[1]{%
+  \begin{tikzpicture}
+    \node[fill=nvorange!25!nvbg, draw=nvorange, rounded corners=4pt, inner sep=7pt,
+          text width=\linewidth-16pt, text=nvwhite]
+      {\textbf{\color{nvorange}Jebakan:} #1};
+  \end{tikzpicture}%
+}
+
+% \kapan{cocok}{kurang cocok} -> dua kolom hijau/merah
+\newcommand{\kapan}[2]{%
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvgreen}Cocok kalau}
+      \begin{itemize}#1\end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvred}Kurang cocok kalau}
+      \begin{itemize}#2\end{itemize}
+    \end{column}
+  \end{columns}%
+}
+
 % ============================================================
 % TITLE INFO
 % ============================================================
@@ -170,1258 +204,2122 @@
 \begin{document}
 
 % ----------------------------------------------------------
-% SLIDE 1 — Title slide
+% FRAME 1 — Judul
 % ----------------------------------------------------------
 \begin{frame}[plain]
   \begin{tikzpicture}[remember picture, overlay]
-    % Background fill
     \fill[nvbg] (current page.south west) rectangle (current page.north east);
-    % Top accent bar
     \fill[nvgreen] ([yshift=-3pt]current page.north west)
       rectangle ([yshift=-7pt]current page.north east);
-    % Left green stripe
     \fill[nvgreen!30] (current page.south west)
       rectangle ([xshift=6pt]current page.north west);
-    % Course title
     \node[anchor=center, yshift=1.6cm,
           font=\fontsize{28}{32}\selectfont\bfseries, text=nvgreen]
           at (current page.center) {Machine Learning Fundamentals};
-    % Subtitle
-    \node[anchor=center, yshift=0.5cm,
-          font=\large, text=nvwhite]
-          at (current page.center) {Navasena Gen-ML Course};
-    % Divider
+    \node[anchor=center, yshift=0.5cm, font=\large, text=nvwhite]
+          at (current page.center)
+          {Hari 1 \textperiodcentered{} Navasena Gen-ML Course \textperiodcentered{} Batch 6};
     \draw[nvgreen, line width=1pt]
-      ([xshift=-5cm]current page.center)
-      -- ([xshift=5cm]current page.center);
-    % Author
-    \node[anchor=center, yshift=-0.5cm,
-          font=\normalsize, text=nvgray]
+      ([xshift=-5cm]current page.center) -- ([xshift=5cm]current page.center);
+    \node[anchor=center, yshift=-0.6cm, font=\normalsize, text=nvgray]
+          at (current page.center)
+          {10 notebook \textperiodcentered{} Python \textperiodcentered{} Google Colab};
+    \node[anchor=center, yshift=-1.5cm, font=\small, text=nvgray]
           at (current page.center) {Navasena AI};
   \end{tikzpicture}
 \end{frame}
 
 % ----------------------------------------------------------
-% SLIDE 2 — Act 1 transition
+% FRAME 2 — Peta hari ini
 % ----------------------------------------------------------
-\acttitle{Act 1}{Apa itu Machine Learning?}{Bagaimana komputer bisa belajar dari data?}
-
-% ----------------------------------------------------------
-% SLIDE 3 — Apa itu ML?
-% ----------------------------------------------------------
-\begin{frame}{Apa itu Machine Learning?}
-  \vspace{0.4em}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \textbf{\color{nvgreen}Konsep Dasar}
-      \vspace{0.5em}
-      \begin{itemize}\setlength\itemsep{0.6em}
-        \item Komputer belajar \textbf{pola} dari data
-        \item Tanpa diprogram secara \textbf{eksplisit}
-        \item Makin banyak data \textbf{$\rightarrow$ makin pintar}
-      \end{itemize}
-      \vspace{0.9em}
-      \begin{tikzpicture}
-        \node[fill=nvcard, rounded corners=4pt, inner sep=8pt,
-              text width=\linewidth-16pt, text=nvwhite] {
-          \color{nvgreen}\textbf{Definisi:}\\
-          \small ML adalah bidang AI di mana sistem belajar
-          dari pengalaman tanpa instruksi eksplisit untuk setiap kasus.
-        };
-      \end{tikzpicture}
-    \end{column}
-    \hfill
-    \begin{column}{0.48\textwidth}
-      \textbf{\color{nvlightgreen}Contoh Nyata Sehari-hari}
-      \vspace{0.5em}
-      \begin{itemize}\setlength\itemsep{0.6em}
-        \item \textbf{Spotify} tahu lagu kesukaanmu
-        \item \textbf{Gmail} tahu mana yang spam
-        \item \textbf{Google Maps} prediksi waktu tempuh
-      \end{itemize}
-      \vspace{0.9em}
-      \begin{tikzpicture}
-        \node[fill=nvcard, rounded corners=4pt, inner sep=8pt,
-              text width=\linewidth-16pt, text=nvwhite] {
-          \color{nvlightgreen}\textbf{Kunci:}\\
-          \small Semua layanan ini menggunakan pola
-          dari data historis jutaan pengguna.
-        };
-      \end{tikzpicture}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-% ----------------------------------------------------------
-% SLIDE 4 — Jenis-jenis ML
-% ----------------------------------------------------------
-\begin{frame}{Tiga Jenis Machine Learning}
-  \vspace{0.3em}
-  \begin{center}
-    \includegraphics[width=0.88\textwidth, height=0.66\textheight,
-                     keepaspectratio]{figures/ml_types.pdf}
-  \end{center}
-  \vspace{-0.2em}
-  \begin{center}\textcolor{nvgray}{\scriptsize \textbf{Reinforcement Learning} hanya diperkenalkan sebagai konteks --- tidak dibahas di modul ini.}\end{center}
-\end{frame}
-
-% ----------------------------------------------------------
-% SLIDE 5 — Roadmap / Timeline
-% ----------------------------------------------------------
-\begin{frame}{Peta Perjalanan Modul 1}
-  \vspace{0.8em}
+\begin{frame}{Peta hari ini}
+  \vspace{0.2em}
   \begin{center}
   \begin{tikzpicture}[
-    node distance=0mm,
-    every node/.style={font=\tiny},
-    dot/.style={circle, minimum size=7pt, inner sep=0pt, draw=none},
-    supervised/.style={dot, fill=nvgreen},
-    unsupervised/.style={dot, fill=nvlightgreen},
-    forecast/.style={dot, fill=yellow!80!orange},
-    gpu/.style={dot, fill=orange},
-    ]
-
-    % Nodes equally spaced along x axis
-    \def\xs{1.35}  % x spacing between sessions
-    \foreach \i/\label/\style in {
-      1/{Linear\\Regression}/supervised,
-      2/{Logistic\\Regression}/supervised,
-      3/{Decision\\Tree}/supervised,
-      4/{KNN}/supervised,
-      5/{SVM}/supervised,
-      6/{Ensemble\\Methods}/supervised,
-      7/{XGBoost}/supervised,
-      8/{Clustering}/unsupervised,
-      9/{Time\\Series}/forecast,
-      10/{NVIDIA\\GPU}/gpu}
-    {
-      \pgfmathsetmacro{\xpos}{(\i-1)*\xs}
-      \node[\style, label={[font=\tiny, text=nvwhite, align=center]below:{\label}}]
-        (n\i) at (\xpos, 0) {};
-      \node[font=\tiny\bfseries, text=nvgreen, above=4pt of n\i] {\i};
-    }
-
-    % Connecting line
-    \draw[nvgray, line width=1pt]
-      (n1.east) -- (n2.west)
-      (n2.east) -- (n3.west)
-      (n3.east) -- (n4.west)
-      (n4.east) -- (n5.west)
-      (n5.east) -- (n6.west)
-      (n6.east) -- (n7.west)
-      (n7.east) -- (n8.west)
-      (n8.east) -- (n9.west)
-      (n9.east) -- (n10.west);
-
-    % Group brackets / labels
-    \draw[nvgreen, line width=0.8pt]
-      ([yshift=-14pt]n1.south) -- ([yshift=-14pt]n7.south);
-    \node[text=nvgreen, font=\tiny\bfseries] at ({3*\xs}, -20pt)
-      {Supervised Learning};
-
-    \draw[nvlightgreen, line width=0.8pt]
-      ([yshift=-14pt]n8.south) -- ([yshift=-14pt]n8.south);
-    \node[text=nvlightgreen, font=\tiny\bfseries] at ({7*\xs}, -20pt)
-      {Unsupervised};
-
-    \draw[yellow!80!orange, line width=0.8pt]
-      ([yshift=-14pt]n9.south) -- ([yshift=-14pt]n9.south);
-    \node[text=yellow!80!orange, font=\tiny\bfseries] at ({8*\xs}, -20pt)
-      {Forecasting};
-
-    \draw[orange, line width=0.8pt]
-      ([yshift=-14pt]n10.south) -- ([yshift=-14pt]n10.south);
-    \node[text=orange, font=\tiny\bfseries] at ({9*\xs}, -20pt)
-      {GPU};
-
+    card/.style={fill=nvcard, rounded corners=4pt, inner sep=7pt, text width=3.15cm,
+                 text=nvwhite, font=\scriptsize, anchor=north west, align=left}]
+    \node[card] at (0,0)
+      {{\bfseries\color{nvgreen}Regresi}\\[2pt] nb01 Linear Regression};
+    \node[card] at (4.15,0)
+      {{\bfseries\color{nvlightgreen}Klasifikasi}\\[2pt]
+       nb02 Logistic Regression\\ nb03 Decision Tree\\ nb04 KNN\\ nb05 SVM};
+    \node[card] at (8.3,0)
+      {{\bfseries\color{nvorange}Ensemble}\\[2pt]
+       nb06 Voting, bagging, boosting\\ nb07 XGBoost};
+    \node[card] at (0,-2.7)
+      {{\bfseries\color{nvgreen}Clustering}\\[2pt]
+       nb08 K-Means, hierarchical, DBSCAN};
+    \node[card] at (4.15,-2.7)
+      {{\bfseries\color{nvlightgreen}Time series}\\[2pt]
+       nb09 Dekomposisi dan SARIMA};
+    \node[card] at (8.3,-2.7)
+      {{\bfseries\color{nvorange}GPU}\\[2pt]
+       nb10 cuML dan XGBoost di GPU};
   \end{tikzpicture}
   \end{center}
-
-  \vspace{1.0em}
-  \begin{center}
-    \begin{tikzpicture}
-      \node[fill=nvcard, rounded corners=4pt, inner sep=6pt, text=nvgray,
-            font=\small] {
-        \color{nvgreen}\rule[0.3ex]{0.6em}{0.6em}\ Supervised\quad
-        \color{nvlightgreen}\rule[0.3ex]{0.6em}{0.6em}\ Unsupervised\quad
-        \color{yellow!80!orange}\rule[0.3ex]{0.6em}{0.6em}\ Forecasting\quad
-        \color{orange}\rule[0.3ex]{0.6em}{0.6em}\ GPU Acceleration
-      };
-    \end{tikzpicture}
-  \end{center}
   \vspace{0.4em}
-  \begin{center}\textcolor{nvgray}{\scriptsize \textbf{Forecasting}/Time Series sebenarnya kasus khusus \textbf{Supervised} dengan input waktu.}\end{center}
+  {\footnotesize\color{nvgray}Sebelum notebook pertama kita bahas alur kerjanya dulu: bagaimana model
+  belajar, dan bagaimana hasilnya diuji.}
+\end{frame}
+
+% ==========================================================
+% ACT 1
+% ==========================================================
+\acttitle{Act 1}{Apa itu Machine Learning?}{Kalau aturannya tidak bisa ditulis, biarkan datanya yang bicara}
+
+% ----------------------------------------------------------
+% FRAME 4 — Intuisi: aturan tertulis vs belajar dari contoh
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Aturan tertulis vs belajar dari contoh}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvred}Spam filter versi if/else}
+      \vspace{0.4em}
+      \begin{itemize}\setlength\itemsep{0.45em}
+        \item Subjek memuat ``GRATIS'' $\rightarrow$ dikirim sebagai ``G R A T I S''
+        \item Pengirim tidak dikenal $\rightarrow$ alamat baru dibuat tiap hari
+        \item Lima tanda seru $\rightarrow$ dikurangi jadi dua
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvgreen}Versi machine learning}
+      \vspace{0.4em}
+      \begin{itemize}\setlength\itemsep{0.45em}
+        \item 10.000 email yang sudah ditandai spam atau bukan
+        \item Model menyesuaikan parameternya untuk menangkap pola pada contoh itu
+        \item Contoh baru masuk, polanya ikut diperbarui
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.4em}
+  \nvbox{Intinya}{Machine learning adalah program yang aturannya dipelajari dari contoh,
+  bukan ditulis tangan satu per satu.}
 \end{frame}
 
 % ----------------------------------------------------------
-% SLIDE 6 — Tools
+% FRAME 5 — Tiga jenis ML
 % ----------------------------------------------------------
-\begin{frame}{Tools yang Kita Gunakan}
+\begin{frame}{Tiga jenis machine learning}
+  \begin{center}
+    \includegraphics[width=0.80\textwidth, height=3.75cm, keepaspectratio]{figures/ml_types.pdf}
+  \end{center}
+  \vspace{-0.2em}
+  \begin{itemize}\setlength\itemsep{0.18em}
+    \item \textbf{\color{nvgreen}Supervised}: setiap contoh punya jawabannya. Sembilan notebook
+          pertama ada di sini.
+    \item \textbf{\color{nvlightgreen}Unsupervised}: tanpa jawaban, model mencari struktur dalam
+          data. Ini clustering di nb08.
+    \item \textbf{\color{nvgray}Reinforcement}: belajar dari reward atas tindakannya. Hari ini
+          hanya sebagai konteks.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 6 — Contoh sehari-hari
+% ----------------------------------------------------------
+\begin{frame}{Contoh yang kamu pakai tiap hari}
+  \vspace{0.8em}
+  \begin{center}
+  {\small\renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{lll}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Layanan} &
+    \color{nvgreen}\textbf{Yang diprediksi} &
+    \color{nvgreen}\textbf{Jenis tugas} \\
+    \midrule
+    Gmail & email ini spam atau bukan & klasifikasi \\
+    \rowcolor{nvcard!60!nvbg} Google Maps & lama waktu tempuh & regresi \\
+    Spotify & pendengar dengan selera mirip & clustering \\
+    \rowcolor{nvcard!60!nvbg} Toko online & permintaan minggu depan & time series \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{1.0em}
+  {\footnotesize\color{nvgray}Keempat baris ini memakai kelompok model yang kita buka hari ini
+  juga. Bedanya ada di ukuran data dan jumlah orang yang merawat sistemnya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 7 — Tools
+% ----------------------------------------------------------
+\begin{frame}{Tools hari ini}
   \vspace{0.6em}
   \begin{columns}[T]
-    \begin{column}{0.47\textwidth}
-      % Python
-      \begin{tikzpicture}
-        \node[fill=nvcard, rounded corners=5pt, inner sep=10pt,
-              text width=\linewidth-20pt, minimum height=1.8cm] {
-          \textbf{\color{nvgreen}\large Python}\\[4pt]
-          \color{nvwhite}\small Bahasa pemrograman utama
-        };
-      \end{tikzpicture}
-
-      \vspace{0.5em}
-
-      % Google Colab
-      \begin{tikzpicture}
-        \node[fill=nvcard, rounded corners=5pt, inner sep=10pt,
-              text width=\linewidth-20pt, minimum height=1.8cm] {
-          \textbf{\color{nvgreen}\large Google Colab}\\[4pt]
-          \color{nvwhite}\small Notebook di cloud dengan GPU gratis
-        };
-      \end{tikzpicture}
-    \end{column}
-    \hfill
-    \begin{column}{0.47\textwidth}
-      % scikit-learn
-      \begin{tikzpicture}
-        \node[fill=nvcard, rounded corners=5pt, inner sep=10pt,
-              text width=\linewidth-20pt, minimum height=1.8cm] {
-          \textbf{\color{nvgreen}\large scikit-learn}\\[4pt]
-          \color{nvwhite}\small Library ML \#1
-        };
-      \end{tikzpicture}
-
-      \vspace{0.5em}
-
-      % NVIDIA GPU
-      \begin{tikzpicture}
-        \node[fill=nvgreen!20!nvcard, rounded corners=5pt, inner sep=10pt,
-              text width=\linewidth-28pt, minimum height=1.8cm,
-              draw=nvgreen, line width=1pt] {
-          \textbf{\color{nvgreen}\large NVIDIA GPU}\\[4pt]
-          \color{nvwhite}\small Akselerasi 10--50x lebih cepat
-        };
-      \end{tikzpicture}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-
-% ============================================================
-% ACT 2: MENEBAK ANGKA
-% ============================================================
-
-% Slide 1 — Act 2 Transition
-\acttitle{Act 2}{Menebak Angka}{Bagaimana memprediksi sebuah nilai?}
-
-% Slide 2 — Linear Regression
-\begin{frame}{Linear Regression --- Garis Terbaik}
-  \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \includegraphics[width=\linewidth]{figures/regression_line.pdf}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{itemize}
-        \item Mencari garis yang paling pas
-        \item[$\Rightarrow$] Formula: $y = w \cdot x + b$
-        \item \textbf{w} = kemiringan (seberapa besar pengaruh)
-        \item \textbf{b} = titik awal
+      \begin{itemize}\setlength\itemsep{0.55em}
+        \item \textbf{\color{nvgreen}Python} --- bahasa yang dipakai sepanjang hari
+        \item \textbf{\color{nvgreen}Google Colab (GPU T4)} --- menjalankan notebook tanpa
+              instalasi di laptop
+        \item \textbf{\color{nvgreen}pandas, matplotlib} --- memuat data, melihat isinya,
+              membuat grafik
       \end{itemize}
-      \vspace{0.6em}
-      \begin{beamercolorbox}[rounded=true,shadow=false,sep=6pt]{nvcard}
-        \small Seperti menebak harga es krim berdasarkan suhu hari ini
-      \end{beamercolorbox}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}\setlength\itemsep{0.55em}
+        \item \textbf{\color{nvlightgreen}scikit-learn} --- hampir semua model klasik di modul
+              ini
+        \item \textbf{\color{nvlightgreen}XGBoost} --- boosting untuk data tabular (nb07)
+        \item \textbf{\color{nvlightgreen}cuML} --- model klasik yang dijalankan di GPU (nb10)
+      \end{itemize}
     \end{column}
   \end{columns}
+  \vspace{1.0em}
+  {\footnotesize\color{nvgray}Semua notebook memuat datanya langsung dari URL, jadi tidak ada
+  file yang perlu kamu unggah dulu.}
 \end{frame}
 
-% Slide 3 — Evaluasi Model
-\begin{frame}{Seberapa Bagus Prediksi Kita?}
+% ==========================================================
+% ACT 2
+% ==========================================================
+\acttitle{Act 2}{\fontsize{24}{28}\selectfont\bfseries Bagaimana model belajar dan diuji?}{Dari kolom data mentah sampai satu angka yang layak dilaporkan}
+
+% ----------------------------------------------------------
+% FRAME 9 — Feature dan target
+% ----------------------------------------------------------
+\begin{frame}{Feature dan target}
+  \vspace{0.2em}
   \begin{center}
-    \renewcommand{\arraystretch}{1.4}
-    \begin{tabular}{@{}lll@{}}
-      \toprule
-      \textbf{Metrik} & \textbf{Arti} & \textbf{Nilai Ideal} \\
-      \midrule
-      MAE  & Rata-rata kesalahan          & $\rightarrow 0$   \\
-      RMSE & Kesalahan (penalti besar)    & $\rightarrow 0$   \\
-      R$^2$   & \% variasi yang dijelaskan  & $\rightarrow 1.0$ \\
-      MAPE & Kesalahan dalam persen       & $< 10\%$          \\
-      \bottomrule
-    \end{tabular}
+  {\small\renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{rrr|r}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\texttt{TV} & \color{nvgreen}\texttt{radio} &
+    \color{nvgreen}\texttt{newspaper} & \color{nvorange}\texttt{sales} \\
+    \midrule
+    230,1 & 37,8 & 69,2 & 22,1 \\
+    \rowcolor{nvcard!60!nvbg} 44,5 & 39,3 & 45,1 & 10,4 \\
+    17,2 & 45,9 & 69,3 & 9,3 \\
+    \bottomrule
+    \multicolumn{3}{c}{\color{nvgreen}\small tiga feature} &
+    \multicolumn{1}{c}{\color{nvorange}\small target} \\
+  \end{tabular}}
   \end{center}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.35em}
+    \item \textbf{Feature} adalah kolom masukan yang dipakai model: belanja iklan di tiga kanal.
+    \item \textbf{Target} adalah nilai yang mau diprediksi: penjualan.
+    \item Targetnya berupa angka, jadi tugasnya regresi. Kalau targetnya kategori, itu
+          klasifikasi dan targetnya disebut label kelas.
+  \end{itemize}
 \end{frame}
 
-% Slide 3b — Time Series Transition (explains why this lives in Act 2)
-\begin{frame}{Time Series = Regression + Waktu}
+% ----------------------------------------------------------
+% FRAME 10 — Intuisi: kenapa data dibagi
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Kenapa data dibagi dua}
+  \vspace{0.6em}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
-      \begin{itemize}
-        \item Kita sudah menebak \textbf{angka} (regression)
-        \item Bagaimana kalau \textbf{input-nya} adalah \textbf{waktu}?
-        \item[\textcolor{nvgreen}{\checkmark}] \textbf{Sama}: cari pola $\to$ prediksi
-        \item[\textcolor{nvgreen}{\checkmark}] \textbf{Beda}: urutan waktu \emph{penting}
-        \item[\textcolor{nvorange}{\textasteriskcentered}] Tambahan: \textbf{seasonality} (pola musiman)
+      \textbf{\color{nvlightgreen}Soal latihan}
+      \vspace{0.4em}
+      \begin{itemize}\setlength\itemsep{0.45em}
+        \item Dikerjakan berulang sampai polanya kelihatan
+        \item Jawabannya sudah ada di buku
       \end{itemize}
     \end{column}
     \begin{column}{0.48\textwidth}
+      \textbf{\color{nvorange}Soal ujian}
+      \vspace{0.4em}
+      \begin{itemize}\setlength\itemsep{0.45em}
+        \item Belum pernah dilihat sebelumnya
+        \item Nilainya baru berarti kalau soalnya memang baru
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{0.8em}
+  \nvbox{Intinya}{Data train dipakai untuk melatih model. Data test disimpan utuh dan dipakai
+  sekali di akhir untuk menilai hasilnya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 11 — Train / validation / test
+% ----------------------------------------------------------
+\begin{frame}{Data train, validation, dan test}
+  \vspace{0.9em}
+  \begin{center}
+  \begin{tikzpicture}[font=\small]
+    \fill[nvgreen!70!black, rounded corners=3pt] (0,0) rectangle (6.6,1.3);
+    \fill[nvlightgreen!60!black, rounded corners=3pt] (6.8,0) rectangle (9.0,1.3);
+    \fill[nvorange!70!black, rounded corners=3pt] (9.2,0) rectangle (11.4,1.3);
+    \node[text=nvwhite, font=\small\bfseries] at (3.3,0.65) {data train 60\%};
+    \node[text=nvwhite, font=\footnotesize\bfseries] at (7.9,0.65) {validation 20\%};
+    \node[text=nvwhite, font=\footnotesize\bfseries] at (10.3,0.65) {test 20\%};
+    \node[text=nvgray, font=\scriptsize, align=center] at (3.3,-0.55) {melatih model};
+    \node[text=nvgray, font=\tiny, align=center] at (7.9,-0.55)
+      {memilih model\\ dan hyperparameter};
+    \node[text=nvgray, font=\tiny, align=center] at (10.4,-0.55)
+      {angka akhir,\\ dipakai sekali};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{1.0em}
+  \begin{itemize}\setlength\itemsep{0.4em}
+    \item Proporsinya bukan aturan baku; 60/20/20 dan 80/20 sama-sama umum.
+    \item Kalau datanya sedikit, validation diganti cross-validation di data train.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 12 — Intuisi: leakage
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Leakage: memakai informasi yang belum tersedia}
+  \vspace{0.4em}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \vspace{0.3em}
+      \begin{itemize}\setlength\itemsep{0.55em}
+        \item Tujuannya memprediksi respons nasabah sebelum telepon dilakukan.
+        \item Kolom \texttt{duration} baru lengkap setelah panggilan berakhir.
+        \item Memakai kolom itu membuat hasil evaluasi terlalu optimistis.
+      \end{itemize}
+      \vspace{0.5em}
+      {\footnotesize\color{nvgray}Ini salah satu bentuk leakage. Bentuk lain kita bahas
+      di nb02.}
+    \end{column}
+    \begin{column}{0.43\textwidth}
       \begin{center}
-      \resizebox{\linewidth}{!}{%
-      \begin{tikzpicture}[scale=0.55]
-        \draw[->,thick,white] (0,0) -- (5,0) node[right,font=\small\color{white}]{Linear};
-        \draw[->,thick,white] (0,0) -- (0,3) node[above,font=\small\color{white}]{$y$};
-        \draw[color=nvgreen,thick,domain=0.2:4.8,samples=60,smooth]
-          plot (\x, {0.45*\x + 0.4});
-        \node[font=\footnotesize\color{white}] at (2.5,-0.5) {$y = wx + b$};
-        \draw[->,thick,color=nvorange] (6.5,1.5) -- (7.3,1.5);
-        \draw[->,thick,white] (7.5,0) -- (12.5,0) node[right,font=\small\color{white}]{Waktu};
-        \draw[->,thick,white] (7.5,0) -- (7.5,3) node[above,font=\small\color{white}]{Nilai};
-        \draw[color=nvgreen,thick,domain=7.7:12.3,samples=80,smooth]
-          plot (\x, {0.28*(\x-7.5) + 0.9*sin(3.2*(\x-7.5) r)});
-        \node[font=\footnotesize\color{white}] at (10,3.3) {Time Series};
-      \end{tikzpicture}%
-      }
+        \includegraphics[width=\textwidth, height=4.3cm, keepaspectratio]{figures/leakage.pdf}
       \end{center}
     \end{column}
   \end{columns}
 \end{frame}
 
-% Slide 4 — Time Series Intro
-\begin{frame}{Time Series --- Memprediksi Masa Depan}
-  \begin{itemize}
-    \item Data yang berurutan berdasarkan waktu
+% ----------------------------------------------------------
+% FRAME 13 — Scaling
+% ----------------------------------------------------------
+\begin{frame}{Scaling: menyamakan skala antar feature}
+  \vspace{0.2em}
+  \begin{center}
+    \includegraphics[width=0.88\textwidth, height=4.3cm, keepaspectratio]{figures/knn_scaling.pdf}
+  \end{center}
+  \vspace{0.2em}
+  \begin{itemize}\setlength\itemsep{0.35em}
+    \item Di data ini nilai gaji ada di puluhan ribu, umur di puluhan tahun. Tanpa scaling,
+          selisih gaji mendominasi perhitungan jarak.
+    \item Model berbasis jarak (KNN, SVM) dan model dengan penalti koefisien (logistic
+          regression) butuh scaling; decision tree dan random forest tidak.
   \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 14 — Intuisi: apa artinya belajar
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Apa artinya ``belajar''}
+  \vspace{0.4em}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.72, font=\scriptsize]
+        \draw[nvgray, ->] (0,0) -- (8,0) node[below left, text=nvgray] {feature $x$};
+        \draw[nvgray, ->] (0,0) -- (0,5.2) node[above right, text=nvgray] {target $y$};
+        \draw[nvgreen, line width=1.2pt] (0.4,0.9) -- (7.6,4.6);
+        \foreach \x/\y/\yh in {1.2/1.9/1.31, 2.4/1.6/1.93, 3.6/3.0/2.55,
+                               4.8/2.6/3.17, 6.0/4.4/3.79, 7.0/3.9/4.30} {
+          \draw[nvorange, line width=1.2pt, dash pattern=on 2.2pt off 1.6pt]
+            (\x,\y) -- (\x,\yh);
+          \fill[nvgreen] (\x,\yh) circle (2.2pt);
+          \fill[nvlightgreen] (\x,\y) circle (3.4pt);
+        }
+        \node[text=nvorange, font=\scriptsize, anchor=east] at (5.85,4.15) {error prediksi};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \vspace{0.6em}
+      \begin{itemize}\setlength\itemsep{0.5em}
+        \item Garis hijau adalah prediksi model, titik hijau muda adalah data sebenarnya.
+        \item Garis putus-putus oranye adalah error prediksi tiap baris.
+        \item Melatih model berarti mengubah parameternya sampai total error itu sekecil
+              mungkin.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 15 — Loss regresi
+% ----------------------------------------------------------
+\begin{frame}{Loss: satu angka yang diminimalkan}
+  \vspace{0.8em}
+  \begin{center}
+    \nvbox{Mean Squared Error}{
+      \centerline{$\displaystyle \text{MSE} \;=\; \frac{1}{n}\sum_{i=1}^{n}\bigl(y_i - \hat{y}_i\bigr)^2$}
+    }
+  \end{center}
+  \vspace{0.8em}
+  \begin{itemize}\setlength\itemsep{0.45em}
+    \item $y_i$ nilai sebenarnya, $\hat{y}_i$ prediksi model, $n$ jumlah baris.
+    \item Selisihnya dikuadratkan, jadi error besar menyumbang jauh lebih banyak daripada
+          beberapa error kecil.
+    \item Pelatihan mencari parameter dengan MSE terkecil di data train. Angka yang
+          dilaporkan tetap diambil dari data yang tidak dipakai melatih.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 16 — Underfitting dan overfitting
+% ----------------------------------------------------------
+\begin{frame}{Underfitting dan overfitting}
+  \begin{center}
+    \includegraphics[width=\textwidth, height=3.8cm, keepaspectratio]{figures/bias_variance.pdf}
+  \end{center}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item \textbf{\color{nvorange}Kiri}: garis lurus terlalu sederhana untuk pola yang melengkung.
+          Error di data train dan data test dua-duanya besar.
+    \item \textbf{\color{nvgreen}Tengah}: masih mengikuti pola utama tanpa melewati semua titik.
+    \item \textbf{\color{nvred}Kanan}: mengikuti hampir setiap titik, termasuk variasi acaknya.
+          Error train turun, error test naik.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 17 — Bias-variance trade-off
+% ----------------------------------------------------------
+\begin{frame}{Bias--variance trade-off}
+  \vspace{0.3em}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.75, font=\scriptsize]
+        \draw[nvgray, ->] (0,0) -- (8.2,0) node[below left, text=nvgray] {kompleksitas model};
+        \draw[nvgray, ->] (0,0) -- (0,5.0) node[above right, text=nvgray] {error};
+        \draw[nvgreen, line width=1.2pt] plot[smooth]
+          coordinates {(0.5,4.2)(2.0,2.5)(3.8,1.5)(5.6,0.9)(7.6,0.5)};
+        \draw[nvorange, line width=1.2pt] plot[smooth]
+          coordinates {(0.5,4.5)(2.0,3.0)(3.8,2.1)(5.0,2.5)(6.3,3.4)(7.6,4.4)};
+        \draw[nvgray, dashed] (3.9,0) -- (3.9,4.7);
+        \node[text=nvgreen, anchor=west] at (5.4,1.35) {data train};
+        \node[text=nvorange, anchor=east] at (7.4,3.9) {data validation};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \vspace{1.0em}
+      \begin{itemize}\setlength\itemsep{0.6em}
+        \item Model yang terlalu sederhana dapat melewatkan pola.
+        \item Model yang terlalu peka terhadap data train dapat berubah banyak ketika sampel
+              pelatihannya berubah.
+        \item Error di data train hampir selalu turun saat model dibuat lebih rumit. Yang perlu
+              dilihat adalah error di data yang tidak dipakai melatih.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 18 — Cross-validation
+% ----------------------------------------------------------
+\begin{frame}{Cross-validation: menilai model lima kali}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize, scale=0.92, every node/.style={transform shape}]
+    \foreach \r in {1,...,5} {
+      \foreach \c in {0,...,4} {
+        \fill[nvgreen!55!black, rounded corners=2pt]
+          (\c*1.9, -\r*0.72) rectangle ++(1.78,0.62);
+      }
+      \node[text=nvgray, anchor=west] at (9.75, {-\r*0.72+0.31}) {fold \r};
+    }
+    \foreach \i in {1,...,5} {
+      \fill[nvorange!75!black, rounded corners=2pt]
+        ({(\i-1)*1.9}, -\i*0.72) rectangle ++(1.78,0.62);
+    }
+    \node[text=nvgray, anchor=west] at (0,0.35)
+      {data train dibagi lima bagian sama besar};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.2em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Tiap putaran, satu bagian (oranye) dipakai menilai, empat sisanya untuk melatih.
+    \item Skornya rata-rata lima putaran, jadi tidak bergantung pada satu potongan data yang
+          kebetulan mudah.
+    \item Data test tetap di luar semua ini.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 19 — Baseline
+% ----------------------------------------------------------
+\begin{frame}{Baseline: pembanding paling sederhana}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.5em}
+    \item \textbf{Regresi}: prediksi satu nilai konstan, yaitu rata-rata target di data train.
+    \item \textbf{Klasifikasi}: prediksi kelas mayoritas untuk semua baris.
+    \item Di \texttt{income\_evaluation.csv}, 76\% baris berlabel \texttt{<=50K}. Model yang
+          memprediksi kelas itu untuk semua baris sudah dapat akurasi 76\%.
+  \end{itemize}
+  \vspace{0.9em}
+  \jebakan{akurasi 76\% pada data seperti itu belum menunjukkan apa pun. Hitung baseline
+  lebih dulu, lalu lihat selisih hasil modelmu terhadap baseline.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 20 — Metrik regresi
+% ----------------------------------------------------------
+\begin{frame}{Metrik regresi: MAE, RMSE, R\texorpdfstring{$^2$}{2}}
+  \vspace{0.5em}
+  \begin{center}
+  {\small\renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{p{1.5cm} p{9.2cm}}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Metrik} & \color{nvgreen}\textbf{Arti} \\
+    \midrule
+    MAE & rata-rata selisih absolut prediksi dan nilai sebenarnya; satuannya sama dengan
+          target \\
+    \rowcolor{nvcard!60!nvbg} RMSE & akar dari rata-rata kuadrat error; lebih peka terhadap error
+          besar daripada MAE karena perhitungannya memakai kuadrat error \\
+    $R^2$ & membandingkan error kuadrat model dengan prediksi konstan berupa rata-rata target;
+          1 berarti prediksi tepat, 0 setara pembanding itu, negatif berarti lebih buruk \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.7em}
+  {\footnotesize\color{nvgray}Pilih metrik sebelum melatih model, bukan setelah melihat hasilnya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 21 — Confusion matrix
+% ----------------------------------------------------------
+\begin{frame}{Confusion matrix: dua jenis kesalahan}
+  \vspace{0.2em}
+  {\footnotesize\color{nvgray}Positif berarti kondisi yang ingin dideteksi, bukan hasil yang baik.}
   \vspace{0.4em}
   \begin{center}
-  \begin{tikzpicture}[scale=0.85]
-    % axes
-    \draw[->,thick,white] (0,0) -- (8.5,0) node[right,white,font=\small] {Waktu};
-    \draw[->,thick,white] (0,-1.5) -- (0,2.8) node[above,white,font=\small] {Nilai};
-    % sine wave with upward trend
-    \draw[color=nvgreen,thick,domain=0.2:8,samples=120,smooth]
-      plot (\x, {0.28*\x + 0.9*sin(3.2*\x r)});
-    % callout labels
-    \node[color=nvgreen,font=\small\bfseries] at (7.0,2.4) {Trend $\nearrow$};
-    \draw[->,color=nvgreen,thin] (6.8,2.2) -- (6.2,1.7);
-    \node[color=nvorange,font=\small\bfseries] at (2.5,2.3) {Seasonality $\updownarrow$};
-    \draw[->,color=nvorange,thin] (2.5,2.1) -- (2.2,1.2);
-    \node[color=nvlightgreen,font=\small\bfseries] at (4.8,-1.2) {Noise $\sim$};
-    \draw[->,color=nvlightgreen,thin] (4.8,-1.0) -- (4.6,-0.3);
+  \begin{tikzpicture}[scale=0.82, font=\small]
+    \node[text=nvwhite, font=\footnotesize\bfseries] at (1.5,3.4) {Prediksi: Tidak};
+    \node[text=nvwhite, font=\footnotesize\bfseries] at (4.5,3.4) {Prediksi: Ya};
+    \node[text=nvwhite, font=\footnotesize\bfseries, rotate=90] at (-1.2,1.5) {Asli};
+    \node[text=nvwhite, font=\footnotesize, anchor=east] at (-0.2,2.25) {Tidak};
+    \node[text=nvwhite, font=\footnotesize, anchor=east] at (-0.2,0.75) {Ya};
+    \fill[nvgreen!60!black] (0,1.5) rectangle (3,3);
+    \node[text=nvwhite, font=\small\bfseries] at (1.5,2.25) {True Negative};
+    \fill[nvorange!70!black] (3,1.5) rectangle (6,3);
+    \node[text=nvwhite, font=\small\bfseries, align=center] at (4.5,2.25)
+      {False Positive\\ \scriptsize alarm palsu};
+    \fill[nvred!70!black] (0,0) rectangle (3,1.5);
+    \node[text=nvwhite, font=\small\bfseries, align=center] at (1.5,0.75)
+      {False Negative\\ \scriptsize kasus terlewat};
+    \fill[nvgreen!60!black] (3,0) rectangle (6,1.5);
+    \node[text=nvwhite, font=\small\bfseries] at (4.5,0.75) {True Positive};
+    \draw[nvwhite, thick] (0,0) rectangle (6,3);
+    \draw[nvwhite] (3,0) -- (3,3);
+    \draw[nvwhite] (0,1.5) -- (6,1.5);
   \end{tikzpicture}
   \end{center}
+  \vspace{0.4em}
+  {\footnotesize\color{nvgray}Akurasi membagi jumlah dua kotak hijau dengan seluruh baris. Dua
+  kotak sisanya punya biaya yang berbeda, dan itu yang menentukan metrik mana yang kita pakai.}
 \end{frame}
 
-% Slide 5 — SARIMA Forecast
-\begin{frame}{SARIMA --- Menangkap Pola Musiman}
+% ----------------------------------------------------------
+% FRAME 22 — Precision, recall, F1, ROC-AUC
+% ----------------------------------------------------------
+\begin{frame}{Precision, recall, F1, dan ROC-AUC}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}\setlength\itemsep{0.3em}
+        \item \textbf{\color{nvgreen}Precision}: dari yang diprediksi positif, berapa bagian yang
+              benar positif.
+        \item \textbf{\color{nvlightgreen}Recall}: dari yang benar-benar positif, berapa bagian
+              yang tertangkap.
+        \item \textbf{F1}: rata-rata harmonik precision dan recall, turun tajam kalau salah satu
+              rendah.
+        \item \textbf{ROC-AUC}: peluang model memberi skor lebih tinggi pada satu contoh positif
+              dibanding satu contoh negatif yang diambil acak.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=3.9cm, keepaspectratio]{figures/metrics_roc.pdf}
+      \end{center}
+      {\scriptsize\color{nvgray}Model logistic regression pada data banking tanpa
+      \texttt{duration}.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 23 — Ringkasan alur kerja
+% ----------------------------------------------------------
+\begin{frame}{Alur kerja yang dipakai di sepuluh notebook}
+  \vspace{0.5em}
+  \begin{enumerate}\setlength\itemsep{0.42em}
+    \item Definisikan masalahnya dan metrik yang akan dilaporkan.
+    \item Siapkan data: periksa nilai kosong, outlier (pencilan), dan kolom yang tidak tersedia
+          saat prediksi.
+    \item Split data train, validation, dan test.
+    \item Latih model di data train.
+    \item Bandingkan hasilnya dengan baseline.
+    \item Tuning hyperparameter dengan cross-validation di data train.
+    \item Uji sekali di data test, lalu laporkan angka itu.
+  \end{enumerate}
+  \vspace{0.6em}
+  {\footnotesize\color{nvgray}Langkah 2 dan 3 memakan waktu paling banyak. Langkah 7 yang paling
+  sering dilewati.}
+\end{frame}
+
+% ==========================================================
+% ACT 3
+% ==========================================================
+\acttitle{Act 3}{\fontsize{24}{28}\selectfont\bfseries Bagaimana memprediksi nilai?}{Dari satu garis lurus sampai deret waktu dengan pola musiman}
+
+% ----------------------------------------------------------
+% FRAME 25 — Intuisi: linear regression
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Suhu naik, es krim terjual lebih banyak}
+  \vspace{0.3em}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=4.2cm, keepaspectratio]{figures/regression_line.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \vspace{0.2em}
+      \begin{itemize}\setlength\itemsep{0.45em}
+        \item Titik hijau adalah catatan harian: suhu hari itu dan jumlah es krim terjual.
+        \item Banyak garis bisa ditarik di antara titik-titik itu. Yang dipilih hanya satu.
+      \end{itemize}
+      \vspace{0.6em}
+      \nvbox{Intinya}{Linear regression mencari garis yang total error prediksinya paling kecil.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 26 — Mekanisme linear regression
+% ----------------------------------------------------------
+\begin{frame}{Linear regression: satu garis, dua parameter}
+  \vspace{0.5em}
   \begin{center}
-  {\small\textcolor{nvlightgreen}{Seasonal AutoRegressive Integrated Moving Average}}\\[0.4em]
-  \begin{tikzpicture}[scale=0.85]
-    % axes
-    \draw[->,thick,white] (0,0) -- (9,0) node[right,white,font=\small] {Waktu};
-    \draw[->,thick,white] (0,-0.5) -- (0,3.2) node[above,white,font=\small] {Nilai};
-    % vertical separator
-    \draw[dashed,color=nvred,thick] (5.5,-0.5) -- (5.5,3.2);
-    \node[color=nvred,font=\tiny,above] at (5.5,3.2) {};
-    \node[white,font=\tiny] at (2.8,-0.35) {Data Historis};
-    \node[white,font=\tiny] at (7.2,-0.35) {Prediksi};
-    % historical solid line (wavy + trend)
-    \draw[color=nvgreen,thick,domain=0.2:5.5,samples=80,smooth]
-      plot (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 0.8});
-    % forecast dashed line
-    \draw[color=nvgreen,dashed,thick,domain=5.5:8.5,samples=50,smooth]
-      plot (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 0.8});
-    % confidence interval shading (filled polygon approximation)
-    \fill[nvgreen,opacity=0.15,domain=5.5:8.5,samples=50]
-      plot (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 0.8 + 0.15*(\x-5.5)})
-      -- plot[domain=8.5:5.5,samples=50] (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 0.8 - 0.15*(\x-5.5)})
-      -- cycle;
-  \end{tikzpicture}
+    \nvbox{Bentuk modelnya}{
+      \centerline{$\displaystyle \hat{y} \;=\; w\,x + b$}
+    }
   \end{center}
-\end{frame}
-
-% Slide 6 — Summary Act 2
-\begin{frame}{Ringkasan: Menebak Angka}
-  \begin{itemize}
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Linear Regression} $\rightarrow$ mencari garis terbaik untuk data
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{R$^2$ Score} $\rightarrow$ seberapa bagus model (mendekati 1.0 = bagus)
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{Time Series} $\rightarrow$ data berurutan waktu, ada trend + musiman
-    \item[\textcolor{nvgreen}{\checkmark}] \textbf{SARIMA} $\rightarrow$ model yang menangkap pola musiman otomatis
+  \vspace{0.7em}
+  \begin{itemize}\setlength\itemsep{0.45em}
+    \item $w$ adalah kemiringan (slope): berapa banyak prediksi berubah tiap satu satuan
+          kenaikan $x$.
+    \item $b$ adalah intercept: nilai prediksi saat $x = 0$.
+    \item Dengan banyak feature, tiap feature punya satu $w$ sendiri:
+          $\hat{y} = w_1 x_1 + w_2 x_2 + \dots + w_k x_k + b$.
+    \item Pelatihan memilih $w$ dan $b$ yang membuat MSE di data train terkecil.
   \end{itemize}
 \end{frame}
 
-% ============================================================
-% ACT 3 — MENEBAK KATEGORI
-% ============================================================
+% ----------------------------------------------------------
+% FRAME 27 — Kapan pakai & jebakan linear regression
+% ----------------------------------------------------------
+\begin{frame}{Linear regression: kapan pakai dan jebakannya}
+  \vspace{0.4em}
+  \kapan{
+    \item hubungan feature dan target mendekati lurus
+    \item kamu perlu model yang koefisiennya bisa dibaca dan dijelaskan
+    \item jumlah feature masih sedikit
+  }{
+    \item polanya jelas melengkung atau berjenjang
+    \item ada outlier (pencilan) yang menarik garisnya
+    \item pengaruh satu feature bergantung pada feature lain
+  }
+  \vspace{1.0em}
+  \jebakan{koefisien besar tidak berarti feature itu penyebabnya. Selain itu $x = 0$ sering
+  berada di luar rentang data, jadi intercept belum tentu punya arti nyata.}
+\end{frame}
 
-% Slide 1 — Transition
-\acttitle{Act 3}{Menebak Kategori}{Ya atau Tidak? Spam atau Bukan?}
+% ----------------------------------------------------------
+% FRAME 28 — Regularisasi
+% ----------------------------------------------------------
+\begin{frame}{Regularisasi: membatasi ukuran koefisien}
+  \vspace{0.4em}
+  {\small Regularisasi (regularization) membatasi kompleksitas model agar tidak terlalu
+  menyesuaikan diri dengan data train.}
+  \vspace{0.5em}
+  \begin{center}
+    \nvbox{Yang diminimalkan}{
+      \centerline{loss di data train \;$+$\; penalti atas ukuran koefisien}
+    }
+  \end{center}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.4em}
+    \item \textbf{\color{nvgreen}Ridge} mengecilkan semua koefisien, jarang sampai nol.
+    \item \textbf{\color{nvlightgreen}Lasso} bisa menolkan koefisien yang tidak berguna,
+          jadi sekaligus menyeleksi feature.
+    \item Kekuatan penaltinya dipilih dengan cross-validation. Penalti yang terlalu kuat
+          membuat model melewatkan pola penting.
+  \end{itemize}
+\end{frame}
 
-% Slide 2 — Klasifikasi vs Regresi
-\begin{frame}{Klasifikasi vs Regresi}
+% ----------------------------------------------------------
+% FRAME 29 — Intuisi: time series
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Time series: urutan waktunya ikut menentukan}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.47\textwidth}
+      \vspace{0.3em}
+      \begin{itemize}\setlength\itemsep{0.4em}
+        \item \textbf{\color{nvorange}Trend}: arah jangka panjang, di sini naik terus.
+        \item \textbf{\color{nvgreen}Pola musiman}: naik-turun yang berulang tiap 12 bulan.
+        \item \textbf{\color{nvgray}Noise}: sisa gerakan yang tidak dijelaskan keduanya.
+      \end{itemize}
+      \vspace{0.5em}
+      \nvbox{Intinya}{Urutan waktu adalah bagian dari datanya, jadi barisnya tidak boleh
+      diacak seperti data tabular biasa.}
+    \end{column}
+    \begin{column}{0.51\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=5.2cm, keepaspectratio]{figures/timeseries.pdf}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 30 — Stasioner dan differencing
+% ----------------------------------------------------------
+\begin{frame}{Stasioner dan differencing}
+  \vspace{0.2em}
+  \begin{center}
+  \begin{tikzpicture}[font=\scriptsize, scale=0.9, every node/.style={transform shape}]
+    % kiri: deret asli
+    \draw[nvgray, ->] (0,0) -- (5.4,0) node[below left, text=nvgray] {bulan};
+    \draw[nvgray, ->] (0,0) -- (0,3.3);
+    \draw[nvgreen, line width=1.1pt, domain=0.2:5.0, samples=90, smooth]
+      plot (\x, {0.48*\x + 0.32*sin(4*\x r) + 0.55});
+    \draw[nvorange, dashed] (0.2,0.65) -- (5.0,2.95);
+    \node[text=nvwhite, font=\scriptsize] at (2.6,3.65) {deret asli};
+    \node[text=nvorange, font=\tiny, anchor=west] at (0.2,2.75) {rata-ratanya bergeser naik};
+    % kanan: setelah differencing
+    \draw[nvgray, ->] (7.0,0) -- (12.4,0) node[below left, text=nvgray] {bulan};
+    \draw[nvgray, ->] (7.0,0) -- (7.0,3.3);
+    \draw[nvgreen, line width=1.1pt, domain=7.2:12.0, samples=90, smooth]
+      plot (\x, {1.5 + 0.5*sin(4*(\x-7.0) r)});
+    \draw[nvorange, dashed] (7.0,1.5) -- (12.2,1.5)
+      node[anchor=west, text=nvorange, font=\tiny] {};
+    \node[text=nvwhite, font=\scriptsize] at (9.7,3.65) {selisih antar bulan};
+    \node[text=nvorange, font=\tiny, anchor=west] at (7.2,2.9) {rata-ratanya tetap};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.7em}
+  \begin{itemize}\setlength\itemsep{0.35em}
+    \item Deret disebut \textbf{stasioner} kalau sifat statistiknya tetap terhadap pergeseran
+          waktu. Grafik yang tampak datar belum membuktikannya.
+    \item \textbf{Differencing} memakai selisih antar bulan sebagai deret baru, supaya
+          rata-ratanya tidak lagi bergeser.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 31 — SARIMA dan interval prediksi
+% ----------------------------------------------------------
+\begin{frame}{SARIMA dan interval prediksi}
+  \vspace{0.1em}
+  {\footnotesize\color{nvlightgreen}Seasonal AutoRegressive Integrated Moving Average}
+  \vspace{0.3em}
+  \begin{columns}[T]
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}\setlength\itemsep{0.35em}
+        \item \textbf{AR}: pakai nilai bulan-bulan sebelumnya.
+        \item \textbf{I}: differencing seperti slide tadi.
+        \item \textbf{MA}: pakai error prediksi sebelumnya.
+        \item \textbf{S}: ulangi ketiganya pada jarak 12 bulan.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.60\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[font=\scriptsize, scale=0.78, every node/.style={transform shape}]
+        \draw[nvgray, ->] (0,0) -- (9.4,0) node[below left, text=nvgray] {waktu};
+        \draw[nvgray, ->] (0,0) -- (0,4.2) node[above right, text=nvgray] {nilai};
+        \draw[nvred, dashed, line width=0.8pt] (5.5,0) -- (5.5,3.7);
+        \node[text=nvgray, font=\tiny] at (2.8,-0.45) {data historis};
+        \node[text=nvgray, font=\tiny] at (7.3,-0.45) {forecast};
+        \fill[nvgreen, opacity=0.30]
+          plot[domain=5.5:8.9, samples=50]
+            (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 1.0 + 0.26*(\x-5.5)})
+          -- plot[domain=8.9:5.5, samples=50]
+            (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 1.0 - 0.26*(\x-5.5)})
+          -- cycle;
+        \draw[nvgreen, line width=1.1pt, domain=0.2:5.5, samples=80, smooth]
+          plot (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 1.0});
+        \draw[nvgreen, dashed, line width=1.1pt, domain=5.5:8.9, samples=60, smooth]
+          plot (\x, {0.3*\x + 0.7*sin(3.0*\x r) + 1.0});
+        \node[text=nvlightgreen, font=\scriptsize, anchor=east] (ip) at (5.0,4.05)
+          {interval prediksi 95\%};
+        \draw[nvlightgreen, ->, line width=0.6pt] (ip.east) -- (7.35,3.25);
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \vspace{0.2em}
+  {\footnotesize\color{nvgray}Pita hijau adalah interval prediksi: rentang untuk nilai bulan
+  berikutnya. Cakupan 95\% berlaku sejauh asumsi modelnya cocok dengan datanya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 32 — Evaluasi time series
+% ----------------------------------------------------------
+\begin{frame}{Evaluasi time series: split kronologis}
+  \vspace{0.7em}
+  \begin{center}
+  \begin{tikzpicture}[font=\small]
+    \fill[nvgreen!70!black, rounded corners=3pt] (0,0) rectangle (8.4,1.2);
+    \fill[nvorange!70!black, rounded corners=3pt] (8.6,0) rectangle (11.4,1.2);
+    \node[text=nvwhite, font=\small\bfseries] at (4.2,0.6) {data train: bulan-bulan awal};
+    \node[text=nvwhite, font=\footnotesize\bfseries, align=center] at (10.0,0.6)
+      {test: 12 bulan\\ terakhir};
+    \draw[nvgray, ->] (0,-0.45) -- (11.4,-0.45)
+      node[below left, text=nvgray, font=\scriptsize] {waktu};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.9em}
+  \begin{itemize}\setlength\itemsep{0.35em}
+    \item Potongannya mengikuti waktu, bukan diacak. Model tidak boleh melihat bulan yang
+          lebih baru daripada bulan yang diprediksi.
+    \item \textbf{Baseline seasonal naive}: prediksi bulan ini sama dengan nilai bulan yang
+          sama tahun lalu. SARIMA baru menarik kalau mengalahkan ini.
+    \item \textbf{MAPE} adalah rata-rata error relatif dalam persen. Angkanya menyesatkan
+          kalau nilai sebenarnya dekat nol.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 33 — Ringkasan Act 3
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 3}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.5em}
+    \item Regresi memprediksi nilai berupa angka. Linear regression mencari $w$ dan $b$ yang
+          membuat total error prediksi terkecil.
+    \item Koefisien memberi arah dan besar pengaruh menurut model, bukan bukti sebab-akibat.
+    \item Regularisasi menambah penalti atas ukuran koefisien; Lasso bisa menolkan koefisien
+          yang tidak berguna.
+    \item Pada time series, urutan waktu ikut menentukan: split kronologis, differencing untuk
+          menstabilkan rata-rata, dan seasonal naive sebagai baseline.
+  \end{itemize}
+  \vspace{0.7em}
+  {\footnotesize\color{nvgray}nb01 memakai Advertising, nb09 memakai SeaPlaneTravel.}
+\end{frame}
+
+% ==========================================================
+% ACT 4
+% ==========================================================
+\acttitle{Act 4}{\fontsize{24}{28}\selectfont\bfseries Bagaimana memprediksi kategori?}{Empat model, empat cara menarik batas keputusan}
+
+% ----------------------------------------------------------
+% FRAME 35 — Regresi dan klasifikasi
+% ----------------------------------------------------------
+\begin{frame}{Regresi dan klasifikasi}
+  \vspace{0.1em}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
       \centering
-      \textbf{\textcolor{nvorange}{Regresi}}\\[0.4em]
-      \begin{tikzpicture}[scale=0.85]
-        \draw[nvcard,thick,->] (0,0) -- (4,0) node[right,white,font=\tiny] {x};
-        \draw[nvcard,thick,->] (0,0) -- (0,3) node[above,white,font=\tiny] {y};
-        \draw[nvgreen,thick] (0.3,0.4) -- (3.7,2.7);
+      \textbf{\color{nvorange}Regresi}\\[0.3em]
+      \begin{tikzpicture}[scale=0.80, font=\scriptsize]
+        \draw[nvgray, ->] (0,0) -- (4.2,0) node[below left, text=nvgray] {feature};
+        \draw[nvgray, ->] (0,0) -- (0,3.1) node[above right, text=nvgray] {target};
+        \draw[nvgreen, line width=1.1pt] (0.3,0.4) -- (3.7,2.7);
         \foreach \x/\y in {0.5/0.7, 1.0/1.1, 1.5/1.3, 2.0/1.8, 2.5/2.0, 3.0/2.3, 3.5/2.6}
-          \fill[white] (\x,\y) circle (2pt);
-      \end{tikzpicture}\\[0.3em]
-      {\small Prediksi \textbf{angka} (kontinu)}\\[0.2em]
-      {\footnotesize\textcolor{nvlightgreen}{Contoh: harga rumah, suhu}}
+          \fill[nvlightgreen] (\x,\y) circle (2.6pt);
+      \end{tikzpicture}\\{\tiny\phantom{batas keputusan}}\\[0.4em]
+      {\small Keluarannya satu angka}\\[0.2em]
+      {\footnotesize\color{nvgray}lama waktu tempuh, penjualan}
     \end{column}
-    \begin{column}{0.04\textwidth}\end{column}
     \begin{column}{0.48\textwidth}
       \centering
-      \textbf{\textcolor{nvgreen}{Klasifikasi}}\\[0.4em]
-      \begin{tikzpicture}[scale=0.85]
-        \draw[nvcard,thick,->] (0,0) -- (4,0) node[right,white,font=\tiny] {x};
-        \draw[nvcard,thick,->] (0,0) -- (0,3) node[above,white,font=\tiny] {y};
+      \textbf{\color{nvgreen}Klasifikasi}\\[0.3em]
+      \begin{tikzpicture}[scale=0.80, font=\scriptsize]
+        \draw[nvgray, ->] (0,0) -- (4.2,0) node[below left, text=nvgray] {feature 1};
+        \draw[nvgray, ->] (0,0) -- (0,3.1) node[above right, text=nvgray] {feature 2};
         \foreach \x/\y in {0.5/0.5, 0.8/0.9, 1.2/0.6, 1.5/1.1, 0.9/1.4}
           \fill[nvred] (\x,\y) circle (3pt);
         \foreach \x/\y in {2.5/1.8, 2.8/2.4, 3.2/1.6, 3.5/2.2, 3.0/2.7}
           \fill[nvgreen] (\x,\y) circle (3pt);
-        \draw[white,dashed] (2.0,0) -- (2.0,3);
-      \end{tikzpicture}\\[0.3em]
-      {\small Prediksi \textbf{kategori} (diskrit)}\\[0.2em]
-      {\footnotesize\textcolor{nvlightgreen}{Contoh: spam/bukan, lulus/tidak}}
+        \draw[nvwhite, dashed] (2.05,0.1) -- (2.05,2.9);
+        \node[text=nvwhite, font=\tiny, anchor=north] at (2.05,-0.55) {batas keputusan};
+      \end{tikzpicture}\\[0.4em]
+      {\small Keluarannya label kelas}\\[0.2em]
+      {\footnotesize\color{nvgray}spam atau bukan, respons ya atau tidak}
     \end{column}
   \end{columns}
+  \vspace{0.1em}
+  {\footnotesize\color{nvgray}Alur kerjanya sama seperti Act 2. Yang berubah adalah bentuk
+  keluaran model dan metrik yang dipakai menilainya.}
 \end{frame}
 
-% Slide 3 — Logistic Regression
-\begin{frame}{Logistic Regression --- Probabilitas Ya/Tidak}
+% ----------------------------------------------------------
+% FRAME 36 — Intuisi: logistic regression
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Logistic regression: skor jadi probabilitas}
+  \vspace{0.2em}
   \begin{center}
-  \begin{tikzpicture}[scale=1.1]
-    % axes
-    \draw[white,->] (-3.2,0) -- (3.5,0) node[right,white,font=\small] {Skor};
-    \draw[white,->] (0,-0.15) -- (0,1.35) node[above,white,font=\small] {Probabilitas};
-    % y-axis ticks
-    \draw[white] (-0.06,0) node[left,white,font=\tiny] {0} -- (0.06,0);
-    \draw[white] (-0.06,1) node[left,white,font=\tiny] {1} -- (0.06,1);
-    % sigmoid curve
-    \draw[nvgreen,very thick,domain=-3:3,samples=80]
-      plot (\x, {1/(1+exp(-2*\x))});
-    % threshold line
-    \draw[nvorange,dashed,thick] (-3.2,0.5) -- (3.5,0.5)
-      node[right,nvorange,font=\small] {Threshold};
-    \draw[nvorange] (0,0.5) circle (2.5pt);
-    % region labels
-    \node[nvred,font=\small\bfseries] at (-2,0.2) {Tidak (0)};
-    \node[nvgreen,font=\small\bfseries] at (2,0.8) {Ya (1)};
+  \begin{tikzpicture}[scale=1.05, font=\scriptsize]
+    \draw[nvgray, ->] (-3.4,0) -- (3.6,0) node[below left, text=nvgray] {skor model};
+    \draw[nvgray, ->] (0,-0.25) -- (0,2.7) node[above right, text=nvgray] {probabilitas};
+    \draw[nvgray] (-0.07,0) node[left, text=nvgray] {0} -- (0.07,0);
+    \draw[nvgray] (-0.07,2) node[left, text=nvgray] {1} -- (0.07,2);
+    \draw[nvgreen, line width=1.3pt, domain=-3.2:3.2, samples=90]
+      plot (\x, {2/(1+exp(-2*\x))});
+    \draw[nvorange, dashed, line width=0.9pt] (-3.4,1) -- (2.9,1)
+      node[right, text=nvorange, font=\scriptsize] {threshold 0,5};
+    \fill[nvorange] (0,1) circle (2.2pt);
+    \node[text=nvred, font=\scriptsize\bfseries] at (-2.0,0.55) {diprediksi ``tidak''};
+    \node[text=nvgreen, font=\scriptsize\bfseries] at (1.75,1.45) {diprediksi ``ya''};
   \end{tikzpicture}
   \end{center}
   \vspace{0.3em}
-  {\small\centering Output sigmoid selalu antara 0 dan 1 — mudah diinterpretasi sebagai probabilitas.}
+  \nvbox{Intinya}{Model menghitung satu skor dari semua feature, lalu fungsi sigmoid memampatkan
+  skor itu menjadi angka antara 0 dan 1 yang dibaca sebagai probabilitas kelas positif.}
 \end{frame}
 
-% Slide 4 — Confusion Matrix
-\begin{frame}{Confusion Matrix --- Detail Kesalahan}
-  \begin{center}
-  \begin{tikzpicture}[scale=0.9,font=\small]
-    % column headers
-    \node[white,font=\footnotesize\bfseries] at (1.5,3.5) {Prediksi: Tidak};
-    \node[white,font=\footnotesize\bfseries] at (3.5,3.5) {Prediksi: Ya};
-    % row headers
-    \node[white,font=\footnotesize\bfseries,rotate=90] at (-0.3,2.25) {Asli: Tidak};
-    \node[white,font=\footnotesize\bfseries,rotate=90] at (-0.3,0.75) {Asli: Ya};
-    % cells — equal size: each 3 wide x 1.5 tall
-    \fill[nvgreen!60!black] (0,1.5) rectangle (3,3);
-    \node[white,font=\small\bfseries] at (1.5,2.25) {True Negative \checkmark};
-    \fill[nvorange!70!black] (3,1.5) rectangle (6,3);
-    \node[white,font=\small\bfseries] at (4.5,2.25) {False Positive (!)};
-    \fill[nvred!70!black] (0,0) rectangle (3,1.5);
-    \node[white,font=\small\bfseries] at (1.5,0.75) {False Negative (x)};
-    \fill[nvgreen!60!black] (3,0) rectangle (6,1.5);
-    \node[white,font=\small\bfseries] at (4.5,0.75) {True Positive \checkmark};
-    % grid
-    \draw[white,thick] (0,0) rectangle (6,3);
-    \draw[white] (3,0) -- (3,3);
-    \draw[white] (0,1.5) -- (6,1.5);
-  \end{tikzpicture}
-  \end{center}
+% ----------------------------------------------------------
+% FRAME 37 — Mekanisme logistic regression
+% ----------------------------------------------------------
+\begin{frame}{Logistic regression: threshold dan data timpang}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.45em}
+    \item Keluaran modelnya probabilitas. Label kelas muncul setelah probabilitas itu
+          dibandingkan dengan sebuah threshold; \texttt{predict()} memakai 0,5.
+    \item Menurunkan threshold menaikkan recall dan biasanya menurunkan precision.
+          Menaikkannya memberi efek sebaliknya. Jadi threshold adalah pilihan, bukan angka baku.
+    \item Pilih thresholdnya dari data validation, mengikuti biaya kesalahan yang sudah
+          disepakati.
+    \item Kalau satu kelas jauh lebih banyak, \texttt{class\_weight='balanced'} memperbesar
+          bobot kelas minoritas saat melatih model.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 38 — Kapan pakai & jebakan logistic
+% ----------------------------------------------------------
+\begin{frame}{Logistic regression: kapan pakai dan jebakannya}
   \vspace{0.4em}
-  {\footnotesize\centering\textcolor{nvlightgreen}{Seperti tes COVID: FP = alarm palsu, FN = terlewat (bahaya!)}}
+  \kapan{
+    \item kamu butuh probabilitas, bukan hanya label
+    \item pengaruh tiap feature perlu bisa dijelaskan
+    \item batas antar kelas mendekati garis lurus
+  }{
+    \item batas antar kelas jelas melengkung
+    \item banyak interaksi antar feature yang tidak kamu buat sendiri
+    \item skala feature dibiarkan berbeda-beda tanpa scaling
+  }
+  \vspace{1.0em}
+  \jebakan{akurasi 89\% pada data yang 89\% berlabel ``tidak'' sama saja dengan baseline
+  kelas mayoritas. Lihat precision, recall, dan ROC-AUC sebelum menyimpulkan.}
 \end{frame}
 
-% Slide 5 — Decision Tree
-\begin{frame}{Decision Tree --- Diagram Alur Keputusan}
+% ----------------------------------------------------------
+% FRAME 39 — Intuisi: decision tree
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Decision tree: rangkaian pertanyaan ya atau tidak}
+  \vspace{0.3em}
   \begin{center}
   \begin{tikzpicture}[
-    decision/.style={rounded corners=4pt,fill=nvcard,draw=nvgreen,text=white,font=\footnotesize,
-                     minimum width=2.2cm,minimum height=0.7cm,align=center},
-    leafred/.style={rounded corners=4pt,fill=nvred,text=white,font=\footnotesize\bfseries,
-                 minimum width=1.6cm,minimum height=0.6cm,align=center},
-    leafgreen/.style={rounded corners=4pt,fill=nvgreen,text=white,font=\footnotesize\bfseries,
-                 minimum width=1.6cm,minimum height=0.6cm,align=center},
-    edge/.style={draw=white,thick,-latex},
-    lbl/.style={font=\tiny,white},
-    scale=0.9
-  ]
-    % root
-    \node[decision] (root) at (0,0) {Umur > 30?};
-    % level 1
-    \node[decision] (L1) at (-2.5,-1.5) {Gaji > 50K?};
-    \node[decision] (R1) at (2.5,-1.5) {Gaji > 80K?};
-    % level 2
-    \node[leafred] (LL) at (-3.5,-3.0) {Tidak Beli};
-    \node[leafgreen] (LR) at (-1.5,-3.0) {Beli};
-    \node[leafred] (RL) at (1.5,-3.0) {Tidak Beli};
-    \node[leafgreen] (RR) at (3.5,-3.0) {Beli};
-    % edges
-    \draw[edge] (root) -- node[lbl,left] {Tidak} (L1);
-    \draw[edge] (root) -- node[lbl,right] {Ya} (R1);
-    \draw[edge] (L1) -- node[lbl,left] {Tidak} (LL);
-    \draw[edge] (L1) -- node[lbl,right] {Ya} (LR);
-    \draw[edge] (R1) -- node[lbl,left] {Tidak} (RL);
-    \draw[edge] (R1) -- node[lbl,right] {Ya} (RR);
+    decision/.style={rounded corners=4pt, fill=nvcard, draw=nvgreen, text=nvwhite,
+                     font=\footnotesize, minimum width=2.2cm, minimum height=0.7cm,
+                     align=center},
+    leafred/.style={rounded corners=4pt, fill=nvred!70!black, text=nvwhite,
+                    font=\footnotesize\bfseries, minimum width=1.7cm, minimum height=0.6cm},
+    leafgreen/.style={rounded corners=4pt, fill=nvgreen!65!black, text=nvwhite,
+                      font=\footnotesize\bfseries, minimum width=1.7cm, minimum height=0.6cm},
+    edg/.style={draw=nvgray, thick, -{Latex[length=2mm]}},
+    lbl/.style={font=\tiny, text=nvgray},
+    scale=0.92, every node/.style={transform shape}]
+    \node[decision] (root) at (0,0) {Umur $>$ 30?};
+    \node[decision] (L1) at (-2.7,-1.5) {Gaji $>$ 50 juta?};
+    \node[decision] (R1) at (2.7,-1.5) {Gaji $>$ 80 juta?};
+    \node[leafred]   (LL) at (-4.0,-3.0) {tidak beli};
+    \node[leafgreen] (LR) at (-1.7,-3.0) {beli};
+    \node[leafred]   (RL) at (1.7,-3.0) {tidak beli};
+    \node[leafgreen] (RR) at (4.0,-3.0) {beli};
+    \draw[edg] (root) -- node[lbl, above left] {tidak} (L1);
+    \draw[edg] (root) -- node[lbl, above right] {ya} (R1);
+    \draw[edg] (L1) -- node[lbl, left] {tidak} (LL);
+    \draw[edg] (L1) -- node[lbl, right] {ya} (LR);
+    \draw[edg] (R1) -- node[lbl, left] {tidak} (RL);
+    \draw[edg] (R1) -- node[lbl, right] {ya} (RR);
   \end{tikzpicture}
   \end{center}
+  \vspace{0.2em}
+  {\footnotesize\color{nvgray}Satu baris data menuruni pohon lewat satu jalur saja, lalu memakai
+  label di ujung jalur itu sebagai prediksi.}
 \end{frame}
 
-% Slide 6 — KNN
-\begin{frame}{KNN --- Siapa Tetanggamu?}
-  \begin{center}
-  \begin{tikzpicture}[scale=1.0]
-    % scattered red dots
-    \foreach \x/\y in {0.3/1.2, 0.8/0.4, 1.5/0.8, 0.5/2.0, 1.8/1.6, 0.2/2.8}
-      \fill[nvred] (\x,\y) circle (4pt);
-    % scattered green dots
-    \foreach \x/\y in {3.2/1.0, 3.8/1.8, 4.2/0.6, 2.8/2.4, 3.5/2.8, 4.5/2.0}
-      \fill[nvgreen] (\x,\y) circle (4pt);
-    % query point
-    \fill[blue!70!white] (2.4,1.6) circle (5pt);
-    \node[white,font=\small\bfseries] at (2.4,1.2) {?};
-    % circle K=5
-    \draw[nvorange,thick,dashed] (2.4,1.6) circle (1.3);
-    \node[nvorange,font=\tiny] at (3.5,0.2) {K=5 tetangga};
-  \end{tikzpicture}
-  \end{center}
-  \vspace{0.3em}
-  {\small\centering\textcolor{nvlightgreen}{Lihat 5 tetangga terdekat $\rightarrow$ mayoritas hijau $\rightarrow$ prediksi: \textbf{Hijau}}}
+% ----------------------------------------------------------
+% FRAME 40 — Mekanisme decision tree
+% ----------------------------------------------------------
+\begin{frame}{Decision tree: bagaimana pertanyaannya dipilih}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.45em}
+    \item Di tiap simpul, model mencoba banyak pasangan feature dan ambang, lalu memilih
+          pasangan yang paling memisahkan kelas.
+    \item Ukuran pemisahannya bisa dipilih; ukuran default di scikit-learn adalah
+          \textbf{gini}: makin kecil, makin murni isi tiap cabang.
+    \item Proses itu diulang pada tiap cabang sampai simpulnya murni atau batas yang kamu
+          pasang tercapai.
+    \item Batasnya yang penting: \texttt{max\_depth} (kedalaman) dan
+          \texttt{min\_samples\_leaf} (isi minimum tiap ujung).
+  \end{itemize}
+  \vspace{0.6em}
+  {\footnotesize\color{nvgray}Karena tiap pertanyaan hanya membandingkan satu feature dengan satu
+  angka, batas keputusannya selalu sejajar sumbu feature.}
 \end{frame}
 
-% Slide 7 — SVM
-\begin{frame}{SVM --- Margin Terlebar}
-  \begin{center}
-  \begin{tikzpicture}[scale=1.0]
-    % green dots (class +1)
-    \foreach \x/\y in {3.0/2.0, 3.5/2.8, 4.0/1.5, 4.5/2.5, 3.8/3.2}
-      \fill[nvgreen] (\x,\y) circle (4pt);
-    % red dots (class -1)
-    \foreach \x/\y in {0.5/0.8, 1.0/1.5, 1.5/0.5, 0.8/2.2, 1.8/1.2}
-      \fill[nvred] (\x,\y) circle (4pt);
-    % decision boundary
-    \draw[nvgreen,very thick] (2.0,0) -- (2.5,3.5);
-    % margin lines
-    \draw[white,dashed,thick] (1.3,0) -- (1.8,3.5);
-    \draw[white,dashed,thick] (2.7,0) -- (3.2,3.5);
-    % margin arrow
-    \draw[nvorange,<->,thick] (1.55,1.8) -- (2.95,1.8);
-    \node[nvorange,font=\small\bfseries] at (2.25,2.1) {Margin};
-    % support vectors circles
-    \draw[nvorange,thick] (1.8,1.2) circle (7pt);
-    \draw[nvorange,thick] (3.0,2.0) circle (7pt);
-    \node[white,font=\tiny] at (4.9,3.5) {Support};
-    \node[white,font=\tiny] at (4.9,3.2) {Vectors};
-  \end{tikzpicture}
-  \end{center}
-\end{frame}
-
-% Slide 8 — Model Comparison
-\begin{frame}{Perbandingan 4 Model Klasifikasi}
-  \begin{center}
-    \includegraphics[width=\textwidth]{figures/decision_boundaries.pdf}
-  \end{center}
-  \vspace{0.3em}
-  {\small\centering\textcolor{nvlightgreen}{Dataset yang sama, hasil yang berbeda — setiap model punya `cara berpikir' sendiri}}
-\end{frame}
-
-% Slide 9 — Overfitting
-\begin{frame}{Overfitting vs Underfitting}
-  \begin{center}
-    \includegraphics[width=\textwidth]{figures/overfitting_panels.pdf}
-  \end{center}
+% ----------------------------------------------------------
+% FRAME 41 — Kapan pakai & jebakan decision tree
+% ----------------------------------------------------------
+\begin{frame}{Decision tree: kapan pakai dan jebakannya}
   \vspace{0.4em}
+  \kapan{
+    \item aturan hasilnya perlu dibaca orang lain
+    \item feature bercampur angka dan kategori
+    \item kamu ingin melewati scaling; pohon tidak membutuhkannya
+  }{
+    \item batas antar kelas miring atau melengkung halus
+    \item datanya sedikit dan pohonnya dibiarkan tumbuh bebas
+    \item kamu butuh prediksi yang stabil terhadap perubahan kecil data
+  }
+  \vspace{1.0em}
+  \jebakan{tanpa batas kedalaman, pohon dapat menghafal data train sampai errornya nol dan
+  hasilnya jatuh di data baru. Pilih kedalamannya dengan cross-validation.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 42 — Intuisi: KNN
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{KNN: lihat data terdekat, ambil suara terbanyak}
+  \vspace{0.3em}
   \begin{columns}[T]
-    \begin{column}{0.33\textwidth}
-      \centering
-      \textcolor{nvred}{\textbf{Terlalu sederhana}}\\
-      {\footnotesize (Underfitting)}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=1.0, font=\scriptsize]
+        \draw[nvgray, ->] (-0.1,-0.1) -- (5.2,-0.1) node[below left, text=nvgray] {feature 1};
+        \draw[nvgray, ->] (-0.1,-0.1) -- (-0.1,3.5) node[above right, text=nvgray] {feature 2};
+        \foreach \x/\y in {0.4/1.2, 0.9/0.4, 1.5/0.9, 0.6/2.1, 1.9/1.7, 0.3/2.9}
+          \fill[nvred] (\x,\y) circle (3.4pt);
+        \foreach \x/\y in {3.2/1.0, 3.6/1.9, 4.2/0.6, 2.9/2.5, 3.5/2.9, 4.6/2.0}
+          \fill[nvgreen] (\x,\y) circle (3.4pt);
+        \fill[nvwhite] (2.5,1.7) circle (4pt);
+        \node[text=nvbg, font=\tiny\bfseries] at (2.5,1.7) {?};
+        \draw[nvorange, dashed, line width=0.9pt] (2.5,1.7) circle (1.3);
+        \node[text=nvorange, font=\tiny, anchor=west] at (3.0,3.3) {K = 5 terdekat};
+      \end{tikzpicture}
+      \end{center}
     \end{column}
-    \begin{column}{0.33\textwidth}
-      \centering
-      \textcolor{nvgreen}{\textbf{Pas!}}\\
-      {\footnotesize (Good fit)}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      \centering
-      \textcolor{nvred}{\textbf{Terlalu rumit}}\\
-      {\footnotesize (Overfitting)}
+    \begin{column}{0.48\textwidth}
+      \vspace{0.5em}
+      \begin{itemize}\setlength\itemsep{0.45em}
+        \item Titik putih adalah data baru yang belum punya label.
+        \item Lima data train terdekat: tiga hijau, dua merah. Prediksinya hijau.
+      \end{itemize}
+      \vspace{0.6em}
+      \nvbox{Intinya}{Tetangga di sini berarti data train yang paling dekat menurut jarak pada
+      feature, bukan tetangga dalam arti sehari-hari.}
     \end{column}
   \end{columns}
 \end{frame}
 
-% Slide 10 — Summary Table
-\begin{frame}{Kapan Pakai Model yang Mana?}
+% ----------------------------------------------------------
+% FRAME 43 — Mekanisme KNN
+% ----------------------------------------------------------
+\begin{frame}{KNN: jarak, K, dan suara mayoritas}
+  \vspace{0.1em}
   \begin{center}
-  {\small
-  \begin{tabular}{@{}lllll@{}}
-    \toprule
-    \textbf{Model} & \textbf{Batas Keputusan} & \textbf{Scaling?} & \textbf{Kecepatan} & \textbf{Interpretasi} \\
-    \midrule
-    Logistic Reg.  & Garis lurus  & Ya    & Cepat  & Mudah  \\
-    Decision Tree  & Kotak-kotak  & Tidak & Cepat  & Mudah  \\
-    KNN            & Berliku      & Ya    & Lambat & Sulit  \\
-    SVM Linear     & Garis lurus  & Ya    & Sedang & Sedang \\
-    SVM RBF        & Melengkung   & Ya    & Lambat & Sulit  \\
-    \bottomrule
-  \end{tabular}
+    \nvbox{Jarak Euclidean antara dua baris data}{
+      \centerline{$\displaystyle d(a,b) \;=\; \sqrt{\sum_{j=1}^{m}\bigl(a_j - b_j\bigr)^2}$}
+    }
+  \end{center}
+  \vspace{0.1em}
+  \begin{itemize}\setlength\itemsep{0.1em}
+    \item $a$ dan $b$ dua baris data, $m$ jumlah feature, dan $K$ jumlah tetangga yang dilihat.
+    \item Hitung jarak data baru ke data train, ambil K yang terdekat, lalu pakai kelas
+          terbanyak di antara mereka.
+    \item K kecil membuat prediksi mengikuti tiap variasi acak di sekitarnya. K besar membuat
+          batasnya terlalu rata dan pola lokal hilang.
+    \item Tidak ada parameter yang dilatih. Hampir semua pekerjaan terjadi saat prediksi.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 44 — Kapan pakai & jebakan KNN
+% ----------------------------------------------------------
+\begin{frame}{KNN: kapan layak dicoba}
+  \vspace{0.4em}
+  \begin{itemize}\setlength\itemsep{0.6em}
+    \item Mulai dari data kecil dengan sedikit feature yang relevan.
+    \item Prediksi dapat melambat saat data train membesar, karena pencarian tetangga
+          dilakukan setiap kali memprediksi.
+    \item Jika skala feature berbeda, lakukan scaling agar perhitungan jarak tidak didominasi
+          satu feature.
+  \end{itemize}
+  \vspace{0.7em}
+  \jebakan{gaji ditulis dalam juta rupiah dan umur dalam tahun. Tanpa scaling, selisih gaji
+  yang rentang nilainya jauh lebih besar hampir menentukan seluruh jaraknya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 45 — Intuisi: SVM
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{SVM: cari jalan paling lebar di antara dua kelas}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=4.6cm, keepaspectratio]{figures/svm_margin.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \vspace{0.3em}
+      \begin{itemize}\setlength\itemsep{0.45em}
+        \item Di antara semua garis pemisah, SVM memilih yang jarak ke kelas terdekat di kedua
+              sisinya paling lebar.
+        \item Titik yang menempel di tepi jalan itu disebut support vector.
+      \end{itemize}
+      \vspace{0.6em}
+      \nvbox{Intinya}{Hanya titik di dekat batas yang menentukan posisi garisnya. Titik yang
+      jauh boleh digeser tanpa mengubah hasilnya.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 46 — Mekanisme SVM
+% ----------------------------------------------------------
+\begin{frame}{SVM: margin, C, dan kernel}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.45em}
+    \item \textbf{Margin} adalah lebar jalan antara batas keputusan dan support vector
+          terdekat. Pelatihan memaksimalkan lebar itu.
+    \item \textbf{C} mengatur seberapa banyak titik boleh masuk ke dalam margin. C kecil
+          memberi margin lebar dengan beberapa pelanggaran; C besar memaksa margin sempit yang
+          rapat mengikuti data train.
+    \item \textbf{Kernel RBF} mengangkat data ke ruang berdimensi lebih tinggi, tempat kedua
+          kelas dapat dipisahkan bidang datar. Kembali ke dua feature semula, batasnya terlihat
+          melengkung.
+    \item \texttt{gamma} pada RBF mengatur seberapa lokal pengaruh satu titik.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 47 — Kapan pakai & jebakan SVM
+% ----------------------------------------------------------
+\begin{frame}{SVM: kapan pakai dan jebakannya}
+  \vspace{0.4em}
+  \kapan{
+    \item jumlah feature banyak dibanding jumlah baris
+    \item batas antar kelas cukup tegas
+    \item kamu bersedia mencari pasangan C dan \texttt{gamma} lewat cross-validation
+  }{
+    \item data trainnya ratusan ribu baris
+    \item probabilitas kelas dibutuhkan langsung dari model
+    \item hasilnya harus dijelaskan sebagai aturan per feature
   }
+  \vspace{1.0em}
+  \jebakan{kernel RBF melambat cepat saat data membesar, dan SVM mengukur jarak. Jika skala
+  feature berbeda, lakukan scaling lebih dulu.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 48 — Empat model, satu dataset
+% ----------------------------------------------------------
+\begin{frame}{Empat model, satu dataset}
+  \vspace{0.2em}
+  \begin{center}
+    \includegraphics[width=\textwidth, height=4.1cm, keepaspectratio]{figures/decision_boundaries.pdf}
+  \end{center}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Data yang sama, empat batas keputusan yang berbeda: bentuk batasnya mengikuti cara
+          model itu menarik keputusan.
+    \item Karena itu perbandingan model selalu dilakukan pada satu split dan satu metrik yang
+          sama.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 49 — Ringkasan Act 4
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 4: kapan pakai model yang mana}
+  \vspace{0.4em}
+  \begin{center}
+  {\small\renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{@{}llccl@{}}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Model} &
+    \color{nvgreen}\textbf{Bentuk batas keputusan} &
+    \color{nvgreen}\textbf{Scaling} &
+    \color{nvgreen}\textbf{Prediksi} &
+    \color{nvgreen}\textbf{Dibaca orang} \\
+    \midrule
+    Logistic regression & garis lurus & perlu & cepat & mudah \\
+    \rowcolor{nvcard!60!nvbg} Decision tree & sejajar sumbu feature & tidak perlu & cepat & mudah \\
+    KNN & mengikuti sebaran data & perlu & melambat & sulit \\
+    \rowcolor{nvcard!60!nvbg} SVM linear & garis lurus & perlu & sedang & sedang \\
+    SVM RBF & melengkung & perlu & lambat & sulit \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.7em}
+  {\footnotesize\color{nvgray}Kolom scaling berlaku kalau skala feature berbeda-beda. Tabel ini
+  membantu memilih kandidat awal; keputusannya tetap dari hasil di data validation.}
+\end{frame}
+
+% ==========================================================
+% ACT 5 — ENSEMBLE
+% ==========================================================
+
+% ----------------------------------------------------------
+% FRAME 50 — Act 5
+% ----------------------------------------------------------
+\acttitle{Act 5}{\fontsize{24}{28}\selectfont\bfseries Bagaimana jika model bekerja sama?}
+{Voting, bagging, boosting, dan batas dari menggabungkan model}
+
+% ----------------------------------------------------------
+% FRAME 51 — Intuisi: kenapa gabungan lebih baik
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Rata-rata banyak tebakan jatuh lebih dekat}
+  \vspace{0.1em}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \vspace{1.3em}
+      \begin{center}
+      \scalebox{1.05}{%
+      \begin{tikzpicture}[font=\scriptsize]
+        \draw[nvgray, ->] (0,0) -- (6.3,0);
+        \node[text=nvgray, font=\tiny, anchor=north east] at (6.3,-0.45) {tebakan berat sapi (kg)};
+        \foreach \x/\l in {0.7/400, 2.2/500, 3.7/600, 5.2/700}{
+          \draw[nvgray] (\x,0) -- (\x,-0.12) node[below, text=nvgray, font=\tiny] {\l};}
+        \foreach \x/\y in {0.8/0.45, 1.2/0.95, 1.5/0.5, 1.9/1.3, 2.2/0.7, 2.5/1.05,
+                           2.8/0.45, 3.0/1.4, 3.3/0.8, 3.6/1.15, 3.9/0.5, 4.2/0.95,
+                           4.6/1.3, 5.0/0.7, 5.5/1.05}
+          \fill[nvgray] (\x,\y) circle (2.6pt);
+        \draw[nvgreen, line width=1.2pt] (3.3,-0.25) -- (3.3,2.15);
+        \node[text=nvgreen, anchor=south, font=\tiny] at (3.3,2.15) {berat sebenarnya};
+        \draw[nvlightgreen, line width=1.2pt, dashed] (3.07,-0.25) -- (3.07,1.75);
+        \node[text=nvlightgreen, anchor=east, font=\tiny] at (2.90,1.78) {rata-rata semua tebakan};
+        \fill[nvred] (5.5,1.05) circle (3.6pt);
+        \node[text=nvred, anchor=south, font=\tiny] at (5.5,1.25) {satu penebak};
+      \end{tikzpicture}}
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \vspace{0.2em}
+      \begin{itemize}\setlength\itemsep{0.3em}
+        \item Satu penebak bisa melenceng jauh.
+        \item Rata-rata ratusan tebakan biasanya jatuh dekat ke nilai sebenarnya.
+      \end{itemize}
+      \vspace{0.4em}
+      \nvbox{Intinya}{Gabungan menolong kalau kesalahan tiap model jatuh ke arah berbeda. Kalau
+      semuanya melenceng ke arah yang sama, gabungannya ikut melenceng.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 52 — Bias-variance versi ensemble
+% ----------------------------------------------------------
+\begin{frame}{Dua cara menggabungkan, dua masalah yang berbeda}
+  \vspace{0.4em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvgreen}Bagging: menurunkan variance}
+      \begin{itemize}\setlength\itemsep{0.35em}
+        \item Banyak model dilatih secara terpisah pada data yang sedikit berbeda.
+        \item Masing-masing tidak stabil, tetapi rata-ratanya jauh lebih tenang.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{\color{nvorange}Boosting: menurunkan bias}
+      \begin{itemize}\setlength\itemsep{0.35em}
+        \item Model dilatih berurutan; tiap model baru mengerjakan kesalahan yang masih tersisa.
+        \item Pola yang tadinya terlewat mulai tertangkap.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{1.0em}
+  \nvbox{Batasnya}{Bagging tidak banyak menolong kalau modelnya memang terlalu sederhana untuk
+  datanya. Boosting yang dibiarkan menambah model terus akhirnya mengikuti noise di data train,
+  jadi jumlah modelnya perlu dibatasi dari hasil di data validation.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 53 — Intuisi: voting
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Voting: tiga model, satu keputusan}
+  \vspace{0.5em}
+  \begin{center}
+  \begin{tikzpicture}[
+    box/.style={rectangle, rounded corners=4pt, fill=nvcard, text=nvwhite,
+                minimum width=3.6cm, minimum height=0.7cm, font=\small},
+    votebox/.style={rectangle, rounded corners=4pt, fill=nvgreen, text=nvbg,
+                    minimum width=2.0cm, minimum height=0.7cm, font=\small\bfseries},
+    resultbox/.style={rectangle, rounded corners=4pt, fill=nvorange, text=nvwhite,
+                      minimum width=3.4cm, minimum height=0.7cm, font=\small\bfseries},
+    arrow/.style={->, thick, color=nvlightgreen}]
+    \node[box] (lr)  at (0, 1.9) {Logistic regression $\to$ \textbf{kelas A}};
+    \node[box] (dt)  at (0, 0.95) {Decision tree $\to$ \textbf{kelas B}};
+    \node[box] (svm) at (0, 0.0) {SVM $\to$ \textbf{kelas A}};
+    \node[votebox]   (vote)   at (4.4, 0.95) {Voting};
+    \node[resultbox] (result) at (7.6, 0.95) {kelas A (2 lawan 1)};
+    \draw[arrow] (lr.east)  -- ++(0.4,0) |- (vote.west);
+    \draw[arrow] (dt.east)  -- (vote.west);
+    \draw[arrow] (svm.east) -- ++(0.4,0) |- (vote.west);
+    \draw[arrow] (vote.east) -- (result.west);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.6em}
+  \nvbox{Intinya}{Voting tidak membuat model baru. Yang dilakukan hanya mengumpulkan keputusan
+  beberapa model yang sudah dilatih, lalu mengambil yang terbanyak.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 54 — Hard vs soft voting
+% ----------------------------------------------------------
+\begin{frame}{Hard voting dan soft voting}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.4em}
+    \item \textbf{Hard voting}: setiap model memberi satu suara berupa kelas, lalu kelas dengan
+          suara terbanyak dipakai.
+    \item \textbf{Soft voting}: probabilitas tiap kelas dari semua model dirata-ratakan, lalu
+          kelas dengan rata-rata tertinggi dipakai. Ini hanya bisa kalau setiap model memang
+          mengeluarkan probabilitas.
+    \item Soft voting sering sedikit lebih baik karena model yang ragu-ragu tidak berbobot sama
+          dengan model yang yakin. Selisihnya tetap perlu dicek di data validation.
+  \end{itemize}
+  \vspace{1.0em}
+  \jebakan{tiga model yang mirip menghasilkan kesalahan di baris yang sama, jadi voting-nya
+  tidak menambah apa-apa. Yang menolong adalah model yang cara kerjanya berbeda.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 55 — Intuisi: bagging & random forest
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Random Forest: banyak pohon dari data yang sedikit berbeda}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.82]
+        \foreach \x/\y in {0/2.8, 1.0/2.8, 2.0/2.8, 0.5/1.6, 1.5/1.6, 1.0/0.6} {
+          \fill[nvgreen!70] (\x, \y) -- (\x+0.5, \y+0.7) -- (\x+1.0, \y) -- cycle;
+          \fill[nvcard]     (\x+0.35, \y-0.35) rectangle (\x+0.65, \y);
+        }
+        \draw[->, thick, color=nvlightgreen] (1.5, 0.1) -- (1.5, -0.5);
+        \node[rectangle, rounded corners=4pt, fill=nvorange, text=nvwhite,
+              minimum width=2.8cm, minimum height=0.6cm, font=\small\bfseries]
+              at (1.5, -0.9) {satu jawaban};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+      \vspace{0.3em}
+      \begin{itemize}\setlength\itemsep{0.4em}
+        \item Tiap pohon dilatih pada sampel bootstrap dari data train.
+        \item Karena datanya tidak persis sama, pohonnya tumbuh berbeda dan salahnya di baris
+              yang berbeda.
+      \end{itemize}
+      \vspace{0.4em}
+      \nvbox{Bootstrap}{Sampel dengan pengembalian: ambil baris acak sebanyak ukuran data
+      semula, dan satu baris boleh terpilih lebih dari sekali. Jadi ada baris yang muncul
+      berulang, ada yang tidak terambil.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 56 — Mekanisme random forest
+% ----------------------------------------------------------
+\begin{frame}{Random Forest: bootstrap, subset feature, lalu voting}
+  \vspace{0.4em}
+  \begin{enumerate}\setlength\itemsep{0.4em}
+    \item Ambil satu sampel bootstrap dari data train untuk pohon ini.
+    \item Tumbuhkan pohon seperti biasa, tetapi di setiap pertanyaan hanya sebagian feature yang
+          dipilih acak yang boleh dipertimbangkan.
+    \item Ulangi untuk semua pohon; pohon-pohonnya tidak saling melihat.
+    \item Hasil akhir: kelas dengan suara terbanyak untuk klasifikasi, rata-rata prediksi untuk
+          regresi.
+  \end{enumerate}
+  \vspace{0.9em}
+  \jebakan{ratusan pohon di data besar membuat pelatihan dan prediksi terasa lambat, dan
+  pohonnya tidak lagi bisa dibaca satu per satu seperti decision tree tunggal.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 57 — Intuisi: boosting
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{Boosting: model berikutnya mengerjakan yang masih salah}
+  \vspace{0.3em}
+  \begin{center}
+    \includegraphics[width=\textwidth, height=2.6cm, keepaspectratio]{figures/boosting.pdf}
+  \end{center}
+  \vspace{0.3em}
+  \nvbox{Intinya}{Modelnya dilatih berurutan, bukan bersamaan, sehingga tiap tambahan model
+  menutup sisa kesalahan model sebelumnya. Caranya ada dua: di AdaBoost bobot baris yang salah
+  dinaikkan, sedangkan di gradient boosting (termasuk XGBoost) model berikutnya mempelajari sisa
+  error (residual) model sebelumnya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 58 — Bagging vs boosting
+% ----------------------------------------------------------
+\begin{frame}{Bagging dan boosting pada data yang sama}
+  \vspace{0.2em}
+  \begin{center}
+    \includegraphics[width=\textwidth, height=4.1cm, keepaspectratio]{figures/ensemble_comparison.pdf}
+  \end{center}
+  \vspace{0.2em}
+  \begin{itemize}\setlength\itemsep{0.25em}
+    \item Cara belajarnya berbeda, tetapi pada data ini bentuk batas keputusannya mirip.
+    \item Angka di bawah tiap panel dihitung pada data yang sama yang dipakai melatih, jadi
+          100\% di sini bukan ukuran kinerja di data baru.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 59 — XGBoost
+% ----------------------------------------------------------
+\begin{frame}{XGBoost: gradient boosting yang siap pakai}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.5em}
+    \item Gradient boosting dengan implementasi yang cepat: pencarian ambang split dikerjakan
+          dari histogram, dan bisa memakai banyak core atau GPU.
+    \item Regularisasi ada di dalamnya, sehingga ukuran tiap pohon dan besar koreksinya bisa
+          ditahan.
+    \item Nilai kosong tidak perlu diisi lebih dulu; tiap split menentukan sendiri ke arah mana
+          baris dengan nilai kosong dikirim.
+    \item Sering menang di kompetisi data tabular. Di data sendiri, hasilnya tetap harus
+          dibandingkan dengan model yang lebih sederhana.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 60 — Early stopping
+% ----------------------------------------------------------
+\begin{frame}{Early stopping: berhenti saat data validation tidak membaik}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[font=\scriptsize]
+        \draw[nvgray, ->] (0,0) -- (6.2,0) node[below left, text=nvgray] {jumlah pohon};
+        \draw[nvgray, ->] (0,0) -- (0,3.4) node[above right, text=nvgray] {error};
+        \draw[nvgreen, line width=1.2pt]
+          (0.4,2.7) .. controls (1.6,1.7) and (2.8,1.0) .. (5.6,0.35);
+        \node[text=nvgreen, anchor=west, font=\tiny] at (4.4,0.72) {data train};
+        \draw[nvorange, line width=1.2pt]
+          (0.4,3.0) .. controls (1.4,2.0) and (2.0,1.35) .. (2.6,1.3)
+          .. controls (3.6,1.28) and (4.6,1.75) .. (5.6,2.25);
+        \node[text=nvorange, anchor=east, font=\tiny] at (5.5,2.6) {data validation};
+        \draw[nvlightgreen, dashed, line width=0.9pt] (2.6,0) -- (2.6,3.1);
+        \node[text=nvlightgreen, anchor=south west, font=\tiny] at (2.65,3.0) {berhenti di sini};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \vspace{0.4em}
+      \begin{itemize}\setlength\itemsep{0.4em}
+        \item Error di data train terus turun selama pohon ditambah.
+        \item Error di data validation turun sampai satu titik, lalu naik lagi.
+        \item Pelatihan dihentikan kalau tidak ada perbaikan selama sejumlah ronde, dan model
+              dari ronde terbaik yang dipakai.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 61 — Feature importance
+% ----------------------------------------------------------
+\begin{frame}{Feature importance: kontribusi menurut metode}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=4.6cm, keepaspectratio]{figures/feature_importance.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \vspace{0.2em}
+      \begin{itemize}\setlength\itemsep{0.35em}
+        \item Delapan feature teratas dari XGBoost pada data income.
+        \item Angkanya menunjukkan seberapa besar feature itu dipakai model ini, bukan
+              sebab-akibat.
+        \item Kolom yang saling berkaitan membagi skornya, jadi satu kolom bisa terlihat kecil
+              padahal informasinya ada.
+      \end{itemize}
+      \vspace{0.4em}
+      {\footnotesize\color{nvgray}Skornya berubah kalau modelnya atau encoding kolom
+      kategorinya berubah.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 62 — Stacking
+% ----------------------------------------------------------
+\begin{frame}{Stacking: satu model belajar memakai prediksi model lain}
+  \vspace{0.4em}
+  \begin{center}
+  \begin{tikzpicture}[
+    base/.style={rectangle, rounded corners=4pt, fill=nvcard, text=nvwhite,
+                 minimum width=3.0cm, minimum height=0.65cm, font=\small},
+    meta/.style={rectangle, rounded corners=4pt, fill=nvgreen, text=nvbg,
+                 minimum width=3.2cm, minimum height=0.75cm, font=\small\bfseries},
+    outbox/.style={rectangle, rounded corners=4pt, fill=nvorange, text=nvwhite,
+                minimum width=2.4cm, minimum height=0.65cm, font=\small\bfseries},
+    arrow/.style={->, thick, color=nvlightgreen}]
+    \node[base] (a) at (0, 1.5) {Random Forest};
+    \node[base] (b) at (0, 0.75) {XGBoost};
+    \node[base] (c) at (0, 0.0) {Logistic regression};
+    \node[meta] (m) at (4.6, 0.75) {Meta-model};
+    \node[outbox] (o) at (8.4, 0.75) {prediksi akhir};
+    \draw[arrow] (a.east) -- ++(0.4,0) |- (m.west);
+    \draw[arrow] (b.east) -- (m.west);
+    \draw[arrow] (c.east) -- ++(0.4,0) |- (m.west);
+    \draw[arrow] (m.east) -- (o.west);
+    \node[text=nvgray, font=\tiny, anchor=north] at (4.6,0.25) {masukannya prediksi, bukan feature asli};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Berguna saat beberapa model sama baiknya dengan cara yang berbeda, dan selisih kecil
+          masih berharga.
+    \item Prediksi untuk melatih meta-model harus diambil dari fold yang tidak dipakai melatih
+          model dasarnya, kalau tidak meta-model melihat prediksi pada data yang sudah dihafal.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 63 — No free lunch
+% ----------------------------------------------------------
+\begin{frame}{Tidak ada model terbaik untuk semua data}
+  \vspace{0.5em}
+  \begin{center}
+  \begin{tikzpicture}[
+    row/.style={rectangle, rounded corners=3pt, fill=nvcard, text=nvwhite,
+                minimum width=10.4cm, minimum height=0.72cm, font=\footnotesize, text centered}]
+    \node[row] at (0, 1.6) {data kecil, sedikit kolom $\Rightarrow$ model sederhana sering sudah cukup};
+    \node[row] at (0, 0.75) {data tabular besar, kolom campuran $\Rightarrow$ boosting layak dicoba lebih dulu};
+    \node[row] at (0, -0.1) {hasilnya harus dijelaskan per feature $\Rightarrow$ model yang bisa dibaca lebih berguna};
+    \node[row, fill=nvgreen!80, text=nvbg, font=\footnotesize\bfseries] at (0, -1.0)
+      {yang menentukan tetap hasil di data validation, bukan urutan di daftar ini};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.7em}
+  {\footnotesize\color{nvgray}Waktu latih, waktu prediksi, dan kebutuhan menjelaskan hasil ikut
+  jadi bagian dari keputusan, bukan hanya satu angka metrik.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 64 — Ringkasan Act 5
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 5}
+  \vspace{0.4em}
+  \begin{center}
+  {\footnotesize\renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{3.7cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{2.8cm}@{}}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Metode} &
+    \color{nvgreen}\textbf{Cara menggabung} &
+    \color{nvgreen}\textbf{Menurunkan} &
+    \color{nvgreen}\textbf{Yang dijaga} \\
+    \midrule
+    Voting & keputusan beberapa model berbeda & variance & modelnya jangan mirip \\
+    \rowcolor{nvcard!60!nvbg} Bagging (RF) & banyak pohon dari sampel bootstrap & variance & jumlah pohon dan waktu latih \\
+    Boosting (XGBoost) & model berurutan, menutup sisa kesalahan & bias & early stopping \\
+    \rowcolor{nvcard!60!nvbg} Stacking & prediksi model dasar jadi masukan & keduanya & prediksi dari fold lain \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.6em}
+  {\footnotesize\color{nvgray}nb06 memakai voting, bagging, dan boosting pada satu dataset;
+  nb07 masuk ke XGBoost, early stopping, dan feature importance.}
+\end{frame}
+
+% ==========================================================
+% ACT 6 — CLUSTERING
+% ==========================================================
+
+% ----------------------------------------------------------
+% FRAME 65 — Act 6
+% ----------------------------------------------------------
+\acttitle{Act 6}{\fontsize{24}{28}\selectfont\bfseries Bagaimana menemukan pola tanpa label?}
+{K-Means, hierarchical, DBSCAN, dan cara memilih jumlah kelompok}
+
+% ----------------------------------------------------------
+% FRAME 66 — Supervised vs unsupervised
+% ----------------------------------------------------------
+\begin{frame}{Ada kolom target, atau tidak ada}
+  \vspace{0.5em}
+  \begin{center}
+  {\small\renewcommand{\arraystretch}{1.3}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{4.6cm}@{}}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{} &
+    \color{nvgreen}\textbf{Supervised} &
+    \color{nvgreen}\textbf{Unsupervised} \\
+    \midrule
+    Data & ada kolom target & tidak ada kolom target \\
+    \rowcolor{nvcard!60!nvbg} Yang dicari & aturan dari feature ke target & struktur kelompok di dalam data \\
+    Penilaian & bandingkan prediksi dengan nilai sebenarnya & ukuran seperti silhouette, ditambah pemeriksaan manual \\
+    \rowcolor{nvcard!60!nvbg} Di modul ini & nb01 sampai nb07 dan nb09 & nb08 \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.7em}
+  {\footnotesize\color{nvgray}Tanpa kolom target, tidak ada jawaban benar yang bisa dihitung.
+  Hasil clustering dinilai dari seberapa berguna kelompoknya untuk keputusan berikutnya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 67 — Intuisi: k-means
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{K-Means: kelompokkan ke pusat terdekat, lalu geser pusatnya}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=4.6cm, keepaspectratio]{figures/clusters.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \vspace{0.3em}
+      \begin{itemize}\setlength\itemsep{0.4em}
+        \item Kelompokkan setiap baris ke pusat terdekat, hitung ulang rata-rata tiap kelompok,
+              lalu ulangi.
+        \item Tanda silang merah adalah pusat kelompok pada akhir proses.
+      \end{itemize}
+      \vspace{0.5em}
+      \nvbox{Intinya}{Titik datanya diam. Yang berubah tiap putaran adalah keanggotaan kelompok
+      dan posisi pusatnya.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 68 — Mekanisme k-means
+% ----------------------------------------------------------
+\begin{frame}{K-Means: empat langkah yang diulang}
+  \vspace{0.4em}
+  \begin{enumerate}\setlength\itemsep{0.4em}
+    \item Tentukan K, lalu tempatkan K pusat awal.
+    \item Kelompokkan setiap baris ke pusat yang paling dekat.
+    \item Hitung ulang setiap pusat sebagai rata-rata anggota kelompoknya.
+    \item Ulangi langkah 2 dan 3 sampai keanggotaannya tidak berubah lagi.
+  \end{enumerate}
+  \vspace{0.9em}
+  \nvbox{Pusat awal ikut menentukan hasil}{Dari pusat awal yang berbeda, prosesnya bisa berhenti
+  di kelompok yang berbeda. \texttt{n\_init} di scikit-learn menjalankan seluruh proses beberapa
+  kali dengan pusat awal berbeda, lalu mengambil hasil dengan inertia terkecil.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 69 — Kapan pakai & jebakan k-means
+% ----------------------------------------------------------
+\begin{frame}{K-Means: kapan pakai dan jebakannya}
+  \vspace{0.4em}
+  \kapan{
+    \item ukuran kelompoknya mirip dan bentuknya membulat
+    \item semua feature berupa angka dengan skala setara
+    \item K bisa ditentukan dari kebutuhan, atau dicari
+  }{
+    \item bentuk kelompoknya memanjang atau melengkung
+    \item sebagian feature berupa kategori
+    \item ada outlier (pencilan) yang menarik pusat menjauh
+  }
+  \vspace{1.0em}
+  \jebakan{k-means bekerja dengan jarak, jadi kelompok yang keluar cenderung bulat dan
+  seukuran. Kolom kategori tidak punya arti jarak, dan kolom belanja yang sebarannya miring
+  perlu diubah dengan \texttt{log1p} lebih dulu.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 70 — Elbow
+% ----------------------------------------------------------
+\begin{frame}{Memilih K: kurva inertia dan titik sikunya}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+        \includegraphics[height=4.6cm, trim=0 0 359bp 0, clip]{figures/elbow_silhouette.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \vspace{0.3em}
+      \begin{itemize}\setlength\itemsep{0.4em}
+        \item Inertia adalah total jarak kuadrat setiap baris ke pusat kelompoknya.
+        \item Nilainya selalu turun saat K bertambah, jadi yang dicari bukan nilai terkecil,
+              melainkan tempat penurunannya mulai melandai.
+        \item Pada data Wholesale dengan kolom belanja berskala log, kurvanya turun mulus tanpa
+              siku yang tegas. Cara ini saja belum memutuskan.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 71 — Silhouette
+% ----------------------------------------------------------
+\begin{frame}{Memilih K: skor silhouette}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+        \includegraphics[height=4.6cm, trim=359bp 0 0 0, clip]{figures/elbow_silhouette.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \vspace{0.3em}
+      \begin{itemize}\setlength\itemsep{0.4em}
+        \item Silhouette mengukur seberapa dekat satu baris ke anggota kelompoknya sendiri
+              dibanding ke kelompok tetangga terdekat. Rentangnya $-1$ sampai $1$.
+        \item Di data ini silhouette memilih K = 2.
+        \item Kalau kebutuhan bisnis butuh segmen yang lebih halus, K = 3 masih wajar; di
+              K = 4 skornya turun jelas, dan penurunan itu bagian dari keputusan.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 72 — Hierarchical clustering
+% ----------------------------------------------------------
+\begin{frame}{Hierarchical clustering: gabungkan yang terdekat, lalu potong}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.72, font=\tiny,
+        pt/.style={circle, draw=nvlightgreen, fill=nvlightgreen!60, inner sep=2pt, text=nvbg},
+        jn/.style={circle, draw=nvlightgreen, fill=nvlightgreen!60, inner sep=1.6pt}]
+        \node[pt] (a) at (0,0) {A};
+        \node[pt] (b) at (1,0) {B};
+        \node[pt] (c) at (2,0) {C};
+        \node[pt] (d) at (3,0) {D};
+        \node[pt] (e) at (4,0) {E};
+        \node[pt] (f) at (5,0) {F};
+        \node[jn] (ab) at (0.5,1.2) {};
+        \node[jn] (cd) at (2.5,1.2) {};
+        \node[jn] (ef) at (4.5,1.2) {};
+        \draw[nvlightgreen] (a)--(ab); \draw[nvlightgreen] (b)--(ab);
+        \draw[nvlightgreen] (c)--(cd); \draw[nvlightgreen] (d)--(cd);
+        \draw[nvlightgreen] (e)--(ef); \draw[nvlightgreen] (f)--(ef);
+        \node[jn] (abcd) at (1.5,2.4) {};
+        \draw[nvlightgreen] (ab)--(abcd); \draw[nvlightgreen] (cd)--(abcd);
+        \node[jn, fill=nvgreen] (root) at (3.0,3.6) {};
+        \draw[nvlightgreen] (abcd)--(root); \draw[nvlightgreen] (ef)--(root);
+        \draw[nvorange, dashed, line width=1pt] (-0.6,3.0) -- (5.6,3.0);
+        \node[text=nvorange, anchor=south east, font=\tiny] at (5.6,3.05) {potong di sini};
+        \node[text=nvorange, anchor=north east, font=\tiny] at (5.6,2.95) {dua kelompok};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \vspace{0.2em}
+      \begin{itemize}\setlength\itemsep{0.3em}
+        \item Mulai dari tiap baris sebagai kelompok sendiri, gabungkan dua kelompok terdekat,
+              ulangi sampai tinggal satu.
+        \item Tinggi tiap sambungan menunjukkan seberapa jauh dua kelompok itu saat digabung.
+        \item Jumlah kelompok didapat dengan memotong dendrogram di satu ketinggian.
+        \item Pilihan \texttt{linkage} menentukan arti ``terdekat'' antar kelompok.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 73 — DBSCAN
+% ----------------------------------------------------------
+\begin{frame}{DBSCAN: kelompok dari kepadatan, sisanya outlier}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.95, font=\tiny]
+        \foreach \x/\y in {0.3/2.5, 0.6/2.8, 0.5/2.2, 0.9/2.6, 0.7/3.0, 1.0/2.9}
+          \fill[nvgreen] (\x,\y) circle (2.8pt);
+        \foreach \x/\y in {3.0/2.0, 3.3/2.4, 3.1/2.8, 3.6/2.2, 3.4/2.7, 3.7/3.0}
+          \fill[nvlightgreen] (\x,\y) circle (2.8pt);
+        \draw[nvorange, dashed, line width=0.8pt] (0.6,2.8) circle (0.62);
+        \node[text=nvorange, anchor=south, font=\tiny] at (0.6,3.5) {radius \texttt{eps}};
+        \foreach \x/\y in {1.9/0.6, 2.2/3.9, 4.6/1.1}
+          \draw[nvred, line width=1.3pt]
+            (\x-0.14,\y-0.14)--(\x+0.14,\y+0.14) (\x-0.14,\y+0.14)--(\x+0.14,\y-0.14);
+        \node[text=nvred, font=\tiny, anchor=north] at (2.4,0.4) {outlier};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+      \vspace{0.2em}
+      \begin{itemize}\setlength\itemsep{0.3em}
+        \item Baris yang punya paling sedikit \texttt{min\_samples} titik di dalam radius
+              \texttt{eps} --- titik itu sendiri ikut dihitung --- menjadi inti kelompok;
+              tetangganya ikut bergabung.
+        \item Baris yang tidak masuk kelompok mana pun ditandai sebagai outlier (pencilan),
+              bukan dipaksa masuk.
+        \item Jumlah kelompok tidak ditentukan di awal, dan bentuknya bebas.
+        \item \texttt{eps} dipilih dari k-distance plot: urutkan jarak ke tetangga ke-k, lalu
+              ambil nilai di tempat kurvanya mulai menanjak.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 74 — Jebakan clustering di dunia nyata
+% ----------------------------------------------------------
+\begin{frame}{Clustering di data nyata: yang mudah terlewat}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.5em}
+    \item Data Wholesale punya \texttt{Channel} dan \texttt{Region} berupa angka kode. Kalau
+          keduanya ikut sebagai feature, hasil clusternya hampir hanya meniru \texttt{Channel},
+          karena selisih angka kode dihitung sebagai jarak.
+    \item Enam kolom belanja sebarannya miring: sedikit pelanggan besar menarik pusat kelompok
+          ke arahnya.
+  \end{itemize}
+  \vspace{0.9em}
+  \nvbox{Yang dikerjakan di nb08}{Pakai enam kolom belanja saja, ubah dengan \texttt{log1p} agar
+  sebarannya lebih rata, jalankan k-means, lalu bandingkan hasil cluster dengan
+  \texttt{Channel} lewat cross-tab sebagai pemeriksaan, bukan sebagai target.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 75 — Ringkasan Act 6
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 6}
+  \vspace{0.4em}
+  \begin{center}
+  {\footnotesize\renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{2.6cm}@{}}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Metode} &
+    \color{nvgreen}\textbf{Perlu K?} &
+    \color{nvgreen}\textbf{Bentuk cluster} &
+    \color{nvgreen}\textbf{Outlier} &
+    \color{nvgreen}\textbf{Yang dipilih} \\
+    \midrule
+    K-Means & ya, di awal & cenderung bulat & tidak ditandai & K, \texttt{n\_init} \\
+    \rowcolor{nvcard!60!nvbg} Hierarchical & tidak di awal & lebih fleksibel & tidak ditandai & \texttt{linkage}, tinggi potong \\
+    DBSCAN & tidak & bebas & ditandai & \texttt{eps}, \texttt{min\_samples} \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.6em}
+  {\footnotesize\color{nvgray}Ketiganya dipakai di nb08 pada data Wholesale. Yang dipakai
+  memutuskan bukan skornya saja, tetapi juga apakah kelompoknya bisa dijelaskan ke orang yang
+  akan memakainya.}
+\end{frame}
+
+% ==========================================================
+% ACT 7 — GPU
+% ==========================================================
+
+% ----------------------------------------------------------
+% FRAME 76 — Act 7
+% ----------------------------------------------------------
+\acttitle{Act 7}{Kapan GPU membantu?}
+{cuML, XGBoost di GPU, dan cara mengukur selisihnya dengan jujur}
+
+% ----------------------------------------------------------
+% FRAME 77 — Intuisi: CPU vs GPU
+% ----------------------------------------------------------
+\begin{frame}
+  \intuisi{CPU dan GPU: satu koki ahli atau seribu koki sederhana}
+  \vspace{0.3em}
+  \begin{columns}[T]
+    \begin{column}{0.46\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.9]
+        \draw[fill=nvcard, draw=nvgreen, line width=1.5pt] (0,0) rectangle (2.8,2.6);
+        \node[font=\bfseries\large, color=nvgreen] at (1.4,2.05) {CPU};
+        \node[font=\small, color=nvwhite, align=center] at (1.4,1.15)
+          {4--16 core,\\masing-masing kuat};
+      \end{tikzpicture}\\[0.3em]
+      {\small\color{nvlightgreen}\bfseries satu koki ahli}
+      \end{center}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.9]
+        \foreach \x in {0,...,5} {
+          \foreach \y in {0,...,4} {
+            \draw[fill=nvdark, draw=nvgreen, line width=0.4pt]
+              (\x*0.44+0.02, \y*0.44+0.02) rectangle (\x*0.44+0.38, \y*0.44+0.38);
+          }
+        }
+        \node[font=\bfseries\large, color=nvgreen] at (1.3,2.55) {GPU};
+      \end{tikzpicture}\\[0.3em]
+      {\small\color{nvlightgreen}\bfseries seribu koki sederhana}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \vspace{0.5em}
+  \nvbox{Intinya}{Melatih model berarti mengulang operasi kecil yang sama pada jutaan baris.
+  Pekerjaan seperti itu bisa dibagi ke banyak core sekaligus.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 78 — Apa yang cocok di GPU
+% ----------------------------------------------------------
+\begin{frame}{Pekerjaan seperti apa yang cocok di GPU}
+  \vspace{0.4em}
+  \kapan{
+    \item operasinya sama untuk semua baris, misalnya perkalian matriks atau perhitungan jarak
+    \item barisnya banyak, sehingga semua core punya bagian
+    \item datanya sudah berada di memori GPU
+  }{
+    \item datanya kecil, hanya beberapa ribu baris
+    \item alurnya bercabang berbeda-beda per baris
+    \item data harus bolak-balik dipindah antara CPU dan GPU
+  }
+  \vspace{0.9em}
+  \nvbox{Yang dijalankan di GPU pada nb10}{Random Forest dan KNN dari cuML, K-Means, serta
+  XGBoost dengan \texttt{device="cuda"}.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 79 — cuML
+% ----------------------------------------------------------
+\begin{frame}[fragile]{cuML: yang berubah hanya baris import-nya}
+  \vspace{0.3em}
+\begin{lstlisting}[language=Python, numbers=none, basicstyle=\ttfamily\small\color{nvwhite}]
+# CPU -- scikit-learn
+from sklearn.ensemble import RandomForestClassifier
+
+# GPU -- cuML (bagian dari RAPIDS)
+from cuml.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(n_estimators=200)
+model.fit(X_train, y_train)
+pred = model.predict(X_test)
+\end{lstlisting}
+  \vspace{0.3em}
+  \begin{itemize}\setlength\itemsep{0.3em}
+    \item Nama kelas dan urutan pemanggilannya sama, jadi kode setelah import tidak perlu diubah.
+    \item Tidak semua argumen scikit-learn tersedia di cuML, dan hasilnya bisa berbeda sedikit
+          karena urutan perhitungannya berbeda.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 80 — XGBoost di GPU
+% ----------------------------------------------------------
+\begin{frame}[fragile]{XGBoost di GPU: satu argumen}
+  \vspace{0.5em}
+\begin{lstlisting}[language=Python, numbers=none, basicstyle=\ttfamily\normalsize\color{nvwhite}]
+model_cpu = XGBClassifier(n_estimators=300, device="cpu")
+
+model_gpu = XGBClassifier(n_estimators=300, device="cuda")
+\end{lstlisting}
+  \vspace{0.7em}
+  \begin{itemize}\setlength\itemsep{0.4em}
+    \item Sisa kodenya sama: \texttt{fit()}, \texttt{predict()}, dan metriknya tidak berubah.
+    \item Kalau GPU tidak tersedia, \texttt{device="cuda"} akan gagal atau jatuh kembali ke CPU,
+          jadi ketersediaan GPU perlu dicek lebih dulu.
+    \item Hasil prediksinya bisa berbeda sedikit dari versi CPU karena urutan penjumlahan
+          bilangan pecahan berbeda.
+  \end{itemize}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 81 — Kapan GPU tidak menang
+% ----------------------------------------------------------
+\begin{frame}{Kapan GPU tidak menang}
+  \vspace{0.5em}
+  \begin{itemize}\setlength\itemsep{0.5em}
+    \item Data harus dipindah ke memori GPU lebih dulu. Kalau pekerjaannya singkat, waktu
+          pindah itu lebih besar daripada waktu yang dihemat.
+    \item Panggilan pertama memuat kernel dan mengalokasikan memori, jadi selalu terasa lambat.
+          Itu warm-up, dan bukan bagian yang diukur.
+    \item Pada data kecil, satu core CPU yang kuat sering lebih cepat daripada ribuan core yang
+          menunggu data.
+    \item Pekerjaan yang alurnya bercabang berbeda per baris tidak bisa dibagi rata ke banyak
+          core.
+  \end{itemize}
+  \vspace{0.7em}
+  {\footnotesize\color{nvgray}Urutan yang benar saat mengukur: jalankan sekali untuk warm-up,
+  baru catat waktunya.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 82 — Benchmark jujur
+% ----------------------------------------------------------
+\begin{frame}{Benchmark: syarat pengukurannya disebut}
+  \vspace{0.2em}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth, height=5.0cm, keepaspectratio]{figures/gpu_speedup.pdf}
+      \end{center}
+      {\scriptsize\color{nvgray}nb10 di Colab: Tesla T4 vs CPU runtime yang sama, 7 September 2026. Sumbu waktu skala log.}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \vspace{0.1em}
+      \begin{itemize}\setlength\itemsep{0.2em}
+        \item \textbf{Tugas}: RF 200 pohon, XGBoost, KNN, K-Means, PCA.
+        \item \textbf{Data}: Covertype, 581.012 baris (KNN: 100.000).
+        \item \textbf{Diukur}: waktu \texttt{fit()}, setelah warm-up.
+        \item \textbf{PCA kalah (0,2x)}: pekerjaannya terlalu kecil untuk menutup overhead.
+        \item \textbf{Akurasi}: XGBoost dan KNN identik; RF cuML 0,759 vs sklearn 0,783, implementasinya berbeda.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 83 — Ekosistem NVIDIA
+% ----------------------------------------------------------
+\begin{frame}{Ekosistem NVIDIA di sekitar pekerjaan ini}
+  \vspace{0.3em}
+  \begin{center}
+  {\footnotesize\renewcommand{\arraystretch}{1.15}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{7.4cm}@{}}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{Nama} &
+    \color{nvgreen}\textbf{Fungsi} \\
+    \midrule
+    RAPIDS cuML & algoritma ML klasik di GPU dengan API mirip scikit-learn \\
+    \rowcolor{nvcard!60!nvbg} cuDF & operasi dataframe di GPU, mengikuti gaya pandas \\
+    XGBoost GPU & gradient boosting di GPU lewat \texttt{device="cuda"} \\
+    \rowcolor{nvcard!60!nvbg} TensorRT & mengoptimalkan model deep learning untuk inferensi \\
+    NeMo & framework untuk melatih dan menyetel model bahasa \\
+    \rowcolor{nvcard!60!nvbg} Triton Inference Server & melayani model terlatih di produksi \\
+    \bottomrule
+  \end{tabular}}
+  \end{center}
+  \vspace{0.2em}
+  {\footnotesize\color{nvgray}Hari ini yang dipakai hanya cuML dan XGBoost GPU. TensorRT, NeMo,
+  dan Triton dibahas di Modul 6.}
+\end{frame}
+
+% ----------------------------------------------------------
+% FRAME 84 — Ringkasan Act 7
+% ----------------------------------------------------------
+\begin{frame}{Ringkasan Act 7}
+  \vspace{0.6em}
+  \begin{itemize}\setlength\itemsep{0.55em}
+    \item GPU membantu kalau pekerjaannya besar, seragam, dan bisa dikerjakan serentak pada
+          banyak baris.
+    \item Perubahan kodenya kecil: satu baris import untuk cuML, satu argumen \texttt{device}
+          untuk XGBoost.
+    \item Ada keadaan ketika CPU lebih cepat, dan itu bukan kesalahan pengukuran: data kecil,
+          alur bercabang, atau data yang bolak-balik dipindah.
+    \item Setiap klaim kecepatan menyebut tugasnya, ukuran datanya, perangkatnya, dan bagian
+          mana yang diukur.
+  \end{itemize}
+\end{frame}
+
+% ==========================================================
+% ACT 8 — PENUTUP
+% ==========================================================
+
+% ----------------------------------------------------------
+% FRAME 85 — Sepuluh notebook hari ini
+% ----------------------------------------------------------
+\begin{frame}{Sepuluh notebook hari ini}
+  \vspace{0.3em}
+  \begin{center}
+  {\small\renewcommand{\arraystretch}{1.15}
+  \begin{tabular}{@{}cp{5.6cm}p{4.6cm}@{}}
+    \toprule
+    \rowcolor{nvcard}\color{nvgreen}\textbf{\#} &
+    \color{nvgreen}\textbf{Topik} &
+    \color{nvgreen}\textbf{Jenis} \\
+    \midrule
+    1 & Linear regression & Supervised \textperiodcentered{} regresi \\
+    \rowcolor{nvcard!60!nvbg} 2 & Logistic regression & Supervised \textperiodcentered{} klasifikasi \\
+    3 & Decision tree & Supervised \textperiodcentered{} klasifikasi \\
+    \rowcolor{nvcard!60!nvbg} 4 & KNN & Supervised \textperiodcentered{} klasifikasi \\
+    5 & SVM & Supervised \textperiodcentered{} klasifikasi \\
+    \rowcolor{nvcard!60!nvbg} 6 & Voting, bagging, boosting & Supervised \textperiodcentered{} ensemble \\
+    7 & XGBoost & Supervised \textperiodcentered{} ensemble \\
+    \rowcolor{nvcard!60!nvbg} 8 & K-Means, hierarchical, DBSCAN & Unsupervised \textperiodcentered{} clustering \\
+    9 & Dekomposisi dan SARIMA & Supervised \textperiodcentered{} time series \\
+    \rowcolor{nvcard!60!nvbg} 10 & cuML dan XGBoost di GPU & Akselerasi \\
+    \bottomrule
+  \end{tabular}}
   \end{center}
 \end{frame}
 
-% ============================================================
-% ACT 4 — KEKUATAN TIM
-% ============================================================
-
-% Slide 1 — Act 4 Transition
-\acttitle{Act 4}{Kekuatan Tim}{Bagaimana jika model bekerja sama?}
-
-% Slide 2 — Voting
-\begin{frame}{Voting --- Ambil Suara Terbanyak}
-\begin{center}
-\begin{tikzpicture}[
-  node distance=0.6cm and 1.2cm,
-  box/.style={rectangle, rounded corners=4pt, fill=nvcard, text=white,
-              minimum width=3.2cm, minimum height=0.7cm, font=\small},
-  votebox/.style={rectangle, rounded corners=4pt, fill=nvgreen, text=white,
-                  minimum width=2.2cm, minimum height=0.7cm, font=\small\bfseries},
-  resultbox/.style={rectangle, rounded corners=4pt, fill=nvorange, text=white,
-                    minimum width=3.4cm, minimum height=0.7cm, font=\small\bfseries},
-  arrow/.style={->, thick, color=nvlightgreen}
-]
-  \node[box] (lr)  at (0, 2.0) {Logistic Reg $\to$ \textbf{Kelas A}};
-  \node[box] (dt)  at (0, 1.0) {Decision Tree $\to$ \textbf{Kelas B}};
-  \node[box] (svm) at (0, 0.0) {SVM $\to$ \textbf{Kelas A}};
-
-  \node[votebox]   (vote)   at (4.2, 1.0) {Vote};
-  \node[resultbox] (result) at (7.2, 1.0) {Kelas A (2 vs 1)};
-
-  \draw[arrow] (lr.east)  -- ++(0.5,0) |- (vote.west);
-  \draw[arrow] (dt.east)  -- (vote.west);
-  \draw[arrow] (svm.east) -- ++(0.5,0) |- (vote.west);
-  \draw[arrow] (vote.east) -- (result.west);
-\end{tikzpicture}
-\end{center}
-\vspace{0.3em}
-\begin{columns}[T]
-  \begin{column}{0.48\textwidth}
-    \centering
-    \textbf{\textcolor{nvorange}{Hard Voting}}\\
-    {\small Setiap model = 1 suara\\Mayoritas menang}
-  \end{column}
-  \begin{column}{0.48\textwidth}
-    \centering
-    \textbf{\textcolor{nvgreen}{Soft Voting}}\\
-    {\small Rata-rata probabilitas\\Biasanya lebih akurat}
-  \end{column}
-\end{columns}
+% ----------------------------------------------------------
+% FRAME 86 — Apa selanjutnya
+% ----------------------------------------------------------
+\begin{frame}{Apa selanjutnya}
+  \vspace{0.6em}
+  \begin{center}
+  \begin{tikzpicture}[
+    mod/.style={draw=nvgreen, fill=nvcard, rounded corners=4pt, text=nvwhite,
+      font=\scriptsize\bfseries, align=center, minimum width=1.75cm, minimum height=1.1cm},
+    modhl/.style={draw=nvgreen, fill=nvgreen, rounded corners=4pt, text=nvbg,
+      font=\scriptsize\bfseries, align=center, minimum width=1.75cm, minimum height=1.1cm}]
+    \node[modhl] (m1) {[1]\\ML\\Fundamentals\\{\tiny hari ini}};
+    \node[mod, right=0.32cm of m1] (m2) {[2]\\Deep\\Learning};
+    \node[mod, right=0.32cm of m2] (m3) {[3]\\NLP};
+    \node[mod, right=0.32cm of m3] (m4) {[4]\\LLM};
+    \node[mod, right=0.32cm of m4] (m5) {[5]\\RAG};
+    \node[mod, right=0.32cm of m5] (m6) {[6]\\NVIDIA\\Ecosystem};
+    \draw[->, line width=1pt, color=nvgreen!60] (m1) -- (m2);
+    \draw[->, line width=1pt, color=nvgreen!60] (m2) -- (m3);
+    \draw[->, line width=1pt, color=nvgreen!60] (m3) -- (m4);
+    \draw[->, line width=1pt, color=nvgreen!60] (m4) -- (m5);
+    \draw[->, line width=1pt, color=nvgreen!60] (m5) -- (m6);
+    \draw[->, line width=1.6pt, color=nvorange]
+      (m1.south) -- ++(0,-0.55) -| (m2.south)
+      node[midway, below, font=\scriptsize\bfseries, color=nvorange] {besok};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{0.8em}
+  {\footnotesize\color{nvgray}Modul 2 memakai kembali istilah hari ini: split data, loss,
+  overfitting, dan cara membandingkan model. Yang berganti adalah jenis modelnya.}
 \end{frame}
 
-% Slide 3 — Bagging & Random Forest
-\begin{frame}{Random Forest --- Banyak Pohon, Satu Hutan}
-\begin{columns}[T]
-  \begin{column}{0.45\textwidth}
-    \begin{center}
-    \begin{tikzpicture}[scale=0.85]
-      % Draw 6 small tree triangles
-      \foreach \x/\y in {0/2.8, 1.0/2.8, 2.0/2.8, 0.5/1.6, 1.5/1.6, 1.0/0.6} {
-        \fill[nvgreen!70] (\x, \y) -- (\x+0.5, \y+0.7) -- (\x+1.0, \y) -- cycle;
-        \fill[nvcard]     (\x+0.35, \y-0.35) rectangle (\x+0.65, \y);
-      }
-      % Arrow from trees to answer
-      \draw[->, thick, color=nvlightgreen] (1.5, 0.1) -- (1.5, -0.5);
-      \node[rectangle, rounded corners=4pt, fill=nvorange, text=white,
-            minimum width=2.8cm, minimum height=0.6cm, font=\small\bfseries]
-            at (1.5, -0.9) {Satu Jawaban};
-    \end{tikzpicture}\\[0.3em]
-    \scriptsize\color{gray} ratusan pohon, masing-masing belajar dari data berbeda
-    \end{center}
-  \end{column}
-  \begin{column}{0.52\textwidth}
-    \begin{itemize}
-      \item[\textcolor{nvorange}{\textbullet}] \textbf{Bagging} = Bootstrap Aggregating: ambil sampel data acak berulang kali
-      \item[\textcolor{nvgreen}{\textbullet}] Setiap pohon lihat data yang berbeda (\textit{bootstrap})
-      \item[\textcolor{nvgreen}{\textbullet}] Setiap pohon hanya boleh tanya sebagian fitur
-      \item[\textcolor{nvgreen}{\textbullet}] Hasil akhir = voting dari semua pohon
-      \item[\textcolor{nvgreen}{\textbullet}] Lebih stabil, tahan \textit{noise}
-    \end{itemize}
-  \end{column}
-\end{columns}
-\end{frame}
-
-% Slide 4 — Boosting
-\begin{frame}{Boosting --- Belajar dari Kesalahan}
-\begin{center}
-  \includegraphics[width=0.95\textwidth]{figures/boosting.pdf}
-\end{center}
-\vspace{0.2cm}
-\begin{center}
-  \small\color{nvlightgreen}
-  Setiap model baru fokus memperbaiki kesalahan model sebelumnya
-\end{center}
-\end{frame}
-
-% Slide 4b — Ensemble Comparison
-\begin{frame}{Bagging vs Boosting --- Decision Boundary}
-\begin{center}
-  \includegraphics[width=0.95\textwidth]{figures/ensemble_comparison.pdf}
-\end{center}
-\vspace{0.2em}
-\begin{center}
-  \small\textcolor{nvlightgreen}{Dataset yang sama, strategi berbeda --- tidak ada yang selalu terbaik!}
-\end{center}
-\end{frame}
-
-% Slide 5 — XGBoost
-\begin{frame}{XGBoost --- Juara Kompetisi ML}
-\begin{center}
-\begin{beamercolorbox}[rounded=true, shadow=true, sep=0.8em, wd=0.9\textwidth]{block body}
-  \centering
-  \textbf{\large\color{nvgreen} eXtreme Gradient Boosting}\\[0.5em]
-  \begin{itemize}
-    \item[\textcolor{nvgreen}{\textbullet}] \textit{Gradient Boosting} versi super cepat
-    \item[\textcolor{nvgreen}{\textbullet}] Built-in regularisasi (anti overfitting)
-    \item[\textcolor{nvgreen}{\textbullet}] Bisa tangani data kosong otomatis
-    \item[\textcolor{nvgreen}{\textbullet}] Salah satu model paling dominan di kompetisi Kaggle
+% ----------------------------------------------------------
+% FRAME 87 — Latihan mandiri
+% ----------------------------------------------------------
+\begin{frame}{Latihan mandiri sebelum hari 2}
+  \vspace{0.6em}
+  \begin{itemize}\setlength\itemsep{0.55em}
+    \item Setiap notebook ditutup satu blok \textbf{Latihan} berisi dua atau tiga tugas dengan
+          sel kosong bertanda \texttt{\# TODO} dan satu petunjuk.
+    \item Kerjakan minimal satu latihan per notebook sebelum hari 2.
+    \item Kunci jawabannya tidak disertakan. Periksa hasilnya dari angka yang keluar saat kode
+          dijalankan, dan bandingkan dengan baseline di notebook itu.
+    \item Kalau tersangkut pada satu model, buka kembali frame ``kapan pakai dan jebakannya''
+          untuk model tersebut.
   \end{itemize}
-  \vspace{0.4em}
-  \begin{tikzpicture}
-    \node[fill=nvgreen, rounded corners=4pt, inner sep=8pt, text width=0.82\textwidth, align=center] {
-      \color{white}\small\textbf{NVIDIA berkontribusi langsung pada GPU support XGBoost!}
-    };
-  \end{tikzpicture}
-\end{beamercolorbox}
-\end{center}
+  \vspace{0.7em}
+  {\footnotesize\color{nvgray}Notebook berjalan di Google Colab dengan runtime GPU untuk nb10;
+  sembilan notebook lainnya cukup dengan CPU.}
 \end{frame}
 
-% Slide 6 — Feature Importance
-\begin{frame}{Feature Importance --- Fitur Mana yang Penting?}
-\begin{center}
-\begin{tikzpicture}[scale=0.95]
-  \def\maxwidth{6.0}
-  % Bar 1: capital-gain 0.35
-  \fill[nvgreen]  (0, 0.00) rectangle (6.00, 0.55);
-  \node[anchor=east, text=white, font=\scriptsize] at (-0.1, 0.275) {capital-gain};
-  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (6.10, 0.275) {0.35};
-  % Bar 2: education-num 0.18
-  \fill[nvcard]   (0,-0.75) rectangle (3.09,-0.20);
-  \node[anchor=east, text=white, font=\scriptsize] at (-0.1,-0.475) {education-num};
-  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (3.19,-0.475) {0.18};
-  % Bar 3: age 0.15
-  \fill[nvcard]   (0,-1.50) rectangle (2.57,-0.95);
-  \node[anchor=east, text=white, font=\scriptsize] at (-0.1,-1.225) {age};
-  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (2.67,-1.225) {0.15};
-  % Bar 4: hours-per-week 0.12
-  \fill[nvcard]   (0,-2.25) rectangle (2.06,-1.70);
-  \node[anchor=east, text=white, font=\scriptsize] at (-0.1,-1.975) {hours-per-week};
-  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (2.16,-1.975) {0.12};
-  % Bar 5: marital-status 0.10
-  \fill[nvcard]   (0,-3.00) rectangle (1.71,-2.45);
-  \node[anchor=east, text=white, font=\scriptsize] at (-0.1,-2.725) {marital-status};
-  \node[anchor=west, text=white, font=\scriptsize\bfseries] at (1.81,-2.725) {0.10};
-  % Axes
-  \draw[gray, thin] (0, 0.6) -- (0, -3.15);
-  \draw[gray, thin] (0,-3.15) -- (\maxwidth,-3.15);
-  \node[text=gray, font=\scriptsize] at (3.0,-3.55) {Skor Importance};
-\end{tikzpicture}
-\end{center}
-\end{frame}
-
-% Slide 7 — No Free Lunch
-\begin{frame}{Tidak Ada Model Terbaik untuk Semua!}
-\begin{center}
-\begin{tikzpicture}[
-  row/.style={rectangle, rounded corners=3pt, fill=nvcard, text=white,
-              minimum width=8.5cm, minimum height=0.65cm, font=\small,
-              text centered},
-  highlight/.style={rectangle, rounded corners=4pt, fill=nvred!80, text=white,
-                    minimum width=8.5cm, minimum height=0.75cm, font=\small\bfseries,
-                    text centered}
-]
-  \node[row]       at (0, 2.1)  {Dataset \textit{noisy} \quad$\Rightarrow$\quad \textbf{Random Forest} menang};
-  \node[row]       at (0, 1.2)  {Dataset bersih \quad$\Rightarrow$\quad \textbf{Gradient Boosting} menang};
-  \node[row]       at (0, 0.3)  {Dataset kecil \quad$\Rightarrow$\quad \textbf{Decision Tree} cukup};
-  \node[row, fill=nvgreen!80] at (0, -0.6) {Selalu coba beberapa model dan bandingkan!};
-  \node[highlight] at (0, -1.7) {No Free Lunch Theorem --- setiap model punya kelebihan dan kekurangan};
-\end{tikzpicture}
-\end{center}
-\end{frame}
-
-% Slide 8 — Summary Act 4
-\begin{frame}{Ringkasan: Kekuatan Tim}
-\begin{itemize}
-  \item[\textcolor{nvgreen}{\checkmark}] \textbf{Voting} $\to$ beberapa model berbeda, ambil suara terbanyak
-  \item[\textcolor{nvgreen}{\checkmark}] \textbf{Bagging (RF)} $\to$ banyak pohon, masing-masing data berbeda
-  \item[\textcolor{nvgreen}{\checkmark}] \textbf{Boosting} $\to$ model berurutan, perbaiki kesalahan
-  \item[\textcolor{nvgreen}{\checkmark}] \textbf{XGBoost} $\to$ juara Kaggle, didukung NVIDIA GPU
-  \item[\textcolor{nvgreen}{\checkmark}] Selalu bandingkan beberapa model!
-\end{itemize}
-\end{frame}
-
-% ============================================================
-% ACT 5: MENEMUKAN POLA TERSEMBUNYI
-% ============================================================
-
-% Slide 1 — Transition
-\acttitle{Act 5}{Menemukan Pola Tersembunyi}{Bagaimana jika tidak ada jawaban benar?}
-
-% Slide 2 — K-Means Clustering
-\begin{frame}{K-Means Clustering}
-\begin{columns}[T]
-  \begin{column}{0.48\textwidth}
-    \begin{figure}
-      \includegraphics[width=\linewidth]{figures/clusters.pdf}
-    \end{figure}
-  \end{column}
-  \begin{column}{0.48\textwidth}
-    \textbf{Mengelompokkan data TANPA label}
-    \begin{enumerate}
-      \item Pilih K titik pusat acak
-      \item Assign data ke pusat terdekat
-      \item Pindahkan pusat ke rata-rata
-      \item Ulangi sampai stabil
-    \end{enumerate}
-    \vspace{0.5em}
-    \begin{beamercolorbox}[rounded=true,shadow=false,sep=4pt]{block body}
-      \setbeamercolor{block body}{bg=nvcard}
-      \parbox{\dimexpr\linewidth-8pt}{\small\color{white}
-        Seperti menaruh magnet di meja penuh paku --- paku menempel ke magnet terdekat
-      \par}
-    \end{beamercolorbox}
-  \end{column}
-\end{columns}
-\end{frame}
-
-% Slide 3 — Berapa K?
-\begin{frame}{Berapa Jumlah Cluster yang Tepat?}
-\begin{columns}[T]
-  \begin{column}{0.48\textwidth}
-    \centering
-    \textbf{Elbow Method}\\[0.4em]
-    \begin{tikzpicture}[scale=0.85]
-      % Axes
-      \draw[->,thick,color=nvgray] (0,0) -- (4.5,0) node[right,font=\small] {K};
-      \draw[->,thick,color=nvgray] (0,0) -- (0,3.5) node[above,font=\small] {Inertia};
-      % Elbow curve
-      \draw[thick,color=nvgreen,line width=1.5pt]
-        (0.5,3.0) .. controls (1.0,2.6) and (1.4,2.1) ..
-        (2.0,1.3) .. controls (2.6,0.9) and (3.0,0.7) ..
-        (4.0,0.5);
-      % Knee point
-      \filldraw[color=nvred] (2.0,1.3) circle (3pt);
-      \draw[->,color=nvred,thick] (3.0,2.2) -- (2.1,1.4);
-      \node[color=nvred,font=\small] at (3.2,2.4) {Titik siku};
-      % X ticks
-      \foreach \x/\l in {0.5/1,1.0/2,1.5/3,2.0/4,2.5/5,3.0/6,3.5/7,4.0/8}{
-        \draw (\x,0) -- (\x,-0.1);
-        \node[below,font=\tiny] at (\x,-0.1) {\l};
-      }
-    \end{tikzpicture}
-  \end{column}
-  \begin{column}{0.48\textwidth}
-    \centering
-    \textbf{Silhouette Score}\\[0.4em]
-    \begin{tikzpicture}[scale=0.85]
-      % Axes
-      \draw[->,thick,color=nvgray] (0,0) -- (4.5,0) node[right,font=\small] {K};
-      \draw[->,thick,color=nvgray] (0,0) -- (0,3.5) node[above,font=\small] {Score};
-      % Bars
-      \fill[color=nvlightgreen!60] (0.4,0) rectangle (0.9,1.4);
-      \fill[color=nvlightgreen!60] (1.1,0) rectangle (1.6,2.0);
-      \fill[color=nvgreen]         (1.8,0) rectangle (2.3,2.9);  % highest
-      \fill[color=nvlightgreen!60] (2.5,0) rectangle (3.0,2.2);
-      \fill[color=nvlightgreen!60] (3.2,0) rectangle (3.7,1.6);
-      % X ticks
-      \foreach \x/\l in {0.65/2,1.35/3,2.05/4,2.75/5,3.45/6}{
-        \node[below,font=\tiny] at (\x,-0.1) {\l};
-      }
-      % Arrow
-      \draw[->,color=nvred,thick] (3.2,3.2) -- (2.3,3.0);
-      \node[color=nvred,font=\small] at (3.4,3.4) {Skor tertinggi};
-    \end{tikzpicture}
-  \end{column}
-\end{columns}
-\end{frame}
-
-% Slide 4 — Hierarchical & DBSCAN
-\begin{frame}{Metode Clustering Lain}
-\begin{columns}[T]
-  \begin{column}{0.48\textwidth}
-    \centering
-    \textbf{Hierarchical Clustering}\\[0.4em]
-    \begin{tikzpicture}[scale=0.7,
-      every node/.style={circle,draw,fill=nvlightgreen!60,inner sep=2pt,font=\tiny,text=white}]
-      % Leaf nodes
-      \node (a) at (0,0)   {A};
-      \node (b) at (1,0)   {B};
-      \node (c) at (2,0)   {C};
-      \node (d) at (3,0)   {D};
-      \node (e) at (4,0)   {E};
-      \node (f) at (5,0)   {F};
-      % Level 1 merges
-      \node (ab) at (0.5,1.2) {};
-      \node (cd) at (2.5,1.2) {};
-      \node (ef) at (4.5,1.2) {};
-      \draw (a)--(ab); \draw (b)--(ab);
-      \draw (c)--(cd); \draw (d)--(cd);
-      \draw (e)--(ef); \draw (f)--(ef);
-      % Level 2 merges
-      \node (abcd) at (1.5,2.4) {};
-      \node (efr)  at (4.0,2.4) {};
-      \draw (ab)--(abcd); \draw (cd)--(abcd);
-      \draw (ef)--(efr);
-      % Level 3 root
-      \node[fill=nvgreen!80] (root) at (2.8,3.6) {};
-      \draw (abcd)--(root); \draw (efr)--(root);
-    \end{tikzpicture}
-    \begin{itemize}
-      \item[\textcolor{nvgreen}{$\bullet$}] Gabungkan cluster terdekat satu per satu
-      \item[\textcolor{nvgreen}{$\bullet$}] Tidak perlu tentukan K di awal
-    \end{itemize}
-  \end{column}
-  \begin{column}{0.48\textwidth}
-    \centering
-    \textbf{DBSCAN}\\[0.4em]
-    \begin{tikzpicture}[scale=0.7]
-      % Cluster 1 (blue dots)
-      \foreach \x/\y in {0.3/2.5,0.6/2.8,0.5/2.2,0.9/2.6,0.7/3.0,1.0/2.9}{
-        \filldraw[nvgreen] (\x,\y) circle (3pt);
-      }
-      % Cluster 2 (green dots)
-      \foreach \x/\y in {3.0/2.0,3.3/2.4,3.1/2.8,3.6/2.2,3.4/2.7,3.7/3.0}{
-        \filldraw[nvlightgreen] (\x,\y) circle (3pt);
-      }
-      % Outliers (red X)
-      \foreach \x/\y in {1.8/0.5,2.2/3.8,4.5/1.2}{
-        \draw[color=nvred,thick,line width=1.5pt]
-          (\x-0.15,\y-0.15)--(\x+0.15,\y+0.15)
-          (\x-0.15,\y+0.15)--(\x+0.15,\y-0.15);
-      }
-      \node[font=\tiny,color=nvred] at (2.5,0.2) {outlier};
-    \end{tikzpicture}
-    \begin{itemize}
-      \item[\textcolor{nvgreen}{$\bullet$}] Berdasarkan kepadatan (density)
-      \item[\textcolor{nvgreen}{$\bullet$}] Bisa deteksi outlier (data aneh)
-      \item[\textcolor{nvgreen}{$\bullet$}] Tidak perlu tentukan K
-    \end{itemize}
-  \end{column}
-\end{columns}
-\end{frame}
-
-% Slide 5 — Summary Act 5
-\begin{frame}{Ringkasan: Pola Tersembunyi}
-\begin{center}
-\begin{tabular}{|l|c|c|c|}
-  \hline
-  \rowcolor{nvdark}
-  \textcolor{white}{\textbf{Metode}} &
-  \textcolor{white}{\textbf{Perlu K?}} &
-  \textcolor{white}{\textbf{Bentuk Cluster}} &
-  \textcolor{white}{\textbf{Deteksi Outlier?}} \\
-  \hline
-  \rowcolor{nvcard!30}
-  K-Means      & Ya       & Bulat      & Tidak \\
-  \hline
-  \rowcolor{nvcard!15}
-  Hierarchical & Opsional & Fleksibel  & Tidak \\
-  \hline
-  \rowcolor{nvcard!30}
-  DBSCAN       & Tidak    & Bebas      & \textcolor{nvgreen}{\textbf{Ya}} \\
-  \hline
-\end{tabular}
-\end{center}
-\vspace{0.8em}
-\begin{center}
-  \textcolor{nvgreen}{\textbf{Aplikasi:}} segmentasi pelanggan, pengelompokan berita, rekomendasi musik
-\end{center}
-\end{frame}
-
-
-% ============================================================
-% ACT 6 — TURBO MODE: NVIDIA GPU
-% ============================================================
-
-% Slide 1 — Act 6 Transition
-\acttitle{Act 6}{Turbo Mode: NVIDIA GPU}{Bagaimana jika bisa 50x lebih cepat?}
-
-% Slide 2 — CPU vs GPU
-\begin{frame}{CPU vs GPU --- Apa Bedanya?}
-\begin{columns}[T]
-  \begin{column}{0.45\textwidth}
-    \begin{center}
-    \begin{tikzpicture}
-      \draw[fill=nvcard, draw=nvgreen, line width=1.5pt] (0,0) rectangle (2.8,2.8);
-      \node[font=\bfseries\large, color=nvgreen] at (1.4,2.2) {CPU};
-      \node[font=\small, color=white, align=center] at (1.4,1.4) {4--16 core\\sangat kuat\\per core};
-    \end{tikzpicture}\\[0.4em]
-    \textcolor{nvlightgreen}{\textbf{1 koki master}}
-    \end{center}
-  \end{column}
-  \begin{column}{0.45\textwidth}
-    \begin{center}
-    \begin{tikzpicture}
-      \foreach \x in {0,...,5} {
-        \foreach \y in {0,...,4} {
-          \draw[fill=nvdark, draw=nvgreen, line width=0.4pt]
-            (\x*0.46+0.02, \y*0.46+0.02) rectangle (\x*0.46+0.40, \y*0.46+0.40);
-        }
-      }
-      \node[font=\bfseries\large, color=nvgreen] at (1.4,2.6) {GPU};
-    \end{tikzpicture}\\[0.4em]
-    \textcolor{nvlightgreen}{\textbf{1.000 koki sederhana}}
-    \end{center}
-  \end{column}
-\end{columns}
-\vspace{0.8em}
-\begin{center}
-  \colorbox{nvcard}{\parbox{0.88\textwidth}{\centering
-    \textcolor{nvorange}{\textbf{ML = ribuan operasi matematika yang SAMA}}\\
-    \textcolor{white}{$\rightarrow$ cocok untuk GPU!}
-  }}
-\end{center}
-\end{frame}
-
-% Slide 3 — RAPIDS cuML
-\begin{frame}{NVIDIA RAPIDS cuML}
-\begin{itemize}
-  \item[\textcolor{nvgreen}{\textbullet}] Library ML di GPU dengan \textbf{API identik scikit-learn}
-  \item[\textcolor{nvgreen}{\textbullet}] Rata-rata \textcolor{nvlightgreen}{\textbf{10--50x lebih cepat}}
-  \item[\textcolor{nvgreen}{\textbullet}] 50+ algoritma: regresi, klasifikasi, clustering, PCA, \ldots
-\end{itemize}
-\vspace{1em}
-\begin{center}
-  \begin{tikzpicture}
-    \draw[fill=nvgreen!20, draw=nvgreen, line width=2pt, rounded corners=6pt]
-      (0,0) rectangle (8,1.2);
-    \node[font=\bfseries\large, color=nvdark] at (4,0.6) {Ganti import, sisanya SAMA!};
-  \end{tikzpicture}
-\end{center}
-\end{frame}
-
-% Slide 4 — Code Comparison (KEY SLIDE)
-\begin{frame}[fragile]{Perbandingan Kode: sklearn vs cuML}
-\begin{columns}[T]
-  \begin{column}{0.48\textwidth}
-    \begin{center}\textcolor{nvlightgreen}{\textbf{scikit-learn (CPU)}}\end{center}
-    \begin{lstlisting}[basicstyle=\ttfamily\small,
-      backgroundcolor=\color{nvcard},
-      keywordstyle=\color{nvlightgreen},
-      stringstyle=\color{nvorange},
-      commentstyle=\color{gray},
-      frame=single, rulecolor=\color{nvgreen},
-      breaklines=true]
-from sklearn.ensemble import \
-  RandomForestClassifier
-
-model = RandomForestClassifier()
-model.fit(X_train, y_train)
-pred = model.predict(X_test)
-    \end{lstlisting}
-  \end{column}
-  \begin{column}{0.48\textwidth}
-    \begin{center}\textcolor{nvlightgreen}{\textbf{cuML (GPU NVIDIA)}}\end{center}
-    \begin{lstlisting}[basicstyle=\ttfamily\small,
-      backgroundcolor=\color{nvcard},
-      keywordstyle=\color{nvlightgreen},
-      stringstyle=\color{nvorange},
-      commentstyle=\color{gray},
-      frame=single, rulecolor=\color{nvgreen},
-      breaklines=true]
-from cuml.ensemble import \
-  RandomForestClassifier
-
-model = RandomForestClassifier()
-model.fit(X_train, y_train)
-pred = model.predict(X_test)
-    \end{lstlisting}
-  \end{column}
-\end{columns}
-\vspace{0.6em}
-\begin{center}
-  \textcolor{nvgreen}{\textbf{Hanya ganti 1 baris import $\rightarrow$ 10--50x lebih cepat!}}
-\end{center}
-\end{frame}
-
-% Slide 5 — XGBoost GPU
-\begin{frame}[fragile]{XGBoost GPU — Satu Baris Perubahan}
-\begin{lstlisting}[basicstyle=\ttfamily\normalsize,
-  backgroundcolor=\color{nvcard},
-  keywordstyle=\color{nvlightgreen},
-  stringstyle=\color{nvorange},
-  commentstyle=\color{gray!70},
-  frame=single, rulecolor=\color{nvgreen},
-  language=Python]
-# CPU
-XGBClassifier(device="cpu")
-
-# GPU NVIDIA
-XGBClassifier(device="cuda")  # Hanya ini yang berubah!
-\end{lstlisting}
-\vspace{0.8em}
-\begin{center}
-  \textcolor{white}{Perubahan kode: HANYA ganti \texttt{device} --- sisanya 100\% identik!}
-\end{center}
-\end{frame}
-
-% Slide 6 — Benchmark
-\begin{frame}{Benchmark: CPU vs GPU}
-\begin{center}
-  \includegraphics[width=0.75\textwidth]{figures/gpu_speedup.pdf}
-\end{center}
-\vspace{0.3em}
-\begin{center}
-  \textcolor{nvlightgreen}{\small Dataset: Forest Covertype (581.012 baris)}
-\end{center}
-\end{frame}
-
-% Slide 7 — ONNX Deployment
-\begin{frame}{Dari Training ke Deployment}
-\begin{center}
-\begin{tikzpicture}[node distance=0.6cm, >=stealth]
-  \tikzset{
-    box/.style={draw=nvgreen, fill=nvcard, rounded corners=5pt,
-      text=white, font=\small\bfseries, align=center,
-      minimum width=2.2cm, minimum height=1.1cm, inner sep=4pt}
-  }
-  \node[box] (train) {Train Model\\(sklearn/\\XGBoost)};
-  \node[box, right=0.5cm of train] (onnx) {Export\\ke ONNX};
-  \node[box, right=0.5cm of onnx] (rt) {ONNX Runtime\\+ GPU};
-  \node[box, right=0.5cm of rt] (app) {Aplikasi/\\Server};
-
-  \draw[->, line width=1.5pt, color=nvgreen] (train) -- (onnx);
-  \draw[->, line width=1.5pt, color=nvgreen] (onnx) -- (rt);
-  \draw[->, line width=1.5pt, color=nvgreen] (rt) -- (app);
-\end{tikzpicture}
-\end{center}
-\vspace{0.6em}
-\begin{center}
-  \textcolor{nvlightgreen}{\textbf{ONNX = format standar (seperti PDF untuk dokumen)}}
-\end{center}
-\vspace{0.3em}
-\begin{center}
-  \textcolor{gray!80}{\small Di server produksi: \textbf{NVIDIA Triton Inference Server}}
-\end{center}
-\end{frame}
-
-% Slide 8 — NVIDIA Ecosystem
-\begin{frame}{Ekosistem NVIDIA untuk AI}
-\begin{center}
-\begin{tabular}{ll}
-  \hline
-  \rowcolor{nvgreen!80}
-  \textbf{\textcolor{nvdark}{Produk}} & \textbf{\textcolor{nvdark}{Fungsi}} \\
-  \hline
-  \rowcolor{nvcard!50}
-  RAPIDS cuML  & ML klasik di GPU \\
-  \rowcolor{nvcard!30}
-  cuDF         & Pandas di GPU \\
-  \rowcolor{nvcard!50}
-  XGBoost GPU  & Gradient Boosting di GPU \\
-  \rowcolor{nvcard!30}
-  TensorRT     & Optimasi inferensi DL \\
-  \rowcolor{nvcard!50}
-  NeMo         & Framework NLP/AI \\
-  \rowcolor{nvcard!30}
-  Triton Server & Deploy model di produksi \\
-  \hline
-\end{tabular}
-\end{center}
-\vspace{0.8em}
-\begin{center}
-  \textcolor{nvlightgreen}{\textbf{Kita akan pelajari lebih dalam di Modul 6!}}
-\end{center}
-\end{frame}
-
-% ============================================================
-% CLOSING
-% ============================================================
-
-% Slide 9 — Full Summary
-\begin{frame}{Modul 1 --- Selesai!}
-\begin{center}
-{\small
-\begin{tabular}{cll}
-  \hline
-  \rowcolor{nvgreen!80}
-  \textbf{\textcolor{nvdark}{\#}} &
-  \textbf{\textcolor{nvdark}{Topik}} &
-  \textbf{\textcolor{nvdark}{Jenis}} \\
-  \hline
-  \rowcolor{nvcard!50} 1 & Linear Regression      & Supervised -- Regresi \\
-  \rowcolor{nvcard!30} 2 & Logistic Regression    & Supervised -- Klasifikasi \\
-  \rowcolor{nvcard!50} 3 & Decision Tree          & Supervised -- Klasifikasi \\
-  \rowcolor{nvcard!30} 4 & KNN                    & Supervised -- Klasifikasi \\
-  \rowcolor{nvcard!50} 5 & SVM                    & Supervised -- Klasifikasi \\
-  \rowcolor{nvcard!30} 6 & Ensemble Methods       & Supervised -- Ensemble \\
-  \rowcolor{nvcard!50} 7 & XGBoost                & Supervised -- Ensemble \\
-  \rowcolor{nvcard!30} 8 & Clustering             & Unsupervised \\
-  \rowcolor{nvcard!50} 9 & Time Series            & Forecasting \\
-  \rowcolor{nvcard!30} 10 & NVIDIA GPU            & Akselerasi \\
-  \hline
-\end{tabular}
-}
-\end{center}
-\end{frame}
-
-% Slide 10 — What's Next
-\begin{frame}{Apa Selanjutnya?}
-\begin{center}
-\begin{tikzpicture}[node distance=0.3cm, >=stealth]
-  \tikzset{
-    mod/.style={draw=nvgreen, fill=nvcard, rounded corners=4pt,
-      text=white, font=\scriptsize\bfseries, align=center,
-      minimum width=1.7cm, minimum height=1.0cm},
-    modhl/.style={draw=nvgreen, fill=nvgreen, rounded corners=4pt,
-      text=nvdark, font=\scriptsize\bfseries, align=center,
-      minimum width=1.7cm, minimum height=1.0cm}
-  }
-  \node[modhl] (m1) {[1]\\ML\\Fundamentals\\{\tiny Selesai!}};
-  \node[mod, right=0.3cm of m1] (m2) {[2]\\Deep\\Learning};
-  \node[mod, right=0.3cm of m2] (m3) {[3]\\NLP};
-  \node[mod, right=0.3cm of m3] (m4) {[4]\\LLM};
-  \node[mod, right=0.3cm of m4] (m5) {[5]\\RAG};
-  \node[mod, right=0.3cm of m5] (m6) {[6]\\NVIDIA\\Ecosystem};
-
-  \draw[->, line width=1pt, color=nvgreen!60] (m1) -- (m2);
-  \draw[->, line width=1pt, color=nvgreen!60] (m2) -- (m3);
-  \draw[->, line width=1pt, color=nvgreen!60] (m3) -- (m4);
-  \draw[->, line width=1pt, color=nvgreen!60] (m4) -- (m5);
-  \draw[->, line width=1pt, color=nvgreen!60] (m5) -- (m6);
-
-  \draw[->, line width=2pt, color=nvorange]
-    (m1.south) -- ++(0,-0.5) -| (m2.south)
-    node[midway, below, font=\scriptsize\bfseries, color=nvorange] {Next!};
-\end{tikzpicture}
-\end{center}
-\end{frame}
-
-% Slide 11 — Thank You
+% ----------------------------------------------------------
+% FRAME 88 — Terima kasih
+% ----------------------------------------------------------
 \begin{frame}[plain]
-\begin{tikzpicture}[remember picture, overlay]
-  \fill[nvbg] (current page.south west) rectangle (current page.north east);
-  \draw[nvgreen, line width=3pt]
-    ([yshift=0.5cm]current page.south west) --
-    ([yshift=0.5cm]current page.south east);
-\end{tikzpicture}
-\begin{center}
-  \vspace{2.5cm}
-  {\Huge\bfseries\textcolor{nvgreen}{Terima Kasih!}}\\[1em]
-  {\large\textcolor{white}{Navasena Gen-ML Course}}
-\end{center}
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[nvbg] (current page.south west) rectangle (current page.north east);
+    \draw[nvgreen, line width=3pt]
+      ([yshift=0.5cm]current page.south west) -- ([yshift=0.5cm]current page.south east);
+  \end{tikzpicture}
+  \begin{center}
+    \vspace{2.3cm}
+    {\Huge\bfseries\color{nvgreen}Terima kasih}\\[1em]
+    {\large\color{nvwhite}Machine Learning Fundamentals \textperiodcentered{} Navasena Gen-ML Course}\\[0.6em]
+    {\normalsize\color{nvgray}Sampai besok di Modul 2: Deep Learning Fundamentals}
+  \end{center}
 \end{frame}
 
 \end{document}

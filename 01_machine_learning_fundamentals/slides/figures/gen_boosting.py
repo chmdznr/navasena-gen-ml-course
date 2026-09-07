@@ -19,7 +19,7 @@ models = [
     (1.0, "Model 1", "Banyak salah", "#EF5350"),
     (4.0, "Model 2", "Lebih baik", "#FF9800"),
     (7.0, "Model 3", "Makin baik", "#FFC107"),
-    (10.0, "Model Final", "Akurat!", "#76B900"),
+    (10.0, "Model Final", "Model gabungan", "#76B900"),
 ]
 
 for x, title, subtitle, color in models:
