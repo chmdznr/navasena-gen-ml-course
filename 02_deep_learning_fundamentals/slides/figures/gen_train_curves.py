@@ -10,10 +10,16 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+plt.rcParams.update({'font.size': 18, 'axes.titlesize': 20, 'axes.labelsize': 18,
+                     'xtick.labelsize': 16, 'ytick.labelsize': 16, 'legend.fontsize': 16})
 import tensorflow as tf
 
 tf.random.set_seed(42)
 np.random.seed(42)
+tf.keras.utils.set_random_seed(42)
+# angka yang dikutip di slide harus sama tiap kali figur diregenerasi
+tf.config.experimental.enable_op_determinism()
 
 BG = "#1A1A2E"
 TEXT = "white"
@@ -26,7 +32,8 @@ MARK_COLOR = "#FFCA28"
 x_train = x_train.astype("float32") / 255.0
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.Input(shape=(28, 28)),
+    tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(128, activation="relu"),
     tf.keras.layers.Dense(10, activation="softmax"),
 ])
@@ -40,7 +47,7 @@ h = history.history
 best_epoch = int(np.argmin(h["val_loss"]))  # 0-indexed
 epochs = np.arange(1, len(h["loss"]) + 1)
 
-fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.2))
 fig.patch.set_facecolor(BG)
 
 # Panel 1: loss
@@ -51,13 +58,14 @@ ax.plot(epochs, h["loss"], color=TRAIN_COLOR, linewidth=2.2, marker="o",
 ax.plot(epochs, h["val_loss"], color=VAL_COLOR, linewidth=2.2, marker="o",
         markersize=4, label="data validation")
 ax.axvline(epochs[best_epoch], color=MARK_COLOR, linewidth=1.4, linestyle="--")
-ax.annotate(f"val_loss terendah\nepoch {epochs[best_epoch]}",
-            xy=(epochs[best_epoch], h["val_loss"][best_epoch]),
-            xytext=(epochs[best_epoch] + 0.3, h["val_loss"][best_epoch] + 0.06),
-            color=MARK_COLOR, fontsize=9, fontweight="bold")
-ax.set_title("Loss", color=TEXT, fontsize=14, fontweight="bold")
-ax.set_xlabel("epoch", color=TEXT, fontsize=11)
-ax.set_ylabel("loss", color=TEXT, fontsize=11)
+# label garis putus-putus: ditaruh di sudut kiri-bawah panel (area kosong),
+# warnanya sama dengan garisnya supaya kaitannya jelas
+ax.text(epochs[0] + 0.15, min(h["loss"]) + 0.005,
+        f"garis kuning: val_loss terendah (epoch {epochs[best_epoch]})",
+        color=MARK_COLOR, fontsize=13, fontweight="bold", va="bottom")
+ax.set_title("Loss", color=TEXT, fontweight="bold")
+ax.set_xlabel("epoch", color=TEXT)
+ax.set_ylabel("loss", color=TEXT)
 
 # Panel 2: accuracy
 ax2 = axes[1]
@@ -67,22 +75,22 @@ ax2.plot(epochs, h["accuracy"], color=TRAIN_COLOR, linewidth=2.2, marker="o",
 ax2.plot(epochs, h["val_accuracy"], color=VAL_COLOR, linewidth=2.2, marker="o",
          markersize=4, label="data validation")
 ax2.axvline(epochs[best_epoch], color=MARK_COLOR, linewidth=1.4, linestyle="--")
-ax2.set_title("Accuracy", color=TEXT, fontsize=14, fontweight="bold")
-ax2.set_xlabel("epoch", color=TEXT, fontsize=11)
-ax2.set_ylabel("accuracy", color=TEXT, fontsize=11)
+ax2.set_title("Accuracy", color=TEXT, fontweight="bold")
+ax2.set_xlabel("epoch", color=TEXT)
+ax2.set_ylabel("accuracy", color=TEXT)
 
-for a in axes:
-    a.tick_params(colors=TEXT, labelsize=9)
+for a, loc in zip(axes, ["upper right", "lower right"]):
+    a.tick_params(colors=TEXT)
     for spine in a.spines.values():
         spine.set_edgecolor("#444466")
     a.grid(True, color=GRID, linestyle="--", linewidth=0.6, zorder=0)
     a.set_axisbelow(True)
-    leg = a.legend(loc="best", fontsize=9, facecolor="#2A2A4E", edgecolor="#555577")
+    leg = a.legend(loc=loc, facecolor="#2A2A4E", edgecolor="#555577")
     for txt in leg.get_texts():
         txt.set_color(TEXT)
 
 fig.suptitle("Kurva pelatihan: Dense(128) pada Fashion-MNIST (8 epoch)",
-             color=TEXT, fontsize=13, y=1.0)
+             color=TEXT, y=1.0)
 plt.tight_layout(pad=1.0)
 
 output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "train_curves.pdf")

@@ -2,6 +2,8 @@
 """Gate for the reworked Module 02 DL quiz. Parses the inline QUIZ JSON and checks invariants.
 Mirrors 04_llm/tools/validate_quiz.py."""
 import re, json, sys, pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from bahasa_rules import check
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 HTML = (ROOT / "dl-fundamentals-quiz.html").read_text(encoding="utf-8")
@@ -44,6 +46,10 @@ for kw in ["learning rate", "overfitting", "validation", "dropout", "softmax", "
     if kw not in blob:
         errs.append(f"coverage gap: '{kw}' not found in any question")
 
+# Aturan bahasa spec §4 ditegakkan pada SELURUH HTML (skeleton + payload), bukan
+# hanya pada blob JSON: footer/header di luar payload pernah lolos karenanya.
+errs += [f"bahasa: {e}" for e in check(re.sub(r"<[^>]+>", " ", HTML), limit=0)]
+
 # Bias panjang: opsi benar tidak boleh sistematis lebih panjang/pendek dari pengecoh.
 import statistics
 cor = [len(q["options"][q["answer"]]) for q in qs]
@@ -51,6 +57,18 @@ inc = [len(o) for q in qs for i, o in enumerate(q["options"]) if i != q["answer"
 ratio = statistics.mean(cor) / statistics.mean(inc)
 if not 0.85 <= ratio <= 1.15:
     errs.append(f"length bias: mean correct/incorrect = {ratio:.2f} (want 0.85–1.15)")
+# Per soal: opsi terpanjang / terpendek <= 1,2, dan opsi benar jarang jadi yang terpanjang.
+n_longest = 0
+for i, q in enumerate(qs, 1):
+    lens = [len(o) for o in q["options"]]
+    r = max(lens) / min(lens)
+    if r > 1.2:
+        errs.append(f"Q{i}: rasio panjang opsi {r:.2f} > 1.2")
+    if lens[q["answer"]] == max(lens):
+        n_longest += 1
+if n_longest > 9:
+    errs.append(f"opsi benar terpanjang di {n_longest} soal (maks 9)")
+
 from collections import Counter
 dist = Counter(q["answer"] for q in qs)
 if max(dist.values()) > n // 2:

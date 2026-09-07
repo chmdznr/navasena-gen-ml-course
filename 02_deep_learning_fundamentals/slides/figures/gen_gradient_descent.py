@@ -1,6 +1,6 @@
 """
 Generate figures/gradient_descent.pdf — gradient descent 1D pada
-f(w) = (w-3)^2 + 1, tiga panel learning rate (0.05 lambat, 0.5 pas,
+f(w) = (w-3)^2 + 1, tiga panel learning rate (0.05 lambat, 0.25 pas,
 1.05 meledak). Titik-titik langkah diberi nomor.
 Run dari direktori slides/: python3 figures/gen_gradient_descent.py
 """
@@ -9,6 +9,9 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+plt.rcParams.update({'font.size': 18, 'axes.titlesize': 20, 'axes.labelsize': 18,
+                     'xtick.labelsize': 16, 'ytick.labelsize': 16, 'legend.fontsize': 16})
 
 BG = "#1A1A2E"
 TEXT = "white"
@@ -41,12 +44,12 @@ np.random.seed(42)
 w0 = -2.0
 
 configs = [
-    ("learning rate = 0.05 (terlalu kecil)", 0.05, 12),
-    ("learning rate = 0.5 (pas)", 0.5, 8),
-    ("learning rate = 1.05 (terlalu besar, meledak)", 1.05, 15),
+    ("learning rate = 0.05\n(terlalu kecil)", 0.05, 12),
+    ("learning rate = 0.25\n(pas)", 0.25, 8),
+    ("learning rate = 1.05\n(terlalu besar, meledak)", 1.05, 15),
 ]
 
-fig, axes = plt.subplots(1, 3, figsize=(14, 4.6))
+fig, axes = plt.subplots(1, 3, figsize=(13, 4.4))
 fig.patch.set_facecolor(BG)
 
 w_curve = np.linspace(-6, 10, 300)
@@ -64,13 +67,13 @@ for ax, (title, lr, n_steps) in zip(axes, configs):
              marker="o", markersize=6, zorder=3)
     for i, (wi, fi) in enumerate(zip(ws, fs)):
         ax.annotate(str(i), (wi, fi), textcoords="offset points",
-                    xytext=(0, 8), color=NUM_COLOR, fontsize=8, fontweight="bold",
+                    xytext=(0, 9), color=NUM_COLOR, fontsize=13, fontweight="bold",
                     ha="center")
     ax.axvline(3, color="#888899", linewidth=0.8, linestyle=":")
-    ax.set_title(title, color=TEXT, fontsize=11, fontweight="bold")
-    ax.set_xlabel("w", color=TEXT, fontsize=10)
-    ax.set_ylabel("f(w)", color=TEXT, fontsize=10)
-    ax.tick_params(colors=TEXT, labelsize=9)
+    ax.set_title(title, color=TEXT, fontweight="bold")
+    ax.set_xlabel("w", color=TEXT)
+    ax.set_ylabel("f(w)", color=TEXT)
+    ax.tick_params(colors=TEXT)
     for spine in ax.spines.values():
         spine.set_edgecolor("#444466")
     ax.grid(True, color=GRID, linestyle="--", linewidth=0.6, zorder=0)
@@ -79,8 +82,7 @@ for ax, (title, lr, n_steps) in zip(axes, configs):
     y_cap = min(fs.max(), 500) * 1.15 if fs.max() > 0 else 50
     ax.set_ylim(0, max(y_cap, 20))
 
-fig.suptitle("Gradient Descent pada f(w) = (w-3)² + 1", color=TEXT,
-             fontsize=15, fontweight="bold", y=1.0)
+fig.suptitle("Gradient Descent pada f(w) = (w-3)² + 1", color=TEXT, fontweight="bold", y=1.0)
 plt.tight_layout(pad=1.0)
 
 output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gradient_descent.pdf")

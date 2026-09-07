@@ -10,6 +10,9 @@ import json
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+plt.rcParams.update({'font.size': 18, 'axes.titlesize': 20, 'axes.labelsize': 18,
+                     'xtick.labelsize': 16, 'ytick.labelsize': 16, 'legend.fontsize': 16})
 import numpy as np
 
 BG_COLOR = "#1A1A2E"

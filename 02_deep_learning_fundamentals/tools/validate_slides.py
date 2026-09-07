@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Gate deck Modul 02: invarian sumber .tex + hasil build. Exit 0 = lulus.
-Set M01_DECK_PARTIAL=1 saat deck belum lengkap (cek jumlah frame/intuisi/notes hanya WARN)."""
+Set M02_DECK_PARTIAL=1 saat deck belum lengkap (cek jumlah frame/intuisi/notes hanya WARN)."""
 import os, re, subprocess, sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from bahasa_rules import check
@@ -8,7 +8,7 @@ from bahasa_rules import check
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "slides"
 TEX, PDF, LOG = ROOT / "module02_slides.tex", ROOT / "module02_slides.pdf", ROOT / "module02_slides.log"
 NOTES_TEX, NOTES_PDF = ROOT / "speaker_notes_src.tex", ROOT / "speaker_notes.pdf"
-PARTIAL = os.environ.get("M01_DECK_PARTIAL") == "1"
+PARTIAL = os.environ.get("M02_DECK_PARTIAL") == "1"
 errs, warns = [], []
 
 src = TEX.read_text(encoding="utf-8")

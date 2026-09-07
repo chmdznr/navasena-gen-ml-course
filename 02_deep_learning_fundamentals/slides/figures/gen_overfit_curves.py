@@ -12,10 +12,16 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+plt.rcParams.update({'font.size': 18, 'axes.titlesize': 20, 'axes.labelsize': 18,
+                     'xtick.labelsize': 16, 'ytick.labelsize': 16, 'legend.fontsize': 16})
 import tensorflow as tf
 
 tf.random.set_seed(42)
 np.random.seed(42)
+tf.keras.utils.set_random_seed(42)
+# angka yang dikutip di slide harus sama tiap kali figur diregenerasi
+tf.config.experimental.enable_op_determinism()
 
 BG = "#1A1A2E"
 TEXT = "white"
@@ -31,7 +37,8 @@ EPOCHS = 30
 
 
 def build_model(use_dropout):
-    layers = [tf.keras.layers.Flatten(input_shape=(28, 28)),
+    layers = [tf.keras.Input(shape=(28, 28)),
+              tf.keras.layers.Flatten(),
               tf.keras.layers.Dense(512, activation="relu")]
     if use_dropout:
         layers.append(tf.keras.layers.Dropout(0.5))
@@ -58,7 +65,7 @@ hist_dropout = run(use_dropout=True)
 
 epochs = np.arange(1, EPOCHS + 1)
 
-fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.2))
 fig.patch.set_facecolor(BG)
 
 panels = [
@@ -72,15 +79,15 @@ for title, h, ax in panels:
     ax.plot(epochs, h["val_loss"], color=VAL_COLOR, linewidth=2.0, label="data validation")
     gap = h["val_loss"][-1] - h["loss"][-1]
     ax.fill_between(epochs, h["loss"], h["val_loss"], color="#FF7043", alpha=0.15)
-    ax.set_title(f"{title}\ngap akhir = {gap:.2f}", color=TEXT, fontsize=12, fontweight="bold")
-    ax.set_xlabel("epoch", color=TEXT, fontsize=11)
-    ax.set_ylabel("loss", color=TEXT, fontsize=11)
-    ax.tick_params(colors=TEXT, labelsize=9)
+    ax.set_title(f"{title}\ngap akhir = {gap:.2f}", color=TEXT, fontweight="bold")
+    ax.set_xlabel("epoch", color=TEXT)
+    ax.set_ylabel("loss", color=TEXT)
+    ax.tick_params(colors=TEXT)
     for spine in ax.spines.values():
         spine.set_edgecolor("#444466")
     ax.grid(True, color=GRID, linestyle="--", linewidth=0.6, zorder=0)
     ax.set_axisbelow(True)
-    leg = ax.legend(loc="upper left", fontsize=9, facecolor="#2A2A4E", edgecolor="#555577")
+    leg = ax.legend(loc="lower left", facecolor="#2A2A4E", edgecolor="#555577")
     for txt in leg.get_texts():
         txt.set_color(TEXT)
 
@@ -89,7 +96,7 @@ for _, _, ax in panels:
     ax.set_ylim(0, ymax)
 
 fig.suptitle("Overfitting vs Dropout(0.5) — 6000 sampel train, 30 epoch",
-             color=TEXT, fontsize=13, y=1.0)
+             color=TEXT, y=1.0)
 plt.tight_layout(pad=1.0)
 
 output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "overfit_curves.pdf")

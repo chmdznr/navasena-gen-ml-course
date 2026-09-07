@@ -15,7 +15,7 @@
 % Kata Inggris yang dipenggal salah oleh pola Indonesia
 \hyphenation{train vari-ance scal-ing de-ci-sion boost-ing gra-di-ent
   drop-out soft-max learn-ing back-prop op-ti-mi-zer va-nish-ing
-  po-oling con-vo-lu-tion em-bed-ding}
+  pool-ing con-vo-lu-tion em-bed-ding}
 
 % ---- Core packages ------------------------------------------
 \usepackage{graphicx}
@@ -448,7 +448,6 @@
 % FRAME 10 — Learning rate
 % ----------------------------------------------------------
 \begin{frame}{Learning rate: ukuran langkah dan gejalanya}
-  \vspace{0.3em}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
       \textbf{\color{nvlightgreen}Terlalu kecil}
@@ -469,10 +468,12 @@
       \end{itemize}
     \end{column}
   \end{columns}
-  \vspace{0.9em}
+  \vspace{0.4em}
+  {\footnotesize\color{nvgray}Panel tengah, 0,25: dasarnya dicapai lewat beberapa langkah bertahap.}
+  \vspace{0.3em}
   \jebakan{Adam memakai learning rate 0,001 sebagai nilai default. Itu titik awal yang
   wajar, bukan angka yang cocok untuk semua data. Kalau loss diam saja atau meledak sejak
-  epoch pertama, ubah dulu learning ratenya sebelum menambah layer.}
+  epoch pertama, ubah learning ratenya sebelum menambah layer.}
 \end{frame}
 
 % ----------------------------------------------------------
@@ -523,7 +524,7 @@
     \node[b] (b2) at (2.45,0) {batch 2};
     \node[b] (b3) at (4.1,0) {batch 3};
     \node[text=nvgray] at (5.5,0) {\dots};
-    \node[b] (b4) at (7.4,0) {batch 1.718};
+    \node[b] (b4) at (7.4,0) {batch 1.719};
     \foreach \n in {b1,b2,b3,b4}
       \draw[nvgreen, -{Stealth[length=4pt]}] (\n.south) -- ++(0,-0.5);
     \node[text=nvgreen, anchor=north, align=center] at (0.8,-0.9) {bobot\\ diperbarui};
@@ -539,7 +540,7 @@
     \item Satu batch berisi 32 gambar yang dihitung bersama. Bobot diperbarui sekali
           untuk setiap batch.
     \item Satu epoch berarti seluruh data train dilewati sekali: 55.000 gambar dibagi 32
-          memberi 1.718 langkah perbaikan.
+          memberi 1.719 langkah perbaikan.
     \item Batch lebih besar membuat arah langkahnya lebih tenang, tetapi butuh memori
           lebih besar dan langkahnya lebih sedikit per epoch.
   \end{itemize}
@@ -554,7 +555,7 @@
 \begin{frame}{Kurva train dan validation dibaca berdampingan}
   \vspace{0.1em}
   \begin{center}
-    \includegraphics[width=0.84\textwidth, height=3.4cm, keepaspectratio]{figures/train_curves.pdf}
+    \includegraphics[width=0.86\textwidth, height=3.45cm, keepaspectratio]{figures/train_curves.pdf}
   \end{center}
   \vspace{0.1em}
   \begin{itemize}\setlength\itemsep{0.3em}
@@ -572,11 +573,11 @@
 % ----------------------------------------------------------
 \begin{frame}{Overfitting: melebarnya jarak train dan validation}
   \begin{center}
-    \includegraphics[width=0.64\textwidth, height=2.8cm, keepaspectratio]{figures/overfit_curves.pdf}
+    \includegraphics[width=0.66\textwidth, height=2.8cm, keepaspectratio]{figures/overfit_curves.pdf}
   \end{center}
   \begin{itemize}\setlength\itemsep{0.24em}
-    \item Model yang sama pada 6.000 sampel train: jaraknya 0,56 tanpa dropout dan 0,18
-          dengan Dropout(0,5).
+    \item Model yang sama pada 6.000 sampel train. Jarak loss validation dan loss train
+          di akhir: 0,60 tanpa dropout, 0,18 dengan Dropout(0,5).
     \item Dropout mematikan sebagian neuron secara acak tiap batch; early stopping
           berhenti saat val\_loss tidak lagi turun.
   \end{itemize}
@@ -621,12 +622,12 @@
 \begin{frame}{Evaluasi multi-kelas: akurasi saja belum cukup}
   \vspace{0.2em}
   \begin{columns}[T]
-    \begin{column}{0.44\textwidth}
+    \begin{column}{0.46\textwidth}
       \begin{center}
-        \includegraphics[width=\textwidth, height=4.65cm, keepaspectratio]{figures/confusion.pdf}
+        \includegraphics[width=\textwidth, height=5.0cm, keepaspectratio]{figures/confusion.pdf}
       \end{center}
     \end{column}
-    \begin{column}{0.54\textwidth}
+    \begin{column}{0.52\textwidth}
       \vspace{0.3em}
       \begin{itemize}\setlength\itemsep{0.42em}
         \item Akurasi test 87,4\% pada model Dense(128) di gambar ini: satu run, seed 42,
@@ -708,7 +709,7 @@
 \begin{frame}{Empat aktivasi dan turunannya}
   \vspace{0.1em}
   \begin{center}
-    \includegraphics[width=0.94\textwidth, height=4.5cm, keepaspectratio]{figures/activations.pdf}
+    \includegraphics[width=0.96\textwidth, height=4.5cm, keepaspectratio]{figures/activations.pdf}
   \end{center}
   \vspace{0.15em}
   \begin{itemize}\setlength\itemsep{0.28em}
@@ -1386,7 +1387,7 @@
   \vspace{0.4em}
   \nvbox{Intinya}{Seperti permainan bisik berantai: makin panjang rantainya, makin sedikit
   pesan awal yang selamat. Review IMDB sepanjang 200 kata berarti 200 langkah, jadi kata di
-  awal review hampir tidak lagi mempengaruhi perbaikan bobot.}
+  awal review hampir tidak lagi memengaruhi perbaikan bobot.}
 \end{frame}
 
 % ----------------------------------------------------------
@@ -1491,11 +1492,11 @@
 \begin{frame}{Hasil nyata: SimpleRNN memprediksi nilai berikutnya}
   \vspace{0.1em}
   \begin{center}
-    \includegraphics[width=0.9\textwidth, height=3.5cm, keepaspectratio]{figures/rnn_sine.pdf}
+    \includegraphics[width=0.92\textwidth, height=3.5cm, keepaspectratio]{figures/rnn_sine.pdf}
   \end{center}
   \begin{itemize}\setlength\itemsep{0.24em}
-    \item \texttt{SimpleRNN(32)} membaca 20 langkah terakhir dan memprediksi satu nilai
-          berikutnya: MAE 0,0246 pada data test, satu run, seed 42, 20 epoch.
+    \item \texttt{SimpleRNN(32)} membaca 50 langkah terakhir dan memprediksi satu nilai
+          berikutnya: MAE 0,0196 pada data test, satu run, seed 42, 20 epoch.
     \item Pembandingnya baseline ``ulangi nilai terakhir yang dilihat'', dan di nb04
           baseline itu dihitung lebih dulu supaya angka modelnya punya arti.
     \item Pola berulang serapi ini memang mudah; deret nyata seperti penjualan atau sensor
@@ -1688,8 +1689,8 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
   \begin{itemize}\setlength\itemsep{0.2em}
     \item TF-TRT, integrasi bawaan TensorFlow, dihapus sejak TensorFlow 2.18 (2.17 versi
           terakhir yang memuatnya) dan Colab sekarang memakai 2.18 ke atas.
-    \item \texttt{tensorrt} dipin ke seri 10.x: TensorRT 11 menghapus cara mudah menyalakan
-          FP16 saat engine dibangun. \texttt{tf2onnx} minimal 1.17 supaya cocok dengan NumPy 2.
+    \item \texttt{tensorrt} dipin ke seri 10.x karena resep nb05 diverifikasi pada seri itu.
+          \texttt{tf2onnx} minimal 1.17 supaya cocok dengan NumPy 2.
   \end{itemize}}
 \end{frame}
 
@@ -1765,7 +1766,7 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
 % ----------------------------------------------------------
 % FRAME 60 — Diskriminatif vs generatif
 % ----------------------------------------------------------
-\begin{frame}{Dua arah: menebak label, atau menghasilkan data}
+\begin{frame}{Dua arah: memberi label, atau menghasilkan data}
   \vspace{0.4em}
   \begin{center}
   \begin{tikzpicture}[font=\scriptsize,
@@ -1885,13 +1886,14 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
 \begin{frame}{Digit yang lahir dari noise, epoch demi epoch}
   \vspace{0.1em}
   \begin{center}
-    \includegraphics[width=0.72\textwidth, height=2.7cm, keepaspectratio]{figures/gan_grid.pdf}
+    \includegraphics[width=0.74\textwidth, height=2.7cm, keepaspectratio]{figures/gan_grid.pdf}
   \end{center}
   \vspace{0.1em}
   \begin{itemize}\setlength\itemsep{0.22em}
-    \item DCGAN pada MNIST, 15 epoch, seed 42. Tiap baris memakai noise masukan yang sama,
-          jadi yang berubah hanya generatornya: epoch 1 masih berbintik, epoch 15 sebagian
-          sudah berbentuk digit yang bisa dikenali dan tidak satu pun ada di dataset.
+    \item DCGAN pada MNIST, 15 epoch, seed 42. Tiap kolom memakai noise masukan yang sama,
+          jadi dari baris atas ke bawah yang berubah hanya generatornya: baris epoch 1 masih
+          berbintik, baris epoch 15 sebagian sudah berbentuk digit yang bisa dikenali dan
+          bukan salinan gambar dari dataset.
   \end{itemize}
   \vspace{0.1em}
   \jebakan{Mode collapse: generator bisa menemukan satu atau dua bentuk yang lolos terus, lalu
@@ -1951,7 +1953,7 @@ Dense(10, activation='softmax', dtype='float32')  # keluaran
     VAE & Latent space diatur supaya titik acak tetap wajar & Generator wajah awal \\
     GAN & Generator berlomba melawan discriminator & StyleGAN \\
     Diffusion & Belajar membersihkan noise bertahap & Stable Diffusion \\
-    Transformer & Menebak potongan berikutnya, berulang-ulang & GPT, Llama \\
+    Transformer & Memprediksi potongan berikutnya, berulang-ulang & GPT, Llama \\
     \bottomrule
   \end{tabular}}
   \end{center}

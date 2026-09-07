@@ -9,6 +9,9 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+plt.rcParams.update({'font.size': 18, 'axes.titlesize': 20, 'axes.labelsize': 18,
+                     'xtick.labelsize': 16, 'ytick.labelsize': 16, 'legend.fontsize': 16})
 import tensorflow as tf
 
 np.random.seed(42)
@@ -53,26 +56,26 @@ for r, (title, kernel, out) in enumerate(rows):
     ax_img = axes[r, 0]
     ax_img.set_facecolor(BG)
     ax_img.imshow(img, cmap="gray")
-    ax_img.set_title("Gambar input (digit 7)" if r == 0 else "", color=TEXT, fontsize=11)
+    ax_img.set_title("Gambar input (digit 7)" if r == 0 else "", color=TEXT)
     ax_img.axis("off")
 
     ax_k = axes[r, 1]
     ax_k.set_facecolor(BG)
     ax_k.imshow(kernel, cmap="RdBu", vmin=-1, vmax=1)
     for (i, j), v in np.ndenumerate(kernel):
-        ax_k.text(j, i, f"{v:.0f}", ha="center", va="center", color=TEXT,
-                   fontsize=13, fontweight="bold")
-    ax_k.set_title(title, color=TEXT, fontsize=11)
+        # sel bernilai 0 warnanya hampir putih, jadi angkanya ditulis gelap
+        ax_k.text(j, i, f"{v:.0f}", ha="center", va="center", fontweight="bold",
+                  color=(TEXT if abs(v) > 0.5 else "#1A1A2E"))
+    ax_k.set_title(title, color=TEXT)
     ax_k.set_xticks([]); ax_k.set_yticks([])
 
     ax_out = axes[r, 2]
     ax_out.set_facecolor(BG)
     ax_out.imshow(out, cmap="gray")
-    ax_out.set_title("Hasil konvolusi" if r == 0 else "", color=TEXT, fontsize=11)
+    ax_out.set_title("Hasil konvolusi" if r == 0 else "", color=TEXT)
     ax_out.axis("off")
 
-fig.suptitle("Konvolusi manual: filter tepi vertikal vs horizontal", color=TEXT,
-             fontsize=15, fontweight="bold", y=0.99)
+fig.suptitle("Konvolusi manual: filter tepi vertikal vs horizontal", color=TEXT, fontweight="bold", y=0.99)
 plt.tight_layout(pad=1.0)
 
 output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "convolution.pdf")

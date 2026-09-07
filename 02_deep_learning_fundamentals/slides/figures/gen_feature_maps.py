@@ -9,10 +9,16 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+plt.rcParams.update({'font.size': 18, 'axes.titlesize': 20, 'axes.labelsize': 18,
+                     'xtick.labelsize': 16, 'ytick.labelsize': 16, 'legend.fontsize': 16})
 import tensorflow as tf
 
 tf.random.set_seed(42)
 np.random.seed(42)
+tf.keras.utils.set_random_seed(42)
+# angka yang dikutip di slide harus sama tiap kali figur diregenerasi
+tf.config.experimental.enable_op_determinism()
 
 BG = "#1A1A2E"
 TEXT = "white"
@@ -49,18 +55,17 @@ axes = axes.flatten()
 
 axes[0].set_facecolor(BG)
 axes[0].imshow(sample[0, :, :, 0], cmap="gray")
-axes[0].set_title("Input (digit 3)", color=TEXT, fontsize=11, fontweight="bold")
+axes[0].set_title("Input (digit 3)", color=TEXT, fontweight="bold")
 axes[0].axis("off")
 
 for i in range(8):
     ax = axes[i + 1]
     ax.set_facecolor(BG)
     ax.imshow(feature_maps[:, :, i], cmap="viridis")
-    ax.set_title(f"feature map {i+1}", color=TEXT, fontsize=10)
+    ax.set_title(f"feature map {i+1}", color=TEXT)
     ax.axis("off")
 
-fig.suptitle("Feature map layer conv1 (8 filter) — setelah 1 epoch", color=TEXT,
-             fontsize=15, fontweight="bold", y=0.995)
+fig.suptitle("Feature map layer conv1 (8 filter) — setelah 1 epoch", color=TEXT, fontweight="bold", y=0.995)
 plt.tight_layout(pad=1.0)
 
 output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "feature_maps.pdf")
