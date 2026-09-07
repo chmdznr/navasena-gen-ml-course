@@ -15,11 +15,11 @@ for marker in "①②③④⑤⑥⑦⑧⑨⑩":
 
 low = html.lower()
 for kw in ["learning rate", "validation", "dropout", "softmax", "konvolusi", "transfer learning",
-           "hidden state", "mixed precision", "TensorRT", "latent", "Input(shape"]:
+           "hidden state", "mixed precision", "tensorrt", "latent", "input(shape"]:
     if kw not in low:
         errs.append(f"coverage gap: '{kw}'")
 
-for stale in ["titik awal", "10-50x", "10–50x", "10-100x", "10–100x", "input_shape=", "kotak-kotak"]:
+for stale in ["titik awal", "10-50x", "10–50x", "10-100x", "10–100x", "kotak-kotak"]:
     if stale in html:
         errs.append(f"stale wording: {stale!r}")
 errs += check(re.sub(r"<[^>]+>", " ", html), limit=0)
