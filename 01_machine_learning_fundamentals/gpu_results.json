@@ -1,11 +1,32 @@
 {
-  "_note": "Hasil nb10 di Google Colab (GPU T4), 7 Sep 2026. Waktu fit() dalam detik. Linear Regression tidak dimasukkan karena diukur sebelum warm-up (panggilan GPU pertama). Skor: RF CPU 0.7827 vs GPU 0.7592 (implementasi cuML berbeda); KNN 0.9139 sama; XGBoost 0.8437 sama; PCA 0.3442 sama.",
+  "_note": "Hasil nb10 (versi batch 6) di Google Colab T4, 7 Sep 2026, setelah warm-up. Waktu fit() detik. Skor CPU/GPU: LR 0.5758/0.5758, RF 0.7827/0.7592, KNN 0.9139/0.9139, K-Means silhouette 0.0352/0.1415, PCA 0.3442/0.3442, XGBoost 0.8437/0.8437.",
   "dataset": "Covertype",
   "n_rows": "581.012",
   "device_cpu": "CPU Colab",
   "device_gpu": "Tesla T4",
   "measured": "fit",
-  "algorithms": ["Random Forest (200 pohon)", "XGBoost (200 pohon)", "KNN K=5 (100.000 baris)", "K-Means K=7", "PCA 54→10"],
-  "cpu_times": [161.627, 92.842, 13.830, 25.043, 0.235],
-  "gpu_times": [10.092, 10.046, 0.634, 7.106, 1.274]
+  "algorithms": [
+    "Random Forest (200 pohon)",
+    "XGBoost (200 pohon)",
+    "KNN K=5 (100.000 baris)",
+    "K-Means K=7",
+    "PCA 54→10",
+    "Linear regression (20.640 baris)"
+  ],
+  "cpu_times": [
+    125.987,
+    98.646,
+    15.464,
+    25.822,
+    0.255,
+    0.027
+  ],
+  "gpu_times": [
+    7.539,
+    9.728,
+    0.631,
+    5.859,
+    1.277,
+    0.476
+  ]
 }

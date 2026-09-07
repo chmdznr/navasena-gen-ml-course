@@ -2169,11 +2169,11 @@ model_gpu = XGBClassifier(n_estimators=300, device="cuda")
     \begin{column}{0.42\textwidth}
       \vspace{0.1em}
       \begin{itemize}\setlength\itemsep{0.2em}
-        \item \textbf{Tugas}: RF 200 pohon, XGBoost, KNN, K-Means, PCA.
+        \item \textbf{Tugas}: RF 200 pohon, XGBoost, KNN, K-Means, PCA, regresi linear.
         \item \textbf{Data}: Covertype, 581.012 baris (KNN: 100.000).
         \item \textbf{Diukur}: waktu \texttt{fit()}, setelah warm-up.
-        \item \textbf{PCA kalah (0,2x)}: pekerjaannya terlalu kecil untuk menutup overhead.
-        \item \textbf{Akurasi}: XGBoost dan KNN identik; RF cuML 0,759 vs sklearn 0,783, implementasinya berbeda.
+        \item \textbf{PCA dan regresi linear kalah} (0,2x dan 0,1x): pekerjaannya terlalu kecil untuk menutup overhead.
+        \item \textbf{Akurasi}: XGBoost, KNN, PCA identik; RF cuML 0,759 vs 0,783 dan K-Means berbeda, implementasinya lain.
       \end{itemize}
     \end{column}
   \end{columns}
