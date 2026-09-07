@@ -58,26 +58,29 @@ ax.set_facecolor(BG_COLOR)
 
 bars_cpu = ax.bar(x - width / 2, cpu_times, width, color=CPU_COLOR, label=device_cpu, zorder=3)
 bars_gpu = ax.bar(x + width / 2, gpu_times, width, color=GPU_COLOR, label=device_gpu, zorder=3)
+ax.set_yscale("log")
+ax.set_ylim(min(min(cpu_times), min(gpu_times)) * 0.5, max(cpu_times) * 6)
 
 for rect, t in zip(bars_cpu, cpu_times):
-    ax.text(rect.get_x() + rect.get_width() / 2, t + max(cpu_times) * 0.02,
-            f"{t:.2f}s", ha="center", va="bottom", color=TEXT_COLOR, fontsize=9)
-for rect, t in zip(bars_gpu, gpu_times):
-    ax.text(rect.get_x() + rect.get_width() / 2, t + max(cpu_times) * 0.02,
-            f"{t:.2f}s", ha="center", va="bottom", color=TEXT_COLOR, fontsize=9)
+    ax.text(rect.get_x() + rect.get_width() / 2, t * 1.15, f"{t:.2f} s",
+            ha="center", va="bottom", color=TEXT_COLOR, fontsize=13)
+for rect, t, c in zip(bars_gpu, gpu_times, cpu_times):
+    ax.text(rect.get_x() + rect.get_width() / 2, t * 1.15, f"{t:.2f} s\n{c / t:.1f}x",
+            ha="center", va="bottom", color=SPEEDUP_COLOR if 'SPEEDUP_COLOR' in globals() else "#A3D944",
+            fontsize=13, fontweight="bold")
 
+import textwrap
 ax.set_xticks(x)
-ax.set_xticklabels(algorithms, color=TEXT_COLOR, fontsize=10)
-ax.set_ylabel("Waktu (detik)", color=TEXT_COLOR, fontsize=11)
-title = f"CPU vs GPU ({measured})" if measured else "CPU vs GPU"
-ax.set_title(title, color=TEXT_COLOR, fontsize=15, fontweight="bold", pad=12)
-ax.tick_params(axis="y", colors=TEXT_COLOR)
+ax.set_xticklabels([textwrap.fill(a, 18) for a in algorithms], color=TEXT_COLOR, fontsize=13)
+ax.set_ylabel("Waktu (detik, skala log)", color=TEXT_COLOR, fontsize=14)
+ax.set_title("CPU lawan GPU: waktu eksekusi", color=TEXT_COLOR, fontsize=16, fontweight="bold", pad=12)
+ax.tick_params(axis="y", colors=TEXT_COLOR, labelsize=12)
 for spine in ax.spines.values():
     spine.set_edgecolor("#444466")
 ax.yaxis.grid(True, color=GRID_COLOR, linestyle="--", linewidth=0.6, zorder=0)
 ax.set_axisbelow(True)
 leg = ax.legend(loc="upper right", framealpha=0.3, facecolor=PANEL_COLOR,
-                 edgecolor="#555577", labelcolor=TEXT_COLOR, fontsize=10)
+                 edgecolor="#555577", labelcolor=TEXT_COLOR, fontsize=12)
 
 plt.tight_layout(pad=1.0)
 fig.savefig(OUTPUT_PATH, format="pdf", bbox_inches="tight", facecolor=BG_COLOR)
