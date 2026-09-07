@@ -2160,25 +2160,21 @@ model_gpu = XGBClassifier(n_estimators=300, device="cuda")
 \begin{frame}{Benchmark: syarat pengukurannya disebut}
   \vspace{0.2em}
   \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
+    \begin{column}{0.56\textwidth}
       \begin{center}
-        \includegraphics[width=\textwidth, height=4.3cm, keepaspectratio]{figures/gpu_speedup.pdf}
+        \includegraphics[width=\textwidth, height=5.0cm, keepaspectratio]{figures/gpu_speedup.pdf}
       \end{center}
-      \vspace{0.1em}
-      {\scriptsize\color{nvgray}Panel kiri akan diisi dari hasil Colab T4 di nb10.}
+      {\scriptsize\color{nvgray}nb10 di Colab: Tesla T4 vs CPU runtime yang sama, 7 September 2026. Sumbu waktu skala log.}
     \end{column}
-    \begin{column}{0.47\textwidth}
+    \begin{column}{0.42\textwidth}
       \vspace{0.1em}
-      \begin{itemize}\setlength\itemsep{0.25em}
-        \item \textbf{Tugas}: Random Forest 200 pohon, KNN, K-Means, dan XGBoost.
-        \item \textbf{Data}: Covertype, 581.012 baris (KNN: subset 100.000 baris train).
-        \item \textbf{Yang diukur}: waktu \texttt{fit()}, setelah warm-up.
-        \item \textbf{Perangkat}: satu GPU Tesla T4 di Google Colab, dibandingkan CPU pada
-              runtime yang sama.
+      \begin{itemize}\setlength\itemsep{0.2em}
+        \item \textbf{Tugas}: RF 200 pohon, XGBoost, KNN, K-Means, PCA.
+        \item \textbf{Data}: Covertype, 581.012 baris (KNN: 100.000).
+        \item \textbf{Diukur}: waktu \texttt{fit()}, setelah warm-up.
+        \item \textbf{PCA kalah (0,2x)}: pekerjaannya terlalu kecil untuk menutup overhead.
+        \item \textbf{Akurasi}: XGBoost dan KNN identik; RF cuML 0,759 vs sklearn 0,783, implementasinya berbeda.
       \end{itemize}
-      \vspace{0.25em}
-      {\footnotesize\color{nvgray}Selama angkanya belum diukur di perangkat itu, tidak ada rasio
-      percepatan yang bisa disebut di sini.}
     \end{column}
   \end{columns}
 \end{frame}

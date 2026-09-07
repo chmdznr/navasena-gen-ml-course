@@ -81,18 +81,19 @@ bars_gpu = ax.barh(y - bar_height / 2, gpu_times, bar_height, color=GPU_COLOR,
                     label=f"GPU ({results.get('device_gpu', 'GPU')})", zorder=3)
 
 for i, (ct, speedup) in enumerate(zip(cpu_times, speedups)):
-    ax.text(ct + max(cpu_times) * 0.01, y[i] + bar_height / 2, f"{speedup:.1f}x",
+    ax.text(ct * 1.08, y[i] + bar_height / 2, f"{speedup:.1f}x",
             va="center", ha="left", color=SPEEDUP_COLOR, fontsize=9, fontweight="bold")
 
 ax.set_yticks(y)
 ax.set_yticklabels(algorithms, color=TEXT_COLOR, fontsize=10)
-ax.set_xlabel(f"Waktu {results.get('measured', 'fit')} (detik)", color=TEXT_COLOR, fontsize=10)
+ax.set_xlabel(f"Waktu {results.get("measured", "fit")} (detik, skala log)", color=TEXT_COLOR, fontsize=10)
 ax.tick_params(axis="x", colors=TEXT_COLOR)
 ax.tick_params(axis="y", colors=TEXT_COLOR)
 for spine in ax.spines.values():
     spine.set_edgecolor("#444466")
 ax.xaxis.label.set_color(TEXT_COLOR)
-ax.set_xlim(0, max(cpu_times) * 1.18)
+ax.set_xscale("log")
+ax.set_xlim(min(min(cpu_times), min(gpu_times)) * 0.6, max(cpu_times) * 2.2)
 ax.xaxis.grid(True, color="#333355", linestyle="--", linewidth=0.6, zorder=0)
 ax.set_axisbelow(True)
 
