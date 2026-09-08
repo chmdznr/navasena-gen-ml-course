@@ -25,4 +25,11 @@ echo "=== Step 3: Compile LaTeX ==="
 xelatex -interaction=nonstopmode -halt-on-error module03_slides.tex
 xelatex -interaction=nonstopmode -halt-on-error module03_slides.tex
 
-echo "=== Done! Output: module03_slides.pdf ==="
+if [ -f speaker_notes_src.tex ]; then
+    echo "=== Step 4: Compile speaker notes ==="
+    xelatex -interaction=nonstopmode -halt-on-error speaker_notes_src.tex
+    xelatex -interaction=nonstopmode -halt-on-error speaker_notes_src.tex
+    mv -f speaker_notes_src.pdf speaker_notes.pdf
+fi
+
+echo "=== Done! Output: module03_slides.pdf + speaker_notes.pdf ==="
