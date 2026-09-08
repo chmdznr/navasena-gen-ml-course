@@ -127,7 +127,7 @@ $\pm$ & ``kurang lebih'' \\
 \subsection*{\framebox{Slide 14/70}\quad POS tagging}
 \addcontentsline{toc}{subsection}{Slide 14: POS tagging}
 \textbf{Ucapkan:} "POS tagging menandai kelas kata: kata benda, kerja, sifat, preposisi. Gunanya bukan untuk dipamerkan, tapi untuk menyaring. Kalau kamu mau menemukan topik sebuah dokumen, ambil kata bendanya saja — kata kerja dan kata sambung jarang menjadi topik. Kalau kamu mau menganalisis tindakan dalam laporan insiden, ambil kata kerjanya."\\[2pt]
-\textbf{Batas:} label di slide memakai tagset UD supaya mudah dibaca. \texttt{nlp-id} mengeluarkan tagset berbeda — NNP, VB, NN, IN. Peserta akan melihat yang kedua di notebook, jadi sebutkan sekarang supaya tidak bingung.\\[2pt]
+\textbf{Batas:} label di slide memakai tagset UD supaya mudah dibaca. \texttt{nlp-id} mengeluarkan tagset berbeda: di run notebook yang muncul PR, ADV, VB, NN, IN, dan SYM. Sebutkan sekarang supaya tidak bingung. Tambahkan juga bahwa pada kalimat contoh, \texttt{alami} ditandai VB padahal ia kata sifat. POS tagger itu model statistik yang menebak, dan tebakannya bisa meleset.\\[2pt]
 
 \subsection*{\framebox{Slide 15/70}\quad Tokenisasi frasa}
 \addcontentsline{toc}{subsection}{Slide 15: Tokenisasi frasa}
@@ -157,7 +157,7 @@ $\pm$ & ``kurang lebih'' \\
 \subsection*{\framebox{Slide 21/70}\quad Named Entity Recognition}
 \addcontentsline{toc}{subsection}{Slide 21: NER}
 \textbf{Ucapkan:} "NER menemukan dan melabeli entitas yang disebut dalam teks: orang, organisasi, lokasi, tanggal. Bedanya dengan tokenisasi frasa di Slide 15 — di sana kita cuma tahu 'ini satu frasa', di sini kita tahu 'ini nama organisasi'. Labelnya itu yang membuatnya berguna."\\[2pt]
-\textbf{Batas:} sebutkan catatan kecil di slide. spaCy melabeli kota dan negara sebagai GPE, bukan LOC. Peserta akan melihat GPE di keluaran notebook, jadi jangan sampai dikira salah.\\[2pt]
+\textbf{Batas:} sebutkan dua hal. Pertama, spaCy melabeli kota dan negara sebagai GPE, bukan LOC, jadi GPE di keluaran notebook bukan kesalahan. Kedua, di run notebook \texttt{Nvidia} justru ikut dilabeli GPE padahal itu perusahaan: model kecil \texttt{en\_core\_web\_sm} memang sering keliru pada nama perusahaan yang mirip nama tempat. Pakai itu sebagai bahan, keluaran NER adalah tebakan model dan di produksi ia perlu diperiksa.\\[2pt]
 
 \subsection*{\framebox{Slide 22/70}\quad NER untuk apa? Tiga kasus nyata}
 \addcontentsline{toc}{subsection}{Slide 22: Kasus NER}
@@ -187,7 +187,8 @@ $\pm$ & ``kurang lebih'' \\
 
 \subsection*{\framebox{Slide 28/70}\quad Batas leksikon: negasi}
 \addcontentsline{toc}{subsection}{Slide 28: Negasi}
-\textbf{Ucapkan:} "'the material is not bad at all'. Untuk manusia ini pujian. Untuk leksikon, ia melihat \texttt{not}, lalu \texttt{bad} yang skornya negatif, lalu \texttt{at all}, dan menjumlahkannya. Karena tidak membaca urutan, negasi berlapis mudah meleset. Sarkasme bernasib sama, dan itu masalah besar untuk data media sosial. Transformer membaca kalimat sebagai satu kesatuan — di situlah bedanya, dan itulah yang kita buktikan tiga slide lagi."\\[2pt]
+\textbf{Ucapkan:} "Baris pertama justru benar, dan itu penting disebut supaya kita jujur: 'The plot was not good' diberi minus nol koma tiga lima. TextBlob memang punya aturan negasi — \texttt{not} membalik skor kata tepat sesudahnya. Batasnya baru terlihat di baris kedua. 'I would not call this a great movie' itu kritik, tapi skornya plus nol koma delapan, positif kuat. Sebabnya \texttt{not} berjarak tiga kata dari \texttt{great}, di luar jangkauan aturannya, jadi yang terhitung tinggal \texttt{great}. Baris ketiga kebalikannya: 'Nobody would say this restaurant is bad\' itu pujian, tapi diberi minus nol koma tujuh."\\[2pt]
+\textbf{Batas:} jangan menyederhanakannya jadi 'leksikon tidak bisa menangani negasi'. Ia bisa, untuk negasi yang berdekatan. Yang tidak bisa ditangani adalah negasi berjarak dan sarkasme, dan ketiga angka di tabel ini diukur langsung, bukan dikarang.\\[2pt]
 
 \subsection*{\framebox{Slide 29/70}\quad Batas leksikon: bahasa}
 \addcontentsline{toc}{subsection}{Slide 29: Batas bahasa}
@@ -213,7 +214,7 @@ $\pm$ & ``kurang lebih'' \\
 
 \subsection*{\framebox{Slide 34/70}\quad Naive Bayes: kenapa masih diajarkan}
 \addcontentsline{toc}{subsection}{Slide 34: Naive Bayes}
-\textbf{Ucapkan:} "Naive Bayes menghitung peluang tiap kelas lewat Teorema Bayes. Disebut 'naive' karena ia menganggap kemunculan tiap kata saling bebas — asumsi yang jelas salah, karena 'nasi' dan 'goreng' sangat berhubungan. Anehnya ia tetap bekerja baik untuk teks. Alasan ia masih diajarkan bukan akurasinya, melainkan kolom kanan itu: keputusannya bisa dibaca manusia. \texttt{outstanding} muncul tiga belas kali lebih sering di ulasan positif — itu kalimat yang bisa kamu bawa ke rapat. Neural network tidak memberimu itu."\\[2pt]
+\textbf{Ucapkan:} "Naive Bayes menghitung peluang tiap kelas lewat Teorema Bayes. Disebut 'naive' karena ia menganggap kemunculan tiap kata saling bebas — asumsi yang jelas salah, karena 'nasi' dan 'goreng' sangat berhubungan. Anehnya ia tetap bekerja baik untuk teks. Alasan ia masih diajarkan bukan akurasinya, melainkan kolom kanan itu: keputusannya bisa dibaca manusia. \texttt{outstanding} muncul hampir dua belas kali lebih sering di ulasan positif — itu kalimat yang bisa kamu bawa ke rapat. Neural network tidak memberimu itu."\\[2pt]
 
 \subsection*{\framebox{Slide 35/70}\quad Intuisi: kebocoran data}
 \addcontentsline{toc}{subsection}{Slide 35: Kebocoran data}
@@ -226,7 +227,7 @@ $\pm$ & ``kurang lebih'' \\
 
 \subsection*{\framebox{Slide 37/70}\quad Baseline: angka pembanding yang wajib}
 \addcontentsline{toc}{subsection}{Slide 37: Baseline}
-\textbf{Ucapkan:} "Akurasi 82 persen itu bagus atau jelek? Tidak ada yang bisa menjawab tanpa angka pembandingnya. Baseline kelas mayoritas adalah akurasi yang kamu dapat kalau selalu menebak kelas terbanyak, tanpa model sama sekali. Di \texttt{movie\_reviews} kedua kelas seimbang seribu lawan seribu, jadi baselinenya sekitar 50 persen, dan 82 persen berarti model benar-benar belajar sesuatu."\\[2pt]
+\textbf{Ucapkan:} "Akurasi 78 persen itu bagus atau jelek? Tidak ada yang bisa menjawab tanpa angka pembandingnya. Baseline kelas mayoritas adalah akurasi yang kamu dapat kalau selalu menebak kelas terbanyak, tanpa model sama sekali. Korpus \texttt{movie\_reviews} seimbang seribu lawan seribu, dan pada pembagian test di notebook baselinenya jatuh di 54,8 persen. Selisih 23 poin itu berarti model benar-benar belajar sesuatu."\\[2pt]
 \textbf{Batas:} berikan contoh sebaliknya supaya menempel. Kalau 95 persen datamu satu kelas, model dengan akurasi 94 persen sebenarnya lebih buruk daripada menebak asal. Angka 94 terdengar hebat sampai kamu tahu pembandingnya.\\[2pt]
 
 \subsection*{\framebox{Slide 38/70}\quad Ringkasan Act 4}
@@ -247,8 +248,8 @@ $\pm$ & ``kurang lebih'' \\
 
 \subsection*{\framebox{Slide 42/70}\quad TF-IDF buta terhadap sinonim}
 \addcontentsline{toc}{subsection}{Slide 42: Buta sinonim}
-\textbf{Ucapkan:} "Dua kalimat: 'Saya suka makan nasi goreng' dan 'Aku gemar menyantap nasi goreng'. Maknanya hampir identik. Skor TF-IDF-nya rendah, sekitar nol koma tiga. Kenapa? Karena bagi TF-IDF, \texttt{suka} dan \texttt{gemar} adalah dua kolom berbeda yang tidak berhubungan sama sekali — sama tidak berhubungannya dengan \texttt{suka} dan \texttt{beton}. Yang tersisa untuk dicocokkan cuma \texttt{nasi} dan \texttt{goreng}. Embedding memberi nol koma delapan lima untuk pasangan yang sama."\\[2pt]
-\textbf{Batas:} sebutkan bahwa angka di slide ilustratif; nilai persisnya dihitung peserta sendiri di notebook Section 9.\\[2pt]
+\textbf{Ucapkan:} "Dua kalimat: 'Saya suka makan nasi goreng' dan 'Aku gemar menyantap nasi goreng'. Maknanya hampir identik. Skor TF-IDF-nya nol koma dua tiga. Kenapa? Karena bagi TF-IDF, \texttt{suka} dan \texttt{gemar} adalah dua kolom berbeda yang tidak berhubungan sama sekali — sama tidak berhubungannya dengan \texttt{suka} dan \texttt{beton}. Yang tersisa untuk dicocokkan cuma \texttt{nasi} dan \texttt{goreng}. Embedding memberi nol koma sembilan enam untuk pasangan yang sama."\\[2pt]
+\textbf{Batas:} angka ini diukur langsung di notebook Section 9 dengan model \texttt{paraphrase-multilingual-MiniLM-L12-v2}. Model embedding lain akan memberi angka berbeda; yang tetap adalah arah selisihnya.\\[2pt]
 
 \subsection*{\framebox{Slide 43/70}\quad Intuisi: embedding sebagai koordinat}
 \addcontentsline{toc}{subsection}{Slide 43: Intuisi embedding}
@@ -278,8 +279,8 @@ $\pm$ & ``kurang lebih'' \\
 
 \subsection*{\framebox{Slide 49/70}\quad Intuisi: token adalah satuan biaya}
 \addcontentsline{toc}{subsection}{Slide 49: Token dan biaya}
-\textbf{Ucapkan:} "Ini bagian yang langsung terasa di dompet. Dua kalimat yang maknanya sama; yang Inggris jadi sembilan token, yang Indonesia jadi tujuh belas. Penyebabnya bukan bahasa Indonesia lebih rumit, melainkan tokenizer GPT-2 dilatih dominan pada teks Inggris, jadi kata Indonesia terpaksa dipecah lebih halus. Akibatnya: API LLM menagih per token, sehingga isi yang sama jadi hampir dua kali lebih mahal dalam bahasa Indonesia. Tokenizer multibahasa atau khusus Indonesia menekan rasio ini, dan itu pertimbangan nyata saat memilih model."\\[2pt]
-\textbf{Batas:} angka di slide ilustratif. Peserta menghitung sendiri dengan kalimatnya di notebook Section 10, dan hasilnya akan sedikit berbeda.\\[2pt]
+\textbf{Ucapkan:} "Ini bagian yang langsung terasa di dompet. Dua pasang kalimat yang maknanya sama; sisi Inggris jadi 16 token, sisi Indonesia jadi 40 token, rasionya dua setengah kali. Penyebabnya bukan bahasa Indonesia lebih rumit, melainkan tokenizer GPT-2 dilatih dominan pada teks Inggris, jadi kata Indonesia terpaksa dipecah lebih halus. Akibatnya: API LLM menagih per token, sehingga isi yang sama jadi dua setengah kali lebih mahal. Tokenizer multibahasa menekan rasio itu jadi 1,35 kali pada kalimat yang sama, dan itu pertimbangan nyata saat memilih model."\\[2pt]
+\textbf{Batas:} rasio ini bergantung pada kalimat yang dipakai. Minta peserta menghitung ulang dengan kalimat mereka sendiri di notebook Section 10; angkanya akan berbeda, arahnya tidak.\\[2pt]
 
 \subsection*{\framebox{Slide 50/70}\quad "Token" mulai Modul 04}
 \addcontentsline{toc}{subsection}{Slide 50: Arti token}

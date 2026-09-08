@@ -20,6 +20,7 @@
 \usepackage{colortbl}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{pifont}
 
 % ============================================================
 % COLOR PALETTE (Navasena dark theme)
@@ -614,10 +615,10 @@
       \begin{enumerate}
         \footnotesize
         \item \texttt{nlp}
-        \item \texttt{bahasa}
+        \item \texttt{kembang}
+        \item \texttt{indonesia}
         \item \texttt{model}
-        \item \texttt{analisis}
-        \item \texttt{sentimen}
+        \item \texttt{bahasa}
       \end{enumerate}
       \vspace{0.3em}
       {\footnotesize\color{nvgray}Baru di sini topiknya terbaca.}
@@ -818,28 +819,28 @@
   membedakan keduanya.}
 \end{frame}
 
-\begin{frame}{Batas Leksikon: Negasi}
+\begin{frame}{Batas Leksikon: Negasi Jauh dan Sarkasme}
   \begin{center}
-  \resizebox{0.70\linewidth}{!}{%
-  \begin{tikzpicture}[font=\small]
-    \node[text=nvwhite, font=\normalsize] at (0,2.2) {"the material is \textbf{not bad} at all"};
-    \node[draw=nvcard, fill=nvdarkcard, rounded corners=4pt, text=nvwhite,
-          minimum width=2.2cm, minimum height=0.7cm] (w1) at (-3.2,0.6) {not};
-    \node[draw=nvred, fill=nvcard, rounded corners=4pt, text=nvred,
-          minimum width=2.2cm, minimum height=0.7cm] (w2) at (-0.4,0.6) {bad};
-    \node[draw=nvcard, fill=nvdarkcard, rounded corners=4pt, text=nvwhite,
-          minimum width=2.2cm, minimum height=0.7cm] (w3) at (2.4,0.6) {at all};
-    \node[text=nvgray, font=\footnotesize] at (0,-0.6) {leksikon menjumlahkan skor per kata};
-    \node[text=nvorange, font=\small\bfseries] at (0,-1.3)
-      {maksud manusia: pujian \quad $\neq$ \quad hasil penjumlahan};
-  \end{tikzpicture}%
+  \renewcommand{\arraystretch}{1.35}
+  {\footnotesize
+  \begin{tabular}{@{}p{0.54\linewidth}p{0.14\linewidth}p{0.24\linewidth}@{}}
+    \toprule
+    \rowcolor{nvcard!50}
+    \textbf{Kalimat} & \textbf{TextBlob} & \textbf{Maksudnya} \\
+    \midrule
+    \texttt{The plot was not good.} & \textcolor{nvgreen}{$-0{,}35$} & negatif \checkmark \\
+    \texttt{I would not call this a great movie.} & \textcolor{nvred}{$+0{,}80$} & negatif \ding{55} \\
+    \texttt{Nobody would say this restaurant is bad.} & \textcolor{nvred}{$-0{,}70$} & positif \ding{55} \\
+    \bottomrule
+  \end{tabular}%
   }
   \end{center}
-  \vspace{0.3em}
+  \vspace{0.5em}
   \begin{itemize}
     \footnotesize
-    \item Leksikon tidak membaca urutan, jadi negasi berlapis dan sarkasme mudah meleset
-    \item Transformer membaca kalimat sebagai satu kesatuan --- di situlah bedanya
+    \item Baris pertama benar: \texttt{not} membalik skor kata \textbf{tepat sesudahnya}
+    \item Baris kedua meleset karena \texttt{not} berjarak tiga kata dari \texttt{great}
+    \item Sarkasme meleset sepenuhnya --- isyaratnya ada di konteks, bukan di kata
   \end{itemize}
 \end{frame}
 
@@ -975,14 +976,14 @@ sentimen("Gw suka bgt sama teknologi NLP nih")
       \begin{tikzpicture}[font=\footnotesize]
         \node[text=nvlightgreen, font=\small\bfseries] at (0,1.6) {Fitur paling informatif};
         \node[text=nvwhite, align=left] at (0,0.4)
-          {\texttt{outstanding}\quad pos : neg = 13,0 : 1,0\\[2pt]
-           \texttt{insulting}\ \ \quad neg : pos = 11,0 : 1,0\\[2pt]
-           \texttt{ludicrous}\ \ \quad neg : pos = \ 9,7 : 1,0};
+          {\texttt{outstanding}\quad pos : neg = 11,8 : 1,0\\[2pt]
+           \texttt{wonderfully}\quad pos : neg = \ 6,5 : 1,0\\[2pt]
+           \texttt{poorly}\ \ \ \ \ \quad neg : pos = \ 5,7 : 1,0};
       \end{tikzpicture}%
       }
       \end{center}
       \vspace{0.2em}
-      {\footnotesize\color{nvgray}Dibaca: kata itu 13x lebih sering muncul di ulasan positif.}
+      {\footnotesize\color{nvgray}Dibaca: kata itu 11,8x lebih sering muncul di ulasan positif.}
     \end{column}
   \end{columns}
 \end{frame}
@@ -1052,10 +1053,10 @@ sentimen("Gw suka bgt sama teknologi NLP nih")
   \begin{tikzpicture}[font=\small]
     \node[draw=nvcard, fill=nvcard, rounded corners=4pt, text=nvwhite,
           text width=5.6cm, align=center, inner sep=8pt] (a) at (-3.4,0)
-          {\textbf{Akurasi model}\\[4pt]{\Large\color{nvgreen}82\%}};
+          {\textbf{Akurasi model}\\[4pt]{\Large\color{nvgreen}78,0\%}};
     \node[draw=nvcard, fill=nvcard, rounded corners=4pt, text=nvwhite,
           text width=5.6cm, align=center, inner sep=8pt] (b) at (3.4,0)
-          {\textbf{Baseline kelas mayoritas}\\[4pt]{\Large\color{nvorange}50\%}};
+          {\textbf{Baseline kelas mayoritas}\\[4pt]{\Large\color{nvorange}54,8\%}};
   \end{tikzpicture}%
   }
   \end{center}
@@ -1063,7 +1064,7 @@ sentimen("Gw suka bgt sama teknologi NLP nih")
   \begin{itemize}
     \footnotesize
     \item \textbf{Baseline kelas mayoritas} = akurasi kalau selalu menebak kelas terbanyak
-    \item Di \texttt{movie\_reviews} kedua kelas seimbang, jadi baseline $\approx$ 50\%
+    \item \texttt{movie\_reviews} seimbang 1.000 lawan 1.000, jadi baseline dekat 50\%
     \item Kalau 95\% data satu kelas, akurasi 94\% berarti model lebih buruk daripada menebak
   \end{itemize}
   \vspace{0.4em}
@@ -1159,10 +1160,10 @@ sentimen("Gw suka bgt sama teknologi NLP nih")
           {K2: "Aku \textbf{gemar menyantap} nasi goreng"};
     \node[draw=nvred, fill=nvcard, rounded corners=4pt, text=nvred,
           font=\bfseries, minimum width=4.6cm, minimum height=1cm, align=center] (r) at (4.2,1.6)
-          {TF-IDF\\similarity $\approx$ 0,32};
+          {TF-IDF\\similarity = 0,23};
     \node[draw=nvgreen, fill=nvcard, rounded corners=4pt, text=nvgreen,
           font=\bfseries, minimum width=4.6cm, minimum height=1cm, align=center] (g) at (4.2,-0.2)
-          {Embedding\\similarity $\approx$ 0,85};
+          {Embedding\\similarity = 0,96};
   \end{tikzpicture}%
   }
   \end{center}
@@ -1173,7 +1174,7 @@ sentimen("Gw suka bgt sama teknologi NLP nih")
     \item Yang tersisa hanya \texttt{nasi} dan \texttt{goreng} --- makanya skornya rendah
   \end{itemize}
   \vspace{0.2em}
-  {\color{nvgray}\scriptsize Angka ilustratif; nilai persisnya dihitung di notebook 01 Section 9.}
+  {\color{nvgray}\scriptsize Diukur di notebook 01 Section 9; \texttt{paraphrase-multilingual-MiniLM-L12-v2}.}
 \end{frame}
 
 \begin{frame}
@@ -1342,13 +1343,13 @@ tok.tokenize("mempelajari")
   \begin{center}
   \resizebox{0.85\linewidth}{!}{%
   \begin{tikzpicture}[font=\small]
-    \node[text=nvwhite, font=\footnotesize] at (0,3.0) {kalimat yang maknanya sama, tokenizer GPT-2};
+    \node[text=nvwhite, font=\footnotesize] at (0,3.0) {dua pasang kalimat semakna, tokenizer GPT-2};
     \node[text=nvwhite, font=\footnotesize, left] at (-4.2,2.0) {Inggris};
-    \fill[nvgreen] (-4.0,1.8) rectangle (0.2,2.2);
-    \node[text=nvwhite, font=\footnotesize, right] at (0.4,2.0) {9 token};
+    \fill[nvgreen] (-4.0,1.8) rectangle (-1.2,2.2);
+    \node[text=nvwhite, font=\footnotesize, right] at (-1.0,2.0) {16 token};
     \node[text=nvwhite, font=\footnotesize, left] at (-4.2,1.0) {Indonesia};
-    \fill[nvorange] (-4.0,0.8) rectangle (3.2,1.2);
-    \node[text=nvwhite, font=\footnotesize, right] at (3.4,1.0) {17 token};
+    \fill[nvorange] (-4.0,0.8) rectangle (3.0,1.2);
+    \node[text=nvwhite, font=\footnotesize, right] at (3.2,1.0) {40 token \ (2,50x)};
   \end{tikzpicture}%
   }
   \end{center}
@@ -1357,10 +1358,10 @@ tok.tokenize("mempelajari")
     \footnotesize
     \item Tokenizer GPT-2 dilatih dominan pada teks Inggris, jadi kata Indonesia terpecah lebih halus
     \item API LLM menagih \textbf{per token} --- kalimat Indonesia jadi lebih mahal untuk isi yang sama
-    \item Tokenizer multibahasa atau khusus Indonesia biasanya menekan rasio ini
+    \item Tokenizer multibahasa menekan rasio itu jadi 1,35x pada dua kalimat yang sama
   \end{itemize}
   \vspace{0.2em}
-  {\color{nvgray}\scriptsize Angka ilustratif; hitung sendiri di notebook 01 Section 10.}
+  {\color{nvgray}\scriptsize Diukur di notebook 01 Section 10; hitung ulang dengan kalimatmu sendiri.}
 \end{frame}
 
 \begin{frame}{"Token" Mulai Modul 04}

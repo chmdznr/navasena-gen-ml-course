@@ -87,12 +87,12 @@ Q = [
       "Kalimatnya mengandung negasi, dan negasi selalu membuat skor polaritas kembali menjadi nol"], 1,
      "Kamus TextBlob hanya berbahasa Inggris. Kalimat Indonesia menghasilkan nol karena tidak ada kata yang dikenali, dan model tidak membedakannya dari netral sungguhan. Ini kegagalan diam yang tidak memunculkan peringatan apa pun."),
 
-    ("Kenapa pendekatan leksikon kesulitan menilai kalimat `the material is not bad at all`?",
-     ["Kalimat itu memuat idiom, dan idiom tidak pernah dimasukkan ke dalam kamus sentimen mana pun",
-      "Leksikon menjumlahkan skor kata satu per satu tanpa membaca urutan, jadi negasi mudah meleset",
-      "Kata `bad` punya skor sangat negatif sehingga selalu mendominasi skor akhir seluruh kalimat",
-      "Kalimatnya terlalu panjang, dan skor leksikon menjadi tidak stabil di kalimat lebih dari lima kata"], 1,
-     "Leksikon menghitung skor per kata lalu menjumlahkannya, sehingga susunan kalimat tidak terbaca. Negasi berlapis dan sarkasme karena itu mudah meleset. Transformer membaca kalimat sebagai satu kesatuan."),
+    ("TextBlob menilai `The plot was not good` dengan benar (-0,35) tetapi `I would not call this a great movie` keliru (+0,80). Apa penjelasannya?",
+     ["Kalimat kedua lebih panjang, dan skor leksikon memang menjadi tidak stabil di kalimat panjang",
+      "Aturan negasi leksikon hanya membalik kata tepat sesudah `not`, sedangkan di kalimat kedua jaraknya tiga kata",
+      "Kata `great` punya skor jauh lebih tinggi daripada `good`, sehingga skor akhirnya ikut terangkat",
+      "Kalimat kedua memuat kata `call` yang tidak ada di kamus, jadi skornya dihitung tanpa negasi"], 1,
+     "Leksikon bukan tidak bisa menangani negasi sama sekali: `not good` dibalik dengan benar karena kata sasarannya berdekatan. Yang gagal adalah negasi berjarak, karena `not` tidak lagi menjangkau `great`. Sarkasme gagal karena alasan serupa: isyaratnya ada di konteks, bukan di kata."),
 
     ("Kalimat `Gw suka bgt sama teknologi NLP nih` gagal dinormalkan pipeline klasik, tetapi dikenali positif oleh IndoBERT. Penjelasannya apa?",
      ["Transformer menormalkan bahasa gaul ke bentuk baku lebih dulu sebelum menilai sentimennya",
