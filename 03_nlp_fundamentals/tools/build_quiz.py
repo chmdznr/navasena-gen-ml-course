@@ -208,12 +208,12 @@ Q = [
       "Menambah jumlah iterasi pelatihan, karena hasil GPU baru stabil setelah banyak epoch berjalan"], 1,
      "Pemanggilan CUDA pertama membayar inisialisasi context dan kompilasi kernel, dan itu bukan kecepatan komputasi sesungguhnya. Aturan emasnya: jangan pernah mengukur pemanggilan pertama. Data kecil memang bisa membuat GPU kalah, tetapi warm-up diperiksa lebih dulu."),
 
-    ("Kenapa MinHash dipakai untuk mencari near-duplicate di korpus 150 ribu paragraf?",
+    ("Kenapa MinHash dipakai untuk mencari near-duplicate di korpus 237 ribu paragraf?",
      ["Karena MinHash menghitung kemiripan tiap pasangan dokumen jauh lebih cepat daripada cosine",
       "Karena tiap dokumen diringkas jadi sidik jari, sehingga pencarian berubah jadi pengelompokan",
       "Karena MinHash mengurutkan dokumen berdasarkan panjangnya, sehingga duplikat pasti berdekatan",
       "Karena MinHash membuang dokumen pendek lebih dulu, dan duplikat biasanya berupa teks pendek"], 1,
-     "Membandingkan semua pasangan berarti sekitar 11 miliar perbandingan. MinHash mengubah masalah `cari yang mirip` menjadi `kelompokkan yang sama`, dan yang kedua jauh lebih murah. Ia tidak mempercepat perbandingan pasangan satu per satu."),
+     "Membandingkan semua pasangan berarti sekitar 28 miliar perbandingan. MinHash mengubah masalah `cari yang mirip` menjadi `kelompokkan yang sama`, dan yang kedua jauh lebih murah. Ia tidak mempercepat perbandingan pasangan satu per satu."),
 
     ("Operasi apa dari `nvtext` yang tidak punya padanan langsung di pandas?",
      ["`str.lower()`, karena pandas belum menyediakan konversi huruf kecil untuk kolom bertipe teks",

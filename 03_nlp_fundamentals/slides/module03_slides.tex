@@ -1478,9 +1478,9 @@ python -m cudf.pandas -m cuml.accel pipeline.py
 
 \begin{frame}
   \intuisi{GPU tidak selalu menang}
-  \vspace{0.4em}
+  \vspace{0.1em}
   \begin{center}
-  \resizebox{0.85\linewidth}{!}{%
+  \resizebox{0.62\linewidth}{!}{%
   \begin{tikzpicture}[font=\small]
     \draw[->,color=nvgray] (0,0) -- (8,0) node[right, text=nvgray, font=\footnotesize] {ukuran data};
     \draw[->,color=nvgray] (0,0) -- (0,3.4) node[above, text=nvgray, font=\footnotesize] {waktu};
@@ -1492,12 +1492,13 @@ python -m cudf.pandas -m cuml.accel pipeline.py
   \end{tikzpicture}%
   }
   \end{center}
-  \vspace{0.4em}
+  \vspace{0.2em}
   \begin{itemize}
     \footnotesize
     \item GPU membayar biaya tetap: inisialisasi CUDA dan pemindahan data CPU$\leftrightarrow$GPU
     \item Untuk data kecil, biaya tetap itu lebih mahal daripada komputasinya sendiri
     \item \textbf{Aturan emas benchmark:} jangan pernah mengukur pemanggilan GPU pertama --- lakukan \emph{warm-up} dulu
+    \item Besar kemenangannya ikut bergantung beban: SmSA yang kecil hanya 3,2x, bigram di 237 ribu paragraf 81x
   \end{itemize}
 \end{frame}
 
@@ -1525,11 +1526,11 @@ python -m cudf.pandas -m cuml.accel pipeline.py
   \end{center}
 \end{frame}
 
-\begin{frame}{Seberapa Cepat? (Colab T4, 150 ribu paragraf Wikipedia ID)}
+\begin{frame}{Seberapa Cepat? (Colab T4, 237 ribu paragraf Wikipedia ID)}
   \begin{center}
-    \includegraphics[width=0.88\textwidth]{figures/rapids_speedup.pdf}
+    \includegraphics[width=0.84\textwidth]{figures/rapids_speedup.pdf}
   \end{center}
-  \footnotesize\textcolor{nvgray}{Diukur langsung di notebook \texttt{02\_nlp\_on\_steroids} --- angka di mesinmu bisa berbeda.}
+  \footnotesize\textcolor{nvgray}{Run 2026-09-08, Colab T4, cuDF/cuML 26.02. Selisihnya berbeda per operasi; angka di mesinmu pun akan berbeda.}
 \end{frame}
 
 \begin{frame}{MinHash: Dari Miliaran Perbandingan Jadi Satu groupby}
@@ -1540,8 +1541,8 @@ python -m cudf.pandas -m cuml.accel pipeline.py
           text width=5.8cm, align=center, inner sep=8pt] (a) at (-3.6,0)
           {\textbf{Cara lugu}\\[4pt]
            bandingkan semua pasangan\\
-           150.000 dokumen\\
-           $\approx$ 11 miliar perbandingan};
+           237.000 dokumen\\
+           $\approx$ 28 miliar perbandingan};
     \node[draw=nvgreen, fill=nvcard, rounded corners=4pt, text=nvwhite,
           text width=5.8cm, align=center, inner sep=8pt] (b) at (3.8,0)
           {\textbf{MinHash}\\[4pt]
@@ -1597,7 +1598,7 @@ python -m cudf.pandas -m cuml.accel pipeline.py
   \begin{tabular}{@{}p{0.44\linewidth}p{0.48\linewidth}@{}}
     \toprule
     \rowcolor{nvcard!50}
-    \textbf{Hari ini (1 T4, 150 ribu paragraf)} & \textbf{Produksi (ratusan GPU, miliaran dokumen)} \\
+    \textbf{Hari ini (1 T4, 237 ribu paragraf)} & \textbf{Produksi (ratusan GPU, miliaran dokumen)} \\
     \midrule
     \texttt{tokenize}, \texttt{normalize} di nvtext & Identifikasi bahasa, pembersihan, penyaringan kualitas \\
     MinHash + \texttt{groupby} & Fuzzy dedup MinHash-LSH terdistribusi \\
@@ -1715,7 +1716,7 @@ python -m cudf.pandas -m cuml.accel pipeline.py
       \begin{itemize}
         \footnotesize
         \item Babak 1 --- nol perubahan kode di GPU
-        \item Babak 2 --- nvtext pada 150 ribu paragraf Wikipedia
+        \item Babak 2 --- nvtext pada 237 ribu paragraf Wikipedia
         \item Babak 3 --- dedup MinHash
         \item Babak 4 --- cuML native + pelajaran warm-up
         \item Babak 5 --- NeMo Curator dan jembatan ke LLM

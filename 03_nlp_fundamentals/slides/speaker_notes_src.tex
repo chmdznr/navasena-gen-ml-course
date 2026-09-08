@@ -304,12 +304,12 @@ $\pm$ & ``kurang lebih'' \\
 
 \subsection*{\framebox{Slide 55/70}\quad Nol perubahan kode}
 \addcontentsline{toc}{subsection}{Slide 55: Zero code change}
-\textbf{Ucapkan:} "Ini bagian yang paling mengejutkan peserta. File Python yang sama, tanpa satu baris pun diubah, dijalankan dua kali. Yang pertama biasa, yang kedua lewat dua akselerator. Yang pertama pakai CPU, yang kedua pakai GPU. Caranya bukan mengubah kode, melainkan mengubah cara menjalankannya — karena akselerator harus aktif sebelum \texttt{import pandas} dieksekusi. Operasi yang belum didukung GPU otomatis kembali ke CPU, jadi kodenya tidak pernah crash gara-gara ini."\\[2pt]
+\textbf{Ucapkan:} "Ini bagian yang paling mengejutkan peserta. File Python yang sama, tanpa satu baris pun diubah, dijalankan dua kali. Yang pertama biasa, yang kedua lewat dua akselerator. Di run notebook: 40,1 detik di CPU jadi 16,4 detik di GPU, dan akurasinya praktis sama, 0,8881 lawan 0,8897. Caranya bukan mengubah kode, melainkan mengubah cara menjalankannya, karena akselerator harus aktif sebelum \texttt{import pandas} dieksekusi. Operasi yang belum didukung GPU otomatis kembali ke CPU, jadi kodenya tidak pernah crash gara-gara ini."\\[2pt]
 
 \subsection*{\framebox{Slide 56/70}\quad Intuisi: GPU tidak selalu menang}
 \addcontentsline{toc}{subsection}{Slide 56: GPU tidak selalu menang}
 \textbf{Ucapkan:} "Jangan biarkan peserta pulang dengan kesimpulan 'GPU selalu lebih cepat'. Lihat grafiknya. Garis GPU mulai lebih tinggi, karena GPU membayar biaya tetap: inisialisasi CUDA dan pemindahan data bolak-balik. Untuk data kecil, biaya tetap itu lebih mahal daripada komputasinya sendiri, dan di kiri titik impas GPU justru kalah. Konsekuensi praktisnya ada di butir terakhir, dan ini aturan emas: jangan pernah mengukur pemanggilan GPU pertama. Lakukan warm-up dulu."\\[2pt]
-\textbf{Batas:} sebutkan bahwa notebook memang memuat sel warm-up khusus, dan tanpa sel itu cuML bisa tampak lebih lambat dari scikit-learn. Kalau ada peserta yang melaporkan GPU-nya kalah, pertanyaan pertama: sel warm-up-nya kelewat atau tidak.\\[2pt]
+\textbf{Batas:} notebook memang memuat sel warm-up khusus. Kalau ada peserta melaporkan GPU-nya kalah, pertanyaan pertama: sel warm-up-nya kelewat atau tidak. Sebutkan juga angka run supaya kemenangan GPU tidak terdengar ajaib: pada SmSA yang kecil, cuML cuma 3,2 kali lebih cepat dari scikit-learn meski sudah panas (0,75 detik lawan 2,38 detik), sedangkan bigram di 237 ribu paragraf mencapai 81 kali. Besar kemenangannya sifat bebannya, bukan sifat GPU-nya.\\[2pt]
 
 \subsection*{\framebox{Slide 57/70}\quad nvtext: operasi yang tidak ada di pandas}
 \addcontentsline{toc}{subsection}{Slide 57: nvtext}
@@ -317,12 +317,12 @@ $\pm$ & ``kurang lebih'' \\
 
 \subsection*{\framebox{Slide 58/70}\quad Seberapa cepat?}
 \addcontentsline{toc}{subsection}{Slide 58: Angka speedup}
-\textbf{Ucapkan:} "Angka ini diukur langsung dari notebook 02 di Colab T4 dengan 150 ribu paragraf Wikipedia Indonesia. Perhatikan bahwa selisihnya berbeda per operasi — bukan satu angka ajaib yang berlaku untuk semuanya."\\[2pt]
+\textbf{Ucapkan:} "Angka ini diukur langsung dari run notebook 02 di Colab T4 pada 8 September 2026, cuDF dan cuML versi 26.02, dengan 236.940 paragraf Wikipedia Indonesia. Tokenisasi 20 kali, hitung kata 18 kali, bigram 81 kali. Perhatikan bahwa selisihnya berbeda per operasi, bukan satu angka ajaib yang berlaku untuk semuanya. Makin intensif operasi string-nya, makin lebar jaraknya."\\[2pt]
 \textbf{Batas:} katakan terus terang bahwa angka di mesin peserta akan berbeda, tergantung GPU yang kebagian di Colab dan beban runtime saat itu. Yang perlu mereka bawa pulang adalah polanya, bukan angkanya.\\[2pt]
 
 \subsection*{\framebox{Slide 59/70}\quad MinHash: dari miliaran perbandingan}
 \addcontentsline{toc}{subsection}{Slide 59: MinHash}
-\textbf{Ucapkan:} "Korpus mentah selalu penuh duplikat: artikel template, boilerplate, salin-tempel. Untuk training LLM itu masalah, karena duplikat membuat model menghafal dan komputasi terbuang. Tapi cara lugu untuk menemukannya mustahil: 150 ribu dokumen berarti sekitar 11 miliar pasangan yang harus dibandingkan. MinHash mengambil jalan pintas — tiap dokumen diringkas jadi sidik jari kecil, lalu tinggal dikelompokkan yang sidik jarinya sama. Dari miliaran perbandingan jadi satu \texttt{groupby}."\\[2pt]
+\textbf{Ucapkan:} "Korpus mentah selalu penuh duplikat: artikel template, boilerplate, salin-tempel. Untuk training LLM itu masalah, karena duplikat membuat model menghafal dan komputasi terbuang. Tapi cara lugu untuk menemukannya mustahil: 237 ribu dokumen berarti sekitar 28 miliar pasangan yang harus dibandingkan. MinHash mengambil jalan pintas, tiap dokumen diringkas jadi sidik jari kecil, lalu tinggal dikelompokkan yang sidik jarinya sama. Dari puluhan miliar perbandingan jadi satu \texttt{groupby}. Di run notebook ketemu 1.424 kelompok near-duplicate."\\[2pt]
 \textbf{Batas:} notebook memakai satu sidik jari utuh, jadi hanya duplikat yang nyaris identik tertangkap. Sistem produksi memakai banyak band sidik jari (MinHash-LSH) supaya kemiripan parsial pun terdeteksi. Sebutkan ini supaya peserta tidak mengira versi notebook sudah setara produksi.\\[2pt]
 
 \subsection*{\framebox{Slide 60/70}\quad Intuisi: kenapa sidik jari cukup}
@@ -332,7 +332,7 @@ $\pm$ & ``kurang lebih'' \\
 
 \subsection*{\framebox{Slide 61/70}\quad Dari lab ke produksi: NeMo Curator}
 \addcontentsline{toc}{subsection}{Slide 61: NeMo Curator}
-\textbf{Ucapkan:} "Baris per baris, apa yang peserta kerjakan hari ini dan padanannya di produksi. Tokenisasi dan normalisasi di nvtext menjadi identifikasi bahasa, pembersihan, dan penyaringan kualitas. MinHash plus \texttt{groupby} menjadi fuzzy dedup terdistribusi. TF-IDF plus regresi logistik menjadi classifier kualitas dokumen. Yang berbeda cuma skala: satu T4 dan 150 ribu paragraf lawan ratusan GPU dan miliaran dokumen. Langkah-langkahnya sama."\\[2pt]
+\textbf{Ucapkan:} "Baris per baris, apa yang peserta kerjakan hari ini dan padanannya di produksi. Tokenisasi dan normalisasi di nvtext menjadi identifikasi bahasa, pembersihan, dan penyaringan kualitas. MinHash plus \texttt{groupby} menjadi fuzzy dedup terdistribusi. TF-IDF plus regresi logistik menjadi classifier kualitas dokumen. Yang berbeda cuma skala: satu T4 dan 237 ribu paragraf lawan ratusan GPU dan miliaran dokumen. Langkah-langkahnya sama."\\[2pt]
 
 \subsection*{\framebox{Slide 62/70}\quad Ringkasan Act 6}
 \addcontentsline{toc}{subsection}{Slide 62: Ringkasan Act 6}
@@ -356,7 +356,7 @@ $\pm$ & ``kurang lebih'' \\
 
 \subsection*{\framebox{Slide 67/70}\quad Notebook 02: peta babak}
 \addcontentsline{toc}{subsection}{Slide 67: Peta nb02}
-\textbf{Ucapkan:} "Notebook 02 wajib runtime T4 GPU, sekitar 45 menit. Lima babak, dan datanya dua: SmSA dari IndoNLU untuk sentimen, dan Wikipedia Bahasa Indonesia lewat streaming untuk skala. Streaming berarti tidak ada dump raksasa yang perlu diunduh — cukup ambil sebanyak yang dibutuhkan."\\[2pt]
+\textbf{Ucapkan:} "Notebook 02 wajib runtime T4 GPU, sekitar 45 menit, dan sudah diverifikasi jalan bersih di Colab pada 8 September 2026. Lima babak, dan datanya dua: SmSA dari IndoNLU untuk sentimen, dan Wikipedia Bahasa Indonesia lewat streaming untuk skala. Streaming berarti tidak ada dump raksasa yang perlu diunduh — cukup ambil sebanyak yang dibutuhkan."\\[2pt]
 
 \subsection*{\framebox{Slide 68/70}\quad Setup \& tools}
 \addcontentsline{toc}{subsection}{Slide 68: Setup}
