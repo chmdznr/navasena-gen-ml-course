@@ -1,0 +1,372 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\usepackage[indonesian]{babel}
+
+% Kata Inggris yang dipenggal salah oleh pola Indonesia
+\hyphenation{to-ken to-ke-ni-sa-si stop-word lem-ma-ti-sa-si stem-ming
+  em-bed-ding trans-for-mer lek-si-kon sub-word cor-pus cor-pus-nya
+  vec-to-ri-zer clas-si-fier base-line pipe-line}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage[colorlinks=true,linkcolor=teal,urlcolor=teal]{hyperref}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{microtype}
+\sloppy
+
+\definecolor{acc}{HTML}{5A8F00}
+\titleformat{\section}{\Large\bfseries\color{acc}}{}{0pt}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0pt}{}
+\setlength{\parindent}{0pt}
+\renewcommand{\framebox}[1]{\colorbox{acc!15}{\textcolor{acc}{\textbf{#1}}}}
+
+\title{\textbf{Speaker Notes}\\[2mm]\large NLP Fundamentals \textperiodcentered{} Batch 6\\[1mm]\normalsize Naskah lisan per slide + panduan menyebut istilah}
+\author{Navasena AI}
+\date{\today}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\noindent Catatan pengajar untuk mendampingi deck \texttt{module03\_slides.pdf} (70 slide, hari 3). Tiap entri diberi label \textbf{Slide N/70} sesuai nomor halaman deck, berisi naskah yang bisa langsung diucapkan (\textbf{Ucapkan}) dan, kalau ada batas yang mudah salah dipahami, penegasannya (\textbf{Batas}). Naskah ini bukan bacaan ulang teks slide: slide memuat yang perlu terlihat, notes menyambungkan idenya dan menyebut sampai mana klaimnya berlaku. Frame bertanda \emph{Intuisi} dibawa dengan tempo santai; frame mekanisme (tabel, diagram berlapis) dibaca lebih pelan dengan jeda setelah tiap butir. Sapaan yang dipakai: ``kamu'' saat mengajak mencoba, ``kita'' saat menalar bersama.
+
+Modul ini punya satu benang merah yang perlu terus disebut: peserta bergerak dari \emph{menghitung kata} menuju \emph{mengukur makna}. Act 2 sampai 4 masih menghitung; Act 5 baru mengganti hitungan dengan vektor makna, dan di situlah jembatan ke Modul 04 dan 05 terbuka. Kalau waktu menipis, yang boleh dipercepat adalah Act 3; yang tidak boleh dilewati adalah Slide 35 (kebocoran data) dan Act 5.
+
+\vspace{4mm}
+\section*{Glosarium: cara menyebut istilah}
+Pakai pembacaan ini konsisten sepanjang hari, termasuk saat menjawab pertanyaan.
+
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}{@{}p{0.32\textwidth} p{0.62\textwidth}@{}}
+\hline
+\textbf{Istilah / singkatan} & \textbf{Dibaca (lantang)} \\ \hline
+\endhead
+NLP & dieja: ``N L P'' (\emph{natural language processing}) \\
+POS tagging & ``P O S tagging'', jelaskan sekali sebagai penandaan kelas kata \\
+NER & dieja: ``N E R'' (\emph{named entity recognition}) \\
+TF-IDF & dieja: ``T F I D F''; jangan dibaca ``tif-idf'' \\
+BPE & dieja: ``B P E'' (\emph{byte pair encoding}) \\
+\texttt{nlp-id} & ``N L P dash I D'', nama library-nya \\
+IndoBERT & ``Indo-bert'' \\
+RAPIDS, cuDF, cuML & ``rapids'', ``cu-D-F'', ``cu-M-L'' \\
+nvtext & ``N V text'' \\
+MinHash & ``min-hash'' \\
+GPU, CPU, API & dieja: ``G P U'', ``C P U'', ``A P I'' \\
+LLM, RAG & dieja: ``L L M'', ``R A G'' \\
+\emph{cosine similarity} & ``cosine similarity''; jelaskan sebagai kemiripan arah \\
+\emph{embedding} & ``embedding''; padanan lisan: ``vektor makna'' \\
+\emph{fine-tune} & ``fine-tune''; padanan lisan: ``dilatih lanjut'' \\
+\emph{baseline} & ``baseline''; padanan lisan: ``angka pembanding'' \\
+$\pm$ & ``kurang lebih'' \\
+\hline
+\end{longtable}
+
+\vspace{2mm}
+\section*{Naskah per slide}
+
+\subsection*{\framebox{Slide 1/70}\quad Judul: NLP Fundamentals}
+\addcontentsline{toc}{subsection}{Slide 1: Judul}
+\textbf{Ucapkan:} "Hari ini kita masuk ke bahasa. Dua hari kemarin datanya berupa angka dan gambar, dan keduanya sudah berbentuk tabel atau piksel sejak awal. Teks tidak begitu. Panjang kalimatnya berbeda-beda, satu kata bisa punya banyak arti, dan tidak ada satu pun kolom yang siap dimasukkan ke model. Seluruh hari ini pada dasarnya menjawab satu pertanyaan: bagaimana mengubah teks menjadi angka tanpa kehilangan maknanya."\\[2pt]
+
+\subsection*{\framebox{Slide 2/70}\quad Act 1: Apa itu NLP?}
+\addcontentsline{toc}{subsection}{Slide 2: Act 1}
+\textbf{Ucapkan:} "Act pertama singkat saja: apa yang dikerjakan NLP, di mana ia dipakai, dan kenapa bahasa Indonesia punya kesulitan yang tidak dimiliki bahasa Inggris."\\[2pt]
+
+\subsection*{\framebox{Slide 3/70}\quad Definisi NLP}
+\addcontentsline{toc}{subsection}{Slide 3: Definisi NLP}
+\textbf{Ucapkan:} "NLP adalah cabang AI yang membuat komputer memahami dan memproses bahasa manusia. Kata kuncinya \emph{memahami} — karena kalau cuma memotong dan menyambung string, itu sudah bisa dilakukan sejak dulu tanpa AI. Yang membuatnya NLP adalah usaha menangkap makna: bahwa 'restoran ini lambat' itu keluhan, dan 'antrean panjang tapi worth it' itu pujian. Contoh yang setiap hari kita pakai: mesin pencari, Google Translate, Siri, dan ChatGPT. Semuanya NLP."\\[2pt]
+
+\subsection*{\framebox{Slide 4/70}\quad Aplikasi NLP di dunia nyata}
+\addcontentsline{toc}{subsection}{Slide 4: Aplikasi}
+\textbf{Ucapkan:} "Enam kategori ini menutupi hampir semua produk NLP yang akan kamu temui. Yang menarik: pola dasarnya cuma satu — teks bebas masuk, sesuatu yang bisa ditindaklanjuti keluar. Kadang keluarannya label (spam atau bukan), kadang angka (skor sentimen), kadang teks lain (terjemahan, ringkasan). Hari ini kita mengerjakan tiga dari enam: analisis sentimen, klasifikasi teks, dan pencarian."\\[2pt]
+
+\subsection*{\framebox{Slide 5/70}\quad Tantangan bahasa manusia}
+\addcontentsline{toc}{subsection}{Slide 5: Tantangan bahasa}
+\textbf{Ucapkan:} "Di sinilah bahasa Indonesia berbeda. Bahasa Inggris morfologinya sederhana: \texttt{run}, \texttt{runs}, \texttt{running} — tiga bentuk, imbuhannya tinggal ditempel di belakang. Bahasa Indonesia membangun kata dari depan, belakang, dan kadang keduanya sekaligus: \texttt{jalan}, \texttt{menjalani}, \texttt{dijalankan}, \texttt{perjalanan}. Konsekuensinya praktis: tool yang dilatih untuk bahasa Inggris tidak bisa dipindahkan begitu saja. Itu sebabnya hari ini kita pakai dua kelompok library — \texttt{nltk} dan spaCy untuk contoh berbahasa Inggris, \texttt{nlp-id} untuk Indonesia."\\[2pt]
+
+\subsection*{\framebox{Slide 6/70}\quad Intuisi: satu kata dasar, belasan bentuk}
+\addcontentsline{toc}{subsection}{Slide 6: Intuisi imbuhan}
+\textbf{Ucapkan:} "Lihat gambarnya sebentar. Tujuh kata di sekeliling, satu kata dasar di tengah: \texttt{ajar}. Bagi kita ini jelas satu gagasan. Bagi mesin yang menghitung kata, ini tujuh kolom berbeda yang tidak saling berhubungan — dan tiap kolom harus dipelajari dari nol dengan datanya sendiri. Itulah masalah yang mau diselesaikan lemmatisasi nanti di Slide 13. Simpan gambar ini di kepala; kita akan kembali ke sini dua kali hari ini, sekali di lemmatisasi dan sekali lagi di tokenisasi subword."\\[2pt]
+
+\subsection*{\framebox{Slide 7/70}\quad Peta perjalanan modul}
+\addcontentsline{toc}{subsection}{Slide 7: Peta modul}
+\textbf{Ucapkan:} "Empat bagian, dan urutannya sengaja. A membersihkan teks sampai jadi token yang layak. B menggambarkan isinya: kata apa yang dominan, siapa yang disebut. C mulai memberi penilaian: nada kalimat ini apa, dokumen ini masuk kelas mana. D adalah lompatannya — di situ kita berhenti menghitung kata dan mulai mengukur makna. Kalau hari ini kamu cuma bisa mengingat satu bagian, ingat D, karena Modul 04 dan 05 berdiri di atasnya. Notebook 01 menempuh keempatnya di CPU; notebook 02 mengulang alur yang sama di GPU."\\[2pt]
+
+\subsection*{\framebox{Slide 8/70}\quad Act 2: Membersihkan teks}
+\addcontentsline{toc}{subsection}{Slide 8: Act 2}
+\textbf{Ucapkan:} "Act 2 adalah bagian yang paling sering dianggap pekerjaan rumah tangga, dan paling sering jadi penyebab hasil analisis tidak berarti apa-apa. Saya akan tunjukkan buktinya di Act 3."\\[2pt]
+
+\subsection*{\framebox{Slide 9/70}\quad Pipeline NLP: dari teks ke model}
+\addcontentsline{toc}{subsection}{Slide 9: Pipeline}
+\textbf{Ucapkan:} "Ini peta jalannya. Teks mentah di kiri, model di kanan, dan di antaranya empat sampai enam langkah yang urutannya cukup baku. Yang perlu kamu ingat: setiap langkah membuang sesuatu. Huruf besar dibuang, tanda baca dibuang, stopword dibuang. Setiap pembuangan itu keputusan, dan setiap keputusan punya kasus di mana ia salah. Kita akan bahas dua kasus seperti itu di slide-slide berikutnya."\\[2pt]
+
+\subsection*{\framebox{Slide 10/70}\quad Tokenisasi: memecah teks}
+\addcontentsline{toc}{subsection}{Slide 10: Tokenisasi}
+\textbf{Ucapkan:} "Token adalah unit terkecil yang diproses model. Hari ini kata 'token' akan berubah artinya satu kali, jadi saya sebutkan sekarang supaya tidak membingungkan nanti: di Bagian A, satu token sama dengan satu kata; di Bagian D, satu token adalah potongan subword yang lebih kecil dari kata. Keduanya benar, hanya konteksnya berbeda. Mulai Modul 04 besok, yang dipakai selalu arti yang kedua."\\[2pt]
+
+\subsection*{\framebox{Slide 11/70}\quad Intuisi: kenapa huruf kecil dan tanda baca dibuang duluan}
+\addcontentsline{toc}{subsection}{Slide 11: Intuisi normalisasi}
+\textbf{Ucapkan:} "Kiri: tanpa normalisasi, \texttt{NLP}, \texttt{nlp}, \texttt{NLP} berkoma, dan \texttt{NLP} dalam kutip dihitung sebagai empat kata berbeda. Kanan: setelah normalisasi, satu kata dengan frekuensi empat. Kenapa ini penting? Karena tiap variasi ejaan yang tidak disatukan menjadi satu dimensi fitur tambahan, dan tiap dimensi tambahan harus dipelajari model dari datanya sendiri. Dengan data terbatas, memecah satu kata jadi empat berarti membagi bukti yang kita punya jadi empat."\\[2pt]
+\textbf{Batas:} untuk analisis media sosial, huruf kapital semua kadang justru sinyal emosi — di kasus itu jangan buang informasinya begitu saja, catat dulu sebagai fitur terpisah.\\[2pt]
+
+\subsection*{\framebox{Slide 12/70}\quad Stopword: kata yang tidak membedakan}
+\addcontentsline{toc}{subsection}{Slide 12: Stopword}
+\textbf{Ucapkan:} "Stopword adalah kata yang muncul di hampir semua dokumen: \texttt{yang}, \texttt{di}, \texttt{dari}, \texttt{dan}. Logikanya sederhana — kalau sebuah kata ada di semua dokumen, kehadirannya tidak memberi tahu apa pun tentang dokumen mana yang sedang kita lihat. Daftar stopword \texttt{nlp-id} sudah disusun untuk bahasa Indonesia, jadi kamu tidak perlu membuatnya sendiri."\\[2pt]
+\textbf{Batas:} baca kotak Jebakan di slide dengan lantang. Kata \texttt{tidak} ada di banyak daftar stopword. Untuk analisis sentimen, membuangnya berarti 'tidak enak' dan 'enak' menjadi identik. Stopword bukan daftar universal; ia bergantung pada tugasnya.\\[2pt]
+
+\subsection*{\framebox{Slide 13/70}\quad Lemmatisasi vs stemming}
+\addcontentsline{toc}{subsection}{Slide 13: Lemmatisasi vs stemming}
+\textbf{Ucapkan:} "Dua cara mengembalikan kata ke bentuk dasar. Stemming memotong imbuhan secara mekanis — cepat, tanpa kamus, tapi hasilnya boleh jadi bukan kata sama sekali. Lemmatisasi memakai kamus dan aturan morfologi, jadi keluarannya selalu kata yang benar-benar ada. Untuk bahasa Indonesia yang imbuhannya berlapis, selisih kualitasnya terasa. Ini kembali ke gambar Slide 6: lemmatisasi adalah usaha menyatukan tujuh cabang tadi kembali ke akarnya."\\[2pt]
+\textbf{Batas:} sebutkan soal Sastrawi secara terus terang. Nama itu masih sering muncul di tutorial Indonesia, tapi rilis terakhirnya tahun 2016. Boleh dipakai kalau sudah jalan di proyek lama; jangan dipilih untuk proyek baru.\\[2pt]
+
+\subsection*{\framebox{Slide 14/70}\quad POS tagging}
+\addcontentsline{toc}{subsection}{Slide 14: POS tagging}
+\textbf{Ucapkan:} "POS tagging menandai kelas kata: kata benda, kerja, sifat, preposisi. Gunanya bukan untuk dipamerkan, tapi untuk menyaring. Kalau kamu mau menemukan topik sebuah dokumen, ambil kata bendanya saja — kata kerja dan kata sambung jarang menjadi topik. Kalau kamu mau menganalisis tindakan dalam laporan insiden, ambil kata kerjanya."\\[2pt]
+\textbf{Batas:} label di slide memakai tagset UD supaya mudah dibaca. \texttt{nlp-id} mengeluarkan tagset berbeda — NNP, VB, NN, IN. Peserta akan melihat yang kedua di notebook, jadi sebutkan sekarang supaya tidak bingung.\\[2pt]
+
+\subsection*{\framebox{Slide 15/70}\quad Tokenisasi frasa}
+\addcontentsline{toc}{subsection}{Slide 15: Tokenisasi frasa}
+\textbf{Ucapkan:} "Masalahnya begini: 'Universitas Indonesia' dipecah jadi 'universitas' dan 'indonesia', dan seketika nama lembaganya hilang. Yang tersisa dua kata umum yang bisa muncul di mana saja. \texttt{PhraseTokenizer} mengelompokkan frasa nomina jadi satu token, sehingga entitas multi-kata tetap utuh. Berguna sekali sebelum analisis frekuensi."\\[2pt]
+\textbf{Batas:} ini bukan NER. Ia menemukan bahwa dua kata itu satu frasa, tapi tidak memberi tahu bahwa itu nama organisasi. Untuk labelnya, tunggu Slide 21.\\[2pt]
+
+\subsection*{\framebox{Slide 16/70}\quad Ringkasan Act 2}
+\addcontentsline{toc}{subsection}{Slide 16: Ringkasan Act 2}
+\textbf{Ucapkan:} "Lima langkah, satu keluaran: daftar token bersih. Itu bahan baku semua yang kita kerjakan sesudah ini. Kalau langkah ini asal-asalan, semua angka di act berikutnya ikut tidak berarti — dan itu yang akan saya buktikan di slide berikutnya."\\[2pt]
+
+\subsection*{\framebox{Slide 17/70}\quad Act 3: Menganalisis teks}
+\addcontentsline{toc}{subsection}{Slide 17: Act 3}
+\textbf{Ucapkan:} "Act 3 masih menggambarkan teks, belum menilai. Dua pertanyaan: apa yang dibicarakan dokumen ini, dan siapa saja yang disebut di dalamnya."\\[2pt]
+
+\subsection*{\framebox{Slide 18/70}\quad Frekuensi kata}
+\addcontentsline{toc}{subsection}{Slide 18: Frekuensi kata}
+\textbf{Ucapkan:} "Menghitung kata yang paling sering muncul adalah cara termurah menebak topik sebuah koleksi dokumen. Gambarnya membandingkan stopword Inggris dan Indonesia supaya terlihat bahwa kelompok kata yang harus dibuang memang berbeda per bahasa."\\[2pt]
+
+\subsection*{\framebox{Slide 19/70}\quad Intuisi: frekuensi tanpa pembersihan}
+\addcontentsline{toc}{subsection}{Slide 19: Intuisi pembersihan}
+\textbf{Ucapkan:} "Inilah bukti yang saya janjikan di Act 2. Kiri: lima kata teratas dari teks mentah — \texttt{yang}, \texttt{di}, \texttt{dan}, \texttt{adalah}, \texttt{untuk}. Ambil dokumen apa pun berbahasa Indonesia, hasilnya akan mirip. Daftar itu tidak memberi tahu apa pun. Kanan: setelah dibersihkan, \texttt{nlp}, \texttt{bahasa}, \texttt{model}, \texttt{analisis}, \texttt{sentimen} — baru di sini topiknya terbaca. Perbedaannya bukan kosmetik. Yang kiri nol informasi, yang kanan adalah jawabannya."\\[2pt]
+
+\subsection*{\framebox{Slide 20/70}\quad Word cloud: cantik, tapi hati-hati}
+\addcontentsline{toc}{subsection}{Slide 20: Word cloud}
+\textbf{Ucapkan:} "Word cloud enak dipandang dan bagus untuk laporan ke pihak yang bukan teknis. Tapi mata manusia buruk sekali dalam membandingkan luas huruf, dan tata letaknya acak — posisi kata di gambar tidak membawa informasi apa pun. Aturan praktisnya di kotak kanan: word cloud untuk menarik perhatian, bar chart untuk mengambil keputusan. Di notebook kita membuat keduanya supaya bedanya terasa."\\[2pt]
+
+\subsection*{\framebox{Slide 21/70}\quad Named Entity Recognition}
+\addcontentsline{toc}{subsection}{Slide 21: NER}
+\textbf{Ucapkan:} "NER menemukan dan melabeli entitas yang disebut dalam teks: orang, organisasi, lokasi, tanggal. Bedanya dengan tokenisasi frasa di Slide 15 — di sana kita cuma tahu 'ini satu frasa', di sini kita tahu 'ini nama organisasi'. Labelnya itu yang membuatnya berguna."\\[2pt]
+\textbf{Batas:} sebutkan catatan kecil di slide. spaCy melabeli kota dan negara sebagai GPE, bukan LOC. Peserta akan melihat GPE di keluaran notebook, jadi jangan sampai dikira salah.\\[2pt]
+
+\subsection*{\framebox{Slide 22/70}\quad NER untuk apa? Tiga kasus nyata}
+\addcontentsline{toc}{subsection}{Slide 22: Kasus NER}
+\textbf{Ucapkan:} "Tiga kasus ini nyata dan sering diminta klien. Kontrak: tarik nama pihak, nilai, dan tanggal dari ratusan PDF — pekerjaan yang biasanya dilakukan manual berhari-hari. Berita: pantau setiap penyebutan nama perusahaan, lalu gabungkan dengan skor sentimennya, dan kamu punya dashboard reputasi. Layanan: isi otomatis formulir tiket dari keluhan berbentuk teks bebas. Polanya satu: teks bebas masuk, data terstruktur keluar. Itulah nilai jual NER."\\[2pt]
+
+\subsection*{\framebox{Slide 23/70}\quad NER bahasa Indonesia: tiga jalur}
+\addcontentsline{toc}{subsection}{Slide 23: NER Indonesia}
+\textbf{Ucapkan:} "Pertanyaan yang pasti muncul: kalau spaCy hanya punya model Inggris, bagaimana dengan Indonesia. Tiga jalur di tabel. Model multibahasa spaCy ringan tapi akurasinya sedang. Model NER berbasis IndoBERT di Hugging Face akurasinya paling baik untuk Indonesia, tapi unduhannya besar dan butuh GPU agar cepat. \texttt{PhraseTokenizer} adalah jalan pintas tanpa model — sangat cepat, tapi tidak memberi label."\\[2pt]
+\textbf{Batas:} tegaskan bahwa spaCy memang belum menyediakan pipeline khusus bahasa Indonesia. Ini bukan kekurangan materi, melainkan keadaan ekosistemnya.\\[2pt]
+
+\subsection*{\framebox{Slide 24/70}\quad Ringkasan Act 3}
+\addcontentsline{toc}{subsection}{Slide 24: Ringkasan Act 3}
+\textbf{Ucapkan:} "Empat butir, dan yang terakhir jadi jembatan: sampai di sini kita baru menggambarkan teks. Act 4 mulai menilainya — dan di situ ada satu kesalahan yang sering lolos dari review."\\[2pt]
+
+\subsection*{\framebox{Slide 25/70}\quad Act 4: Menilai teks}
+\addcontentsline{toc}{subsection}{Slide 25: Act 4}
+\textbf{Ucapkan:} "Act 4 punya dua bagian: analisis sentimen, lalu klasifikasi teks. Di ujungnya ada satu slide yang menurut saya paling penting sepanjang hari ini, dan itu bukan tentang NLP — melainkan tentang cara mengevaluasi model apa pun."\\[2pt]
+
+\subsection*{\framebox{Slide 26/70}\quad Analisis sentimen: dua generasi}
+\addcontentsline{toc}{subsection}{Slide 26: Dua generasi sentimen}
+\textbf{Ucapkan:} "Dua pendekatan, dan membandingkannya langsung adalah cara tercepat memahami kenapa NLP pindah ke transformer. Generasi pertama, leksikon: simpan kamus kata beserta skornya, lalu jumlahkan skor kata yang muncul. Cepat, transparan, jalan di laptop mana pun. Generasi kedua, transformer: model dilatih dari teks nyata berlabel, dan ia membaca susunan kalimat, bukan menjumlah. Harganya unduhan ratusan MB dan komputasi yang jauh lebih berat."\\[2pt]
+
+\subsection*{\framebox{Slide 27/70}\quad Skala polaritas}
+\addcontentsline{toc}{subsection}{Slide 27: Skala polaritas}
+\textbf{Ucapkan:} "TextBlob mengeluarkan dua angka. Polarity dari minus satu sampai plus satu: negatif ke positif. Subjectivity dari nol sampai satu: faktual ke opini. Yang kedua sering dilupakan padahal berguna — kalimat 'harganya Rp50.000' punya subjectivity rendah, dan kalau kamu memfilter dengan itu, kamu bisa memisahkan pernyataan fakta dari pendapat."\\[2pt]
+\textbf{Batas:} baca kotak Jebakan pelan-pelan. Skor nol punya dua arti yang sangat berbeda — kalimatnya memang netral, atau tidak ada satu pun katanya yang ada di kamus. Leksikon tidak membedakan keduanya, dan tidak memberi peringatan. Slide 29 menunjukkan akibatnya.\\[2pt]
+
+\subsection*{\framebox{Slide 28/70}\quad Batas leksikon: negasi}
+\addcontentsline{toc}{subsection}{Slide 28: Negasi}
+\textbf{Ucapkan:} "'the material is not bad at all'. Untuk manusia ini pujian. Untuk leksikon, ia melihat \texttt{not}, lalu \texttt{bad} yang skornya negatif, lalu \texttt{at all}, dan menjumlahkannya. Karena tidak membaca urutan, negasi berlapis mudah meleset. Sarkasme bernasib sama, dan itu masalah besar untuk data media sosial. Transformer membaca kalimat sebagai satu kesatuan — di situlah bedanya, dan itulah yang kita buktikan tiga slide lagi."\\[2pt]
+
+\subsection*{\framebox{Slide 29/70}\quad Batas leksikon: bahasa}
+\addcontentsline{toc}{subsection}{Slide 29: Batas bahasa}
+\textbf{Ucapkan:} "Sekarang masalah yang lebih dekat ke kita. Kalimat 'Pelayanan restoran itu lambat dan mengecewakan' jelas negatif bagi kita. TextBlob mengembalikan nol koma nol nol."\\[2pt]
+\textbf{Batas:} jeda sebentar di sini, lalu baca kotak Jebakan. Nol itu bukan 'netral'. Kamus TextBlob hanya berbahasa Inggris, jadi tidak ada satu pun kata Indonesia yang dikenali. Nol berarti 'tidak tahu' — dan model tidak akan pernah memberi tahu kamu bedanya. Ini kegagalan diam, jenis yang paling berbahaya, karena pipeline-nya jalan mulus dan angkanya tetap keluar.\\[2pt]
+
+\subsection*{\framebox{Slide 30/70}\quad Sentimen Indonesia dengan IndoBERT}
+\addcontentsline{toc}{subsection}{Slide 30: IndoBERT}
+\textbf{Ucapkan:} "Beginilah cara industri Indonesia mengerjakannya sekarang. Empat baris kode: panggil \texttt{pipeline}, sebut nama modelnya, masukkan kalimat. Modelnya sudah dilatih lanjut pada data sentimen berbahasa Indonesia oleh orang lain, dan kita tinggal memakainya. Pola ini persis transfer learning yang kemarin kamu lihat dengan ResNet di Modul 02 — model besar yang sudah dilatih, dipakai ulang untuk tugas kita."\\[2pt]
+\textbf{Batas:} sebutkan bahwa model ini mengenali tiga kelas, termasuk netral. Banyak model sentimen hanya punya dua, dan itu memaksa kalimat faktual masuk ke salah satunya.\\[2pt]
+
+\subsection*{\framebox{Slide 31/70}\quad Intuisi: kenapa transformer tahan bahasa gaul}
+\addcontentsline{toc}{subsection}{Slide 31: Intuisi slang}
+\textbf{Ucapkan:} "Di notebook, kalimat 'Gw suka bgt sama teknologi NLP nih' langsung dikenali positif — kalimat yang gagal total dinormalkan pipeline klasik kita di Section 1. Kenapa? Bukan karena modelnya lebih pintar, tapi karena pengetahuannya datang dari tempat lain. Kamus leksikon disusun manusia dari teks baku, dan \texttt{gw} tidak ada di sana. Transformer dilatih dari teks nyata — Twitter, ulasan, forum — jadi bahasa gaul ikut terlatih karena memang ada di datanya. Ditambah tokenisasi subword, kata yang belum pernah dilihat pun tetap terwakili sebagian."\\[2pt]
+
+\subsection*{\framebox{Slide 32/70}\quad Leksikon atau transformer?}
+\addcontentsline{toc}{subsection}{Slide 32: Kapan pakai yang mana}
+\textbf{Ucapkan:} "Jangan buru-buru menyimpulkan transformer selalu menang. Kolom kiri: kalau datanya jutaan dokumen dan kamu cuma butuh penyaringan kasar, kalau tidak ada GPU, kalau skornya harus bisa dijelaskan per kata untuk audit — leksikon masih pilihan yang benar. Kolom kanan: teks Indonesia, bahasa informal, negasi penting, butuh kelas netral yang jujur. Dan yang paling sering dipakai di produksi: keduanya berlapis — leksikon menyaring dulu supaya murah, transformer memutuskan yang tersisa."\\[2pt]
+
+\subsection*{\framebox{Slide 33/70}\quad Klasifikasi teks: bag-of-words}
+\addcontentsline{toc}{subsection}{Slide 33: Bag-of-words}
+\textbf{Ucapkan:} "Sekarang kita berhenti memakai model orang lain dan melatih classifier sendiri. Langkah pertama: mengubah dokumen jadi angka. Bag-of-words caranya paling sederhana — untuk tiap kata di daftar fitur, catat ada atau tidak ada. Urutan kata dibuang total. Namanya 'kantong kata' memang karena itu: seolah semua kata dimasukkan ke kantong lalu dikocok. Sederhana, tapi ini bentuk paling awal dari gagasan besar hari ini — teks sebagai vektor angka."\\[2pt]
+
+\subsection*{\framebox{Slide 34/70}\quad Naive Bayes: kenapa masih diajarkan}
+\addcontentsline{toc}{subsection}{Slide 34: Naive Bayes}
+\textbf{Ucapkan:} "Naive Bayes menghitung peluang tiap kelas lewat Teorema Bayes. Disebut 'naive' karena ia menganggap kemunculan tiap kata saling bebas — asumsi yang jelas salah, karena 'nasi' dan 'goreng' sangat berhubungan. Anehnya ia tetap bekerja baik untuk teks. Alasan ia masih diajarkan bukan akurasinya, melainkan kolom kanan itu: keputusannya bisa dibaca manusia. \texttt{outstanding} muncul tiga belas kali lebih sering di ulasan positif — itu kalimat yang bisa kamu bawa ke rapat. Neural network tidak memberimu itu."\\[2pt]
+
+\subsection*{\framebox{Slide 35/70}\quad Intuisi: kebocoran data}
+\addcontentsline{toc}{subsection}{Slide 35: Kebocoran data}
+\textbf{Ucapkan:} "Ini slide terpenting hari ini, dan kalau waktu mepet, potong slide lain, jangan yang ini. Fitur kita adalah dua ribu kata paling sering muncul. Pertanyaannya: sering muncul di data yang mana? Kolom merah, cara yang salah — hitung dari seluruh korpus dulu, baru pecah train dan test. Kelihatan wajar, dan kodenya jalan tanpa error. Tapi data test sudah ikut menentukan kolom mana yang dipakai model, jadi model sudah 'mengintip' sebelum diuji, dan akurasinya jadi terlalu bagus. Kolom hijau, cara yang benar: pecah dulu, pilih fitur dari train saja, baru terapkan ke test."\\[2pt]
+\textbf{Batas:} tekankan bahwa ini bukan kesalahan langka. Notebook modul ini versi lama melakukan persis kesalahan yang di kolom merah, dan tidak ada yang menyadarinya sampai diaudit. Kebocoran data tidak memunculkan error — ia cuma memberi angka yang menyenangkan.\\[2pt]
+
+\subsection*{\framebox{Slide 36/70}\quad Aturan yang sama berlaku untuk semuanya}
+\addcontentsline{toc}{subsection}{Slide 36: Fit hanya pada train}
+\textbf{Ucapkan:} "Kebocoran tadi bukan cuma soal seleksi fitur. Tabel ini daftar langkah yang sama-sama 'belajar' sesuatu dari data. \texttt{TfidfVectorizer} belajar kosakata dan bobot IDF. \texttt{StandardScaler} belajar rata-rata dan simpangan baku. Imputasi nilai kosong belajar median atau modus. Semuanya di-\texttt{fit} pada train, lalu diterapkan ke test — tanpa kecuali. Aturan ini akan terus berlaku di Modul 04 dan 05, jadi hafalkan bentuknya, bukan contohnya."\\[2pt]
+
+\subsection*{\framebox{Slide 37/70}\quad Baseline: angka pembanding yang wajib}
+\addcontentsline{toc}{subsection}{Slide 37: Baseline}
+\textbf{Ucapkan:} "Akurasi 82 persen itu bagus atau jelek? Tidak ada yang bisa menjawab tanpa angka pembandingnya. Baseline kelas mayoritas adalah akurasi yang kamu dapat kalau selalu menebak kelas terbanyak, tanpa model sama sekali. Di \texttt{movie\_reviews} kedua kelas seimbang seribu lawan seribu, jadi baselinenya sekitar 50 persen, dan 82 persen berarti model benar-benar belajar sesuatu."\\[2pt]
+\textbf{Batas:} berikan contoh sebaliknya supaya menempel. Kalau 95 persen datamu satu kelas, model dengan akurasi 94 persen sebenarnya lebih buruk daripada menebak asal. Angka 94 terdengar hebat sampai kamu tahu pembandingnya.\\[2pt]
+
+\subsection*{\framebox{Slide 38/70}\quad Ringkasan Act 4}
+\addcontentsline{toc}{subsection}{Slide 38: Ringkasan Act 4}
+\textbf{Ucapkan:} "Lima butir. Yang paling perlu dibawa pulang: dua yang tengah tentang evaluasi, bukan tentang NLP. Dan butir penutupnya membuka Act 5 — masalah yang belum kita selesaikan adalah bahwa semua hitungan kata di atas tidak tahu 'suka' dan 'gemar' itu sama."\\[2pt]
+
+\subsection*{\framebox{Slide 39/70}\quad Act 5: Dari kata ke makna}
+\addcontentsline{toc}{subsection}{Slide 39: Act 5}
+\textbf{Ucapkan:} "Act 5 adalah puncak hari ini. Kalau kamu memahami satu act saja, pilih yang ini — karena Modul 04 dan Modul 05 seluruhnya berdiri di atas gagasan yang dibangun di sini."\\[2pt]
+
+\subsection*{\framebox{Slide 40/70}\quad Tiga anak tangga representasi teks}
+\addcontentsline{toc}{subsection}{Slide 40: Tiga anak tangga}
+\textbf{Ucapkan:} "Tiga anak tangga, dan ketiganya mengerjakan hal yang sama: mengubah teks jadi angka. Yang membedakan adalah berapa banyak makna yang ikut terbawa. Bag-of-words cuma tahu ada atau tidak ada. TF-IDF menambahkan bobot, jadi kata langka dihargai lebih tinggi. Embedding menambahkan pengetahuan dari jutaan kalimat, dan di situlah makna mulai masuk."\\[2pt]
+
+\subsection*{\framebox{Slide 41/70}\quad TF-IDF: kata langka lebih berharga}
+\addcontentsline{toc}{subsection}{Slide 41: TF-IDF}
+\textbf{Ucapkan:} "TF adalah seberapa sering kata muncul di dokumen ini. IDF adalah seberapa jarang kata itu di seluruh koleksi. Kalikan keduanya, dan kata yang sering di sini tapi jarang di tempat lain dapat bobot tinggi. Lihat contoh di kanan: \texttt{yang} ada di seratus persen dokumen, bobotnya mendekati nol. \texttt{minhash} ada di dua persen, bobotnya tinggi. Menariknya, IDF melakukan otomatis apa yang tadi kita lakukan manual dengan daftar stopword — menekan kata yang ada di mana-mana. Bedanya ia menyesuaikan diri dengan koleksi dokumenmu sendiri."\\[2pt]
+
+\subsection*{\framebox{Slide 42/70}\quad TF-IDF buta terhadap sinonim}
+\addcontentsline{toc}{subsection}{Slide 42: Buta sinonim}
+\textbf{Ucapkan:} "Dua kalimat: 'Saya suka makan nasi goreng' dan 'Aku gemar menyantap nasi goreng'. Maknanya hampir identik. Skor TF-IDF-nya rendah, sekitar nol koma tiga. Kenapa? Karena bagi TF-IDF, \texttt{suka} dan \texttt{gemar} adalah dua kolom berbeda yang tidak berhubungan sama sekali — sama tidak berhubungannya dengan \texttt{suka} dan \texttt{beton}. Yang tersisa untuk dicocokkan cuma \texttt{nasi} dan \texttt{goreng}. Embedding memberi nol koma delapan lima untuk pasangan yang sama."\\[2pt]
+\textbf{Batas:} sebutkan bahwa angka di slide ilustratif; nilai persisnya dihitung peserta sendiri di notebook Section 9.\\[2pt]
+
+\subsection*{\framebox{Slide 43/70}\quad Intuisi: embedding sebagai koordinat}
+\addcontentsline{toc}{subsection}{Slide 43: Intuisi embedding}
+\textbf{Ucapkan:} "Beginilah cara membayangkannya. Model menempatkan tiap kata atau kalimat di sebuah ruang. Kata bermakna mirip diletakkan berdekatan: \texttt{suka}, \texttt{gemar}, \texttt{menyantap} berkumpul di satu sudut; \texttt{harga} dan \texttt{BBM} di sudut lain. Begitu makna jadi posisi, kemiripan makna jadi jarak — dan jarak bisa dihitung. Itu lompatan besarnya: sesuatu yang tadinya harus ditebak manusia sekarang bisa dihitung mesin."\\[2pt]
+\textbf{Batas:} gambar ini dua dimensi supaya bisa dilihat. Ruang sebenarnya 384 dimensi, dan tidak ada yang bisa membayangkannya. Yang berlaku sama di kedua ruang cuma satu: yang dekat itu mirip.\\[2pt]
+
+\subsection*{\framebox{Slide 44/70}\quad Satu kalimat, 384 angka}
+\addcontentsline{toc}{subsection}{Slide 44: 384 angka}
+\textbf{Ucapkan:} "Masukkan kalimat, keluar 384 angka. Yang perlu diperhatikan: panjang kalimatnya berapa pun, keluarannya selalu 384. Kalimat lima kata dan kalimat lima puluh kata sama-sama jadi 384 angka. Itu yang membuat kalimat bisa dibandingkan satu sama lain — panjangnya seragam. Model yang kita pakai multibahasa, jadi kalimat Indonesia dan terjemahan Inggrisnya diletakkan berdekatan. Itu berguna sekali: kamu bisa mencari dokumen Inggris dengan query Indonesia."\\[2pt]
+
+\subsection*{\framebox{Slide 45/70}\quad Cosine similarity}
+\addcontentsline{toc}{subsection}{Slide 45: Cosine similarity}
+\textbf{Ucapkan:} "Kalau makna sudah jadi arah, kemiripan jadi sudut. Cosine similarity mengukur sudut antar vektor, bukan panjangnya. Nilai satu berarti arahnya sama persis; nol berarti tegak lurus, tidak berhubungan. Kenapa sudut dan bukan jarak biasa? Karena panjang vektor sering mencerminkan panjang dokumen, dan kita tidak mau dokumen panjang otomatis dianggap berbeda dari yang pendek. Dengan sudut, keduanya adil dibandingkan."\\[2pt]
+
+\subsection*{\framebox{Slide 46/70}\quad Semantic search dalam sepuluh baris}
+\addcontentsline{toc}{subsection}{Slide 46: Semantic search}
+\textbf{Ucapkan:} "Empat langkah, dan itu seluruh mesinnya. Encode dokumen, encode query, hitung cosine similarity, ambil yang skornya tertinggi. Di notebook, query 'puncak paling tinggi di Indonesia' menemukan dokumen 'Gunung Kerinci adalah gunung berapi tertinggi di Indonesia' — dan tidak ada satu pun kata yang sama antara keduanya. Tidak ada 'gunung', tidak ada 'Kerinci', tidak ada 'tertinggi' yang persis. TF-IDF tidak akan pernah menemukan dokumen itu."\\[2pt]
+
+\subsection*{\framebox{Slide 47/70}\quad Inilah inti RAG}
+\addcontentsline{toc}{subsection}{Slide 47: Inti RAG}
+\textbf{Ucapkan:} "Kiri: yang barusan kamu bangun hari ini. Kanan: RAG di Modul 05. Bandingkan baris per baris — hampir sama persis. Yang bertambah cuma dua: dokumen disimpan di FAISS supaya pencarian tetap cepat untuk jutaan dokumen, dan hasil pencariannya diserahkan ke LLM untuk disusun jadi kalimat jawaban. Jadi kalau minggu depan ada yang bilang RAG itu rumit, ingat slide ini: bagian intinya sudah kamu tulis hari ini dalam sepuluh baris."\\[2pt]
+
+\subsection*{\framebox{Slide 48/70}\quad Tokenisasi subword}
+\addcontentsline{toc}{subsection}{Slide 48: Subword}
+\textbf{Ucapkan:} "Di sinilah arti kata 'token' berubah, seperti yang saya sebut di Slide 10. LLM tidak memecah teks per kata, melainkan per potongan subword — lebih kecil dari kata, lebih besar dari huruf. \texttt{mempelajari} jadi empat potongan. Kenapa repot-repot begitu? Karena dengan kosakata terbatas, tiga puluh sampai lima puluh ribu subword, model bisa menuliskan kata apa pun, termasuk kata yang belum pernah dilihatnya saat training. Nama orang, istilah baru, typo — semuanya tetap bisa direpresentasikan dari potongan yang sudah dikenal."\\[2pt]
+\textbf{Batas:} sambungkan lagi ke Slide 6. Untuk bahasa Indonesia yang kaya imbuhan, subword punya bonus: \texttt{mempelajari} dan \texttt{dipelajari} berbagi potongan yang sama, jadi model tidak perlu belajar keduanya dari nol.\\[2pt]
+
+\subsection*{\framebox{Slide 49/70}\quad Intuisi: token adalah satuan biaya}
+\addcontentsline{toc}{subsection}{Slide 49: Token dan biaya}
+\textbf{Ucapkan:} "Ini bagian yang langsung terasa di dompet. Dua kalimat yang maknanya sama; yang Inggris jadi sembilan token, yang Indonesia jadi tujuh belas. Penyebabnya bukan bahasa Indonesia lebih rumit, melainkan tokenizer GPT-2 dilatih dominan pada teks Inggris, jadi kata Indonesia terpaksa dipecah lebih halus. Akibatnya: API LLM menagih per token, sehingga isi yang sama jadi hampir dua kali lebih mahal dalam bahasa Indonesia. Tokenizer multibahasa atau khusus Indonesia menekan rasio ini, dan itu pertimbangan nyata saat memilih model."\\[2pt]
+\textbf{Batas:} angka di slide ilustratif. Peserta menghitung sendiri dengan kalimatnya di notebook Section 10, dan hasilnya akan sedikit berbeda.\\[2pt]
+
+\subsection*{\framebox{Slide 50/70}\quad "Token" mulai Modul 04}
+\addcontentsline{toc}{subsection}{Slide 50: Arti token}
+\textbf{Ucapkan:} "Tabel penutup untuk menghilangkan kebingungan. Di Bagian A hari ini, satu token sama dengan satu kata. Di Bagian D dan seterusnya, satu token sama dengan satu subword. Mulai besok di Modul 04, setiap kali kamu melihat \texttt{max\_new\_tokens}, batas konteks, atau tagihan API — yang dimaksud selalu subword."\\[2pt]
+
+\subsection*{\framebox{Slide 51/70}\quad Ringkasan Act 5}
+\addcontentsline{toc}{subsection}{Slide 51: Ringkasan Act 5}
+\textbf{Ucapkan:} "Lima butir, dan semuanya berjalan di CPU tanpa masalah karena datanya kecil. Act 6 mengambil alur yang sama dan menjalankannya pada skala yang membuat CPU menyerah."\\[2pt]
+
+\subsection*{\framebox{Slide 52/70}\quad Act 6: NLP di GPU}
+\addcontentsline{toc}{subsection}{Slide 52: Act 6}
+\textbf{Ucapkan:} "Act 6 mendampingi notebook kedua. Pastikan peserta sudah mengganti runtime ke T4 GPU sebelum act ini dimulai — pergantian runtime menghapus variabel, jadi lebih baik dilakukan sekarang daripada di tengah."\\[2pt]
+
+\subsection*{\framebox{Slide 53/70}\quad Kenapa NLP klasik butuh GPU}
+\addcontentsline{toc}{subsection}{Slide 53: Kenapa GPU}
+\textbf{Ucapkan:} "Pertanyaan yang wajar: bukankah GPU itu untuk deep learning? Untuk NLP klasik pun ia berguna, dan alasannya ada di gambar kanan. CPU punya belasan core yang masing-masing sangat cepat mengolah satu string. GPU punya ribuan core yang lebih lambat, tapi bisa mengolah ribuan string sekaligus. Operasi teks — tokenisasi, hitung n-gram, normalisasi — persis pekerjaan seragam berulang yang cocok untuk pola kedua. Dan menyiapkan korpus training LLM berarti memproses miliaran dokumen, jadi perbedaannya bukan puluhan detik, melainkan berjam-jam lawan menit."\\[2pt]
+
+\subsection*{\framebox{Slide 54/70}\quad Stack RAPIDS untuk NLP}
+\addcontentsline{toc}{subsection}{Slide 54: Stack RAPIDS}
+\textbf{Ucapkan:} "Tiga library, dan dua di antaranya punya padanan yang sudah kamu kenal. cuDF adalah pandas versi GPU. cuML adalah scikit-learn versi GPU. Yang menarik justru baris tengah: \texttt{nvtext} tidak punya padanan di pandas sama sekali, karena operasinya memang lahir di GPU. Kabar baiknya, ketiganya sudah terpasang di runtime GPU Colab — tinggal \texttt{import}, tanpa instalasi."\\[2pt]
+
+\subsection*{\framebox{Slide 55/70}\quad Nol perubahan kode}
+\addcontentsline{toc}{subsection}{Slide 55: Zero code change}
+\textbf{Ucapkan:} "Ini bagian yang paling mengejutkan peserta. File Python yang sama, tanpa satu baris pun diubah, dijalankan dua kali. Yang pertama biasa, yang kedua lewat dua akselerator. Yang pertama pakai CPU, yang kedua pakai GPU. Caranya bukan mengubah kode, melainkan mengubah cara menjalankannya — karena akselerator harus aktif sebelum \texttt{import pandas} dieksekusi. Operasi yang belum didukung GPU otomatis kembali ke CPU, jadi kodenya tidak pernah crash gara-gara ini."\\[2pt]
+
+\subsection*{\framebox{Slide 56/70}\quad Intuisi: GPU tidak selalu menang}
+\addcontentsline{toc}{subsection}{Slide 56: GPU tidak selalu menang}
+\textbf{Ucapkan:} "Jangan biarkan peserta pulang dengan kesimpulan 'GPU selalu lebih cepat'. Lihat grafiknya. Garis GPU mulai lebih tinggi, karena GPU membayar biaya tetap: inisialisasi CUDA dan pemindahan data bolak-balik. Untuk data kecil, biaya tetap itu lebih mahal daripada komputasinya sendiri, dan di kiri titik impas GPU justru kalah. Konsekuensi praktisnya ada di butir terakhir, dan ini aturan emas: jangan pernah mengukur pemanggilan GPU pertama. Lakukan warm-up dulu."\\[2pt]
+\textbf{Batas:} sebutkan bahwa notebook memang memuat sel warm-up khusus, dan tanpa sel itu cuML bisa tampak lebih lambat dari scikit-learn. Kalau ada peserta yang melaporkan GPU-nya kalah, pertanyaan pertama: sel warm-up-nya kelewat atau tidak.\\[2pt]
+
+\subsection*{\framebox{Slide 57/70}\quad nvtext: operasi yang tidak ada di pandas}
+\addcontentsline{toc}{subsection}{Slide 57: nvtext}
+\textbf{Ucapkan:} "Empat operasi di tabel, dan tidak satu pun punya padanan langsung di pandas. \texttt{token\_count} menghitung token per baris tanpa perlu membentuk daftarnya dulu — hemat memori. \texttt{ngrams\_tokenize} membangun bigram langsung di GPU. \texttt{minhash} membuat sidik jari dokumen, dan itu yang kita pakai di babak berikutnya. Polanya: makin intensif operasi string-nya, makin lebar kemenangan GPU."\\[2pt]
+
+\subsection*{\framebox{Slide 58/70}\quad Seberapa cepat?}
+\addcontentsline{toc}{subsection}{Slide 58: Angka speedup}
+\textbf{Ucapkan:} "Angka ini diukur langsung dari notebook 02 di Colab T4 dengan 150 ribu paragraf Wikipedia Indonesia. Perhatikan bahwa selisihnya berbeda per operasi — bukan satu angka ajaib yang berlaku untuk semuanya."\\[2pt]
+\textbf{Batas:} katakan terus terang bahwa angka di mesin peserta akan berbeda, tergantung GPU yang kebagian di Colab dan beban runtime saat itu. Yang perlu mereka bawa pulang adalah polanya, bukan angkanya.\\[2pt]
+
+\subsection*{\framebox{Slide 59/70}\quad MinHash: dari miliaran perbandingan}
+\addcontentsline{toc}{subsection}{Slide 59: MinHash}
+\textbf{Ucapkan:} "Korpus mentah selalu penuh duplikat: artikel template, boilerplate, salin-tempel. Untuk training LLM itu masalah, karena duplikat membuat model menghafal dan komputasi terbuang. Tapi cara lugu untuk menemukannya mustahil: 150 ribu dokumen berarti sekitar 11 miliar pasangan yang harus dibandingkan. MinHash mengambil jalan pintas — tiap dokumen diringkas jadi sidik jari kecil, lalu tinggal dikelompokkan yang sidik jarinya sama. Dari miliaran perbandingan jadi satu \texttt{groupby}."\\[2pt]
+\textbf{Batas:} notebook memakai satu sidik jari utuh, jadi hanya duplikat yang nyaris identik tertangkap. Sistem produksi memakai banyak band sidik jari (MinHash-LSH) supaya kemiripan parsial pun terdeteksi. Sebutkan ini supaya peserta tidak mengira versi notebook sudah setara produksi.\\[2pt]
+
+\subsection*{\framebox{Slide 60/70}\quad Intuisi: kenapa sidik jari cukup}
+\addcontentsline{toc}{subsection}{Slide 60: Intuisi sidik jari}
+\textbf{Ucapkan:} "Kenapa mengganti perbandingan dengan sidik jari itu sah? Karena MinHash dirancang supaya dokumen yang mirip menghasilkan sidik jari sama dengan probabilitas tinggi. Begitu itu berlaku, masalah 'cari yang mirip' berubah jadi masalah 'kelompokkan yang sama' — dan yang kedua jauh lebih murah, karena mengelompokkan nilai yang identik adalah operasi paling dasar di database mana pun."\\[2pt]
+\textbf{Batas:} kata 'probabilitas tinggi' itu penting. MinHash bisa meleset di kedua arah — melewatkan pasangan mirip, atau menyatukan yang sebenarnya berbeda. Untuk penyiapan korpus, kesalahan sesekali masih dapat diterima; untuk audit hukum, tidak.\\[2pt]
+
+\subsection*{\framebox{Slide 61/70}\quad Dari lab ke produksi: NeMo Curator}
+\addcontentsline{toc}{subsection}{Slide 61: NeMo Curator}
+\textbf{Ucapkan:} "Baris per baris, apa yang peserta kerjakan hari ini dan padanannya di produksi. Tokenisasi dan normalisasi di nvtext menjadi identifikasi bahasa, pembersihan, dan penyaringan kualitas. MinHash plus \texttt{groupby} menjadi fuzzy dedup terdistribusi. TF-IDF plus regresi logistik menjadi classifier kualitas dokumen. Yang berbeda cuma skala: satu T4 dan 150 ribu paragraf lawan ratusan GPU dan miliaran dokumen. Langkah-langkahnya sama."\\[2pt]
+
+\subsection*{\framebox{Slide 62/70}\quad Ringkasan Act 6}
+\addcontentsline{toc}{subsection}{Slide 62: Ringkasan Act 6}
+\textbf{Ucapkan:} "Lima butir, dan dua di antaranya bukan tentang RAPIDS melainkan tentang cara mengukur dengan jujur: GPU menang di skala, dan warm-up wajib. Keduanya berlaku untuk benchmark GPU apa pun, termasuk yang akan kamu lakukan di Modul 06."\\[2pt]
+
+\subsection*{\framebox{Slide 63/70}\quad Act 7: Ringkasan \& lanjutan}
+\addcontentsline{toc}{subsection}{Slide 63: Act 7}
+\textbf{Ucapkan:} "Penutup. Kita rangkum, lalu lihat ke mana modul ini bersambung."\\[2pt]
+
+\subsection*{\framebox{Slide 64/70}\quad Ringkasan Modul 03}
+\addcontentsline{toc}{subsection}{Slide 64: Ringkasan modul}
+\textbf{Ucapkan:} "Sepuluh section notebook 01 plus notebook 02, tersusun per bagian. Pakai tabel ini sebagai daftar periksa: kalau ada baris yang terasa asing, itu bagian yang perlu diulang sendiri sebelum Modul 04 besok."\\[2pt]
+
+\subsection*{\framebox{Slide 65/70}\quad Tiga hal yang dibawa pulang}
+\addcontentsline{toc}{subsection}{Slide 65: Tiga hal}
+\textbf{Ucapkan:} "Kalau semua hari ini menguap dan cuma tiga kalimat yang tersisa, biar tiga ini yang bertahan. Satu: pembersihan menentukan segalanya — tanpa membuang stopword, analisis frekuensi apa pun hanya memunculkan \texttt{yang} dan \texttt{di}. Dua: apa pun yang belajar dari data harus di-\texttt{fit} pada train saja, dan melanggarnya tidak memberi error, cuma angka palsu. Tiga: hitungan kata tidak sama dengan makna, dan perbedaan itulah yang membuat RAG mungkin."\\[2pt]
+
+\subsection*{\framebox{Slide 66/70}\quad Notebook 01: peta section}
+\addcontentsline{toc}{subsection}{Slide 66: Peta nb01}
+\textbf{Ucapkan:} "Notebook 01 jalan di CPU, sekitar 60 menit termasuk membaca. Empat bagian sesuai peta di Slide 7, ditutup empat soal latihan. Soal nomor dua yang paling saya sarankan dikerjakan — ia meminta kamu mengubah jumlah fitur dari dua ribu jadi tiga ratus dan menjelaskan akibatnya, dan itu memaksa kamu memahami ulang bag-of-words."\\[2pt]
+
+\subsection*{\framebox{Slide 67/70}\quad Notebook 02: peta babak}
+\addcontentsline{toc}{subsection}{Slide 67: Peta nb02}
+\textbf{Ucapkan:} "Notebook 02 wajib runtime T4 GPU, sekitar 45 menit. Lima babak, dan datanya dua: SmSA dari IndoNLU untuk sentimen, dan Wikipedia Bahasa Indonesia lewat streaming untuk skala. Streaming berarti tidak ada dump raksasa yang perlu diunduh — cukup ambil sebanyak yang dibutuhkan."\\[2pt]
+
+\subsection*{\framebox{Slide 68/70}\quad Setup \& tools}
+\addcontentsline{toc}{subsection}{Slide 68: Setup}
+\textbf{Ucapkan:} "Bagian kanan lebih penting daripada kiri, jadi baca yang kanan dulu. Butir pertama adalah jebakan yang nyata: \texttt{nlp-id} versi baru mengunci \texttt{huggingface-hub} versi 1, dan \texttt{transformers} versi 4 tidak kompatibel dengan itu. Kalau kamu memasang \texttt{transformers<5}, instalasinya gagal total — bukan sekadar memberi peringatan. Butir kedua: kalau Colab menampilkan tombol restart session, tekan, lalu lanjut dari sel berikutnya. Jangan mengulang \texttt{pip install}."\\[2pt]
+
+\subsection*{\framebox{Slide 69/70}\quad Lanjutan: Modul 04 -- LLM}
+\addcontentsline{toc}{subsection}{Slide 69: Lanjutan}
+\textbf{Ucapkan:} "Tiga sambungan, dan semuanya konkret. Ke Modul 04: \texttt{pipeline} yang tadi dipakai untuk IndoBERT adalah pintu masuk yang sama ke LLM, dan kata 'token' yang dipakai di sana adalah subword dari Section 10. Ke Modul 05: pola encode-bandingkan-ambil top-k dari Section 9 dipakai lagi, kali ini dengan FAISS. Ke Modul 06: RAPIDS hari ini bersambung ke NeMo dan TensorRT-LLM."\\[2pt]
+
+\subsection*{\framebox{Slide 70/70}\quad Penutup}
+\addcontentsline{toc}{subsection}{Slide 70: Penutup}
+\textbf{Ucapkan:} "Terima kasih. Kalau ada satu pertanyaan yang layak dibawa ke sesi berikutnya, itu pertanyaan ini: kalau embedding sudah bisa menangkap makna satu kalimat, apa lagi yang ditambahkan LLM di atasnya? Jawabannya besok."\\[2pt]
+
+\end{document}
