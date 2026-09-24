@@ -4,6 +4,7 @@ Set M03_DECK_PARTIAL=1 saat deck belum lengkap (cek jumlah frame/intuisi/notes h
 import os, re, subprocess, sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from bahasa_rules import check
+from freshness import tertinggal
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "slides"
 TEX, PDF, LOG = ROOT / "module03_slides.tex", ROOT / "module03_slides.pdf", ROOT / "module03_slides.log"
@@ -12,8 +13,10 @@ PARTIAL = os.environ.get("M03_DECK_PARTIAL") == "1"
 errs, warns = [], []
 
 src = TEX.read_text(encoding="utf-8")
-if not PDF.exists() or PDF.stat().st_mtime < TEX.stat().st_mtime:
-    errs.append("PDF tidak ada atau lebih tua dari .tex")
+
+
+if (e := tertinggal(PDF, TEX)):
+    errs.append(e)
 if LOG.exists():
     log = LOG.read_text(encoding="utf-8", errors="ignore")
     if re.search(r"^!", log, re.M):

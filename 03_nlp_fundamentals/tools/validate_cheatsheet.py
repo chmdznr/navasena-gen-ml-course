@@ -3,6 +3,7 @@
 import re, subprocess, sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from bahasa_rules import check
+from freshness import tertinggal
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 html = (ROOT / "nlp-fundamentals-cheatsheet.html").read_text(encoding="utf-8")
@@ -25,11 +26,9 @@ for stale in ["Spam vs Ham", "spam vs ham", "Module 0", "_id.ipynb", "_en.ipynb"
         errs.append(f"stale wording: {stale!r}")
 errs += check(re.sub(r"<[^>]+>", " ", html), limit=0)
 
-if not pdf.exists():
-    errs.append("PDF belum dibuat")
-elif pdf.stat().st_mtime < (ROOT / "nlp-fundamentals-cheatsheet.html").stat().st_mtime:
-    errs.append("PDF lebih tua dari HTML — regenerasi lewat Chrome headless --print-to-pdf")
-else:
+if (e := tertinggal(pdf, ROOT / "nlp-fundamentals-cheatsheet.html")):
+    errs.append(e + " (Chrome headless --print-to-pdf)")
+if pdf.exists():
     out = subprocess.run(["pdfinfo", str(pdf)], capture_output=True, text=True).stdout
     m = re.search(r"Pages:\s+(\d+)", out)
     if not m or int(m.group(1)) != 1:
