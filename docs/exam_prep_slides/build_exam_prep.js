@@ -34,8 +34,8 @@ function lines(arr, extra = {}) {
   return arr.map((t, i) => ({ text: t, options: { breakLine: i < arr.length - 1, ...extra } }));
 }
 
-function bulletList(s, items, box, fontSize = 20) {
-  s.addText(lines(items, { bullet: true, paraSpaceAfter: 12 }),
+function bulletList(s, items, box, fontSize = 20, space = 12) {
+  s.addText(lines(items, { bullet: true, paraSpaceAfter: space }),
     { ...box, fontFace: FONT, fontSize, color: C.white, valign: "top" });
 }
 
@@ -54,7 +54,7 @@ function callout(s, text, y = 6.2, color = C.lime) {
     fontFace: FONT, fontSize: 17, color, bold: true });
 }
 
-function table(s, rows, colW, y = 1.75, fontSize = 15) {
+function table(s, rows, colW, y = 1.75, fontSize = 15, rowH = undefined) {
   const head = rows[0].map(t => ({ text: t, options: { bold: true, color: C.bg, fill: { color: C.green } } }));
   const body = rows.slice(1).map((r, i) => r.map(cell => {
     const o = typeof cell === "object" ? cell : { text: cell };
@@ -62,7 +62,7 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
       fill: { color: i % 2 ? C.dark : C.card } } };
   }));
   s.addTable([head, ...body], { x: 0.6, y, w: colW.reduce((a, b) => a + b, 0), colW,
-    fontFace: FONT, fontSize, valign: "middle", margin: 0.08,
+    fontFace: FONT, fontSize, valign: "middle", margin: 0.08, rowH,
     border: { type: "solid", pt: 0.5, color: C.bg } });
 }
 
@@ -107,7 +107,8 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
   s.addNotes(
     "Mulai dari apa yang sudah kamu bangun, bukan dari apa yang belum. Enam kotak ini " +
     "merangkum isi modul 01 sampai 06. Hampir semua ini muncul di blueprint NCA-GENL.\n\n" +
-    "Minta peserta membuka lagi hasil pre-test mereka. Domain yang dulu nilainya paling rendah " +
+    "[Arahan: minta peserta membuka hasil pre-test.] Buka lagi hasil pre-test kamu. " +
+    "Domain yang dulu nilainya paling rendah " +
     "dan sekarang sudah dibahas di bootcamp adalah bukti kemajuan. Domain yang dulu rendah dan " +
     "belum banyak dibahas adalah prioritas belajar berikutnya. Kita bahas petanya di slide 4.");
 }
@@ -139,8 +140,8 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
     "Setelah dua tahun, sertifikasi diperbarui dengan mengikuti ujian lagi.\n\n" +
     "Soal passing score pasti ditanyakan. Jawabannya: NVIDIA tidak memublikasikannya. " +
     "Angka batas lulus yang beredar di internet tidak punya dasar resmi. Strategi yang " +
-    "aman adalah menguasai materinya, bukan mengejar batas minimal. Ingatkan juga peserta untuk " +
-    "membaca examination policy NVIDIA sebelum menjadwalkan ujian.");
+    "aman adalah menguasai materinya, bukan mengejar batas minimal. Satu lagi: " +
+    "baca examination policy NVIDIA sebelum menjadwalkan ujian.");
 }
 
 // ── 4. Modul → domain ───────────────────────────────────────
@@ -155,7 +156,7 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
     ["Experimentation", "22%", "M04 LoRA & evaluasi, M05 RAGAS", part],
     ["Data Analysis & Visualization", "14%", "M01 EDA, M03 NLP, RAPIDS", ok],
     ["Trustworthy AI", "10%", "M06 fairness, guardrails, privasi", ok],
-  ], [4.3, 1.1, 5.0, 1.7], 1.75, 16);
+  ], [4.3, 1.1, 5.0, 1.7], 1.75, 19, 0.65);
   callout(s, "Celah terbesar ada di Experimentation: bobotnya 22%, tapi baru tercakup sebagian.");
   s.addNotes(
     "Bobot domain dari blueprint resmi NCA-GENL. " + CHECKED + "\n" +
@@ -216,11 +217,13 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
   s.addNotes(
     "Urutannya disusun berdasarkan pengaruhnya ke skor, bukan dari yang paling mudah. Domain berbobot besar " +
     "yang masih lemah menyumbang paling banyak soal, jadi itu dulu.\n\n" +
-    "Langkah pertama berbeda untuk tiap orang. Experimentation lemah untuk semua peserta karena " +
+    "Langkah pertama berbeda untuk tiap orang. Experimentation jadi prioritas kita semua karena " +
     "baru tercakup sebagian. Selain itu, hasil pre-test menunjukkan domain terlemahmu sendiri; " +
     "kalau itu Core ML yang bobotnya 30%, dahulukan juga.\n\n" +
     "Langkah terakhir penting karena soal ujian berbahasa Inggris. Membiasakan diri membaca soal " +
-    "pilihan ganda teknis dalam bahasa Inggris sama pentingnya dengan menguasai materinya.");
+    "pilihan ganda teknis dalam bahasa Inggris sama pentingnya dengan menguasai materinya.\n\n" +
+    "Bahan latihan yang sudah kamu punya: quiz tiap modul (file *-quiz.html di folder modul 01–06), " +
+    "misalnya llm-fundamentals-quiz.html dan nvidia-ecosystem-quiz.html.");
 }
 
 // ── 7. Taktik hari ujian ────────────────────────────────────
@@ -232,7 +235,7 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
     "Perhatikan kata kunci soal: best, most likely, first, NOT.",
     "Singkirkan pilihan yang jelas salah, lalu bandingkan sisanya.",
     "Pahami fungsi tiap produk NVIDIA: Triton, TensorRT, NeMo, NIM, RAPIDS.",
-  ], { x: 0.6, y: 1.8, w: 12.1, h: 4.9 }, 22);
+  ], { x: 0.6, y: 1.8, w: 12.1, h: 4.9 }, 24, 24);
   s.addNotes(
     "Taktik ini umum untuk ujian pilihan ganda berbatas waktu, disesuaikan dengan format NCA-GENL.\n\n" +
     "Satu menit per soal berasal dari 60 menit untuk 50 sampai 60 soal. Kalau satu soal terasa " +
@@ -240,7 +243,8 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
     "Kata kunci seperti \"most likely\" atau \"first\" sering membedakan dua pilihan yang " +
     "sama-sama benar secara teknis. Soal dengan \"NOT\" mudah terlewat kalau membaca terburu-buru.\n\n" +
     "Soal tentang produk NVIDIA kemungkinan besar menanyakan fungsinya: mana untuk serving, mana untuk optimasi " +
-    "inferensi, mana untuk guardrails. Kamu sudah memakai hampir semuanya di bootcamp.");
+    "inferensi, mana untuk guardrails. Kamu sudah memakai hampir semuanya di bootcamp.\n\n" +
+    "Latih tempo satu menit per soal dengan quiz modul (*-quiz.html) sebelum hari ujian.");
 }
 
 // ── 8. Jenjang sertifikasi ──────────────────────────────────
@@ -297,7 +301,7 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
     "Deep Learning Institute adalah unit pelatihan resmi NVIDIA. " + CHECKED + "\n" +
     "Sumber: https://www.nvidia.com/en-us/training/self-paced-courses/ dan " +
     "https://www.nvidia.com/en-us/learn/certification/generative-ai-llm-associate/\n\n" +
-    "Halaman self-paced punya filter Free Courses. Sarankan peserta mulai dari yang gratis. " +
+    "Halaman self-paced punya filter Free Courses. Mulai dari yang gratis. " +
     "Harga $90 dan $500 di slide adalah harga kursus yang direkomendasikan untuk NCA-GENL, " +
     "bukan harga semua kursus DLI.\n\n" +
     "Di halaman NCA-GENL, NVIDIA memetakan kursus-kursus ini ke domain ujian. Sebelum membeli, " +
@@ -355,13 +359,13 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
     "Informasi ujian gratis untuk peserta GTC on-site ada di halaman training NVIDIA " +
     "(https://www.nvidia.com/en-us/training/). Ketentuannya bisa berubah tiap tahun.\n\n" +
     "Jetson AI Lab cocok untuk yang tertarik edge AI. Di modul NVIDIA kita sudah menjalankan " +
-    "LLM di Jetson Orin Nano. Inception relevan untuk peserta yang sedang atau ingin membangun " +
+    "LLM di Jetson Orin Nano. Inception relevan kalau kamu sedang atau ingin membangun " +
     "startup; manfaat investor bergantung pada kelayakan.");
 }
 
 // ── 12. Arah peran ──────────────────────────────────────────
 {
-  const s = base("Pilih arah perannya dulu", "Bagian 3 · Karier dan portofolio");
+  const s = base("Pilih dulu arah peranmu", "Bagian 3 · Karier dan portofolio");
   table(s, [
     ["Peran", "Sertifikasi berikutnya", "Proyek pertama"],
     ["LLM / AI application engineer", "NCP-GENL, NCP-AAI", "Agen RAG dengan tool calling dan guardrails"],
@@ -369,10 +373,10 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
     ["Data scientist", "NCA-ADS → NCP-ADS", "Pipeline cuDF/cuML di data nyata + benchmark CPU vs GPU"],
     ["MLOps / AI infrastructure", "NCA-AIIO → NCP-AIO", "Serving model dengan Triton + pemantauan latensi"],
     ["Edge AI engineer", "Belajar lewat Jetson AI Lab", "Asisten lokal di Jetson dengan Ollama atau TensorRT"],
-  ], [3.7, 3.2, 5.2], 1.75, 15);
+  ], [3.7, 3.2, 5.2], 1.75, 17, 0.7);
   callout(s, "Pilih satu peran dan satu proyek. Kedalaman lebih bernilai daripada daftar sertifikat.");
   s.addNotes(
-    "Tabel ini bukan daftar wajib. Tujuannya membantu peserta memilih satu arah dulu.\n\n" +
+    "Tabel ini bukan daftar wajib. Tujuannya membantu kamu memilih satu arah dulu.\n\n" +
     "Sertifikasi di kolom tengah mengacu ke katalog NVIDIA: " +
     "https://www.nvidia.com/en-us/learn/certification/ . Tanda panah artinya mulai dari Associate, " +
     "lalu naik ke Professional.\n\n" +
@@ -396,7 +400,7 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
     if (i < 3) s.addText("→", { x: 0.6 + i * 3.1 + 2.7, y: 2.95, w: 0.4, h: 0.5, margin: 0,
       align: "center", fontFace: FONT, fontSize: 20, color: C.lime, bold: true });
   });
-  callout(s, "Capstone yang sudah jadi adalah bahan portofolio pertamamu. Tinggal dipublikasikan.", 5.0);
+  callout(s, "Capstone-mu sudah jadi bahan portofolio. Tinggal dikemas dan dipublikasikan.", 5.0);
   s.addNotes(
     "Capstone sudah berisi kerja nyata; yang kurang biasanya hanya kemasannya.\n\n" +
     "Repo yang rapi dimulai dari README yang menjawab tiga pertanyaan: masalah apa, bagaimana " +
@@ -432,13 +436,14 @@ function table(s, rows, colW, y = 1.75, fontSize = 15) {
     s.addText([{ text: shown, options: { hyperlink: { url } } }], { x: 7.45, y: y + 0.35, w: 5.0,
       h: 0.4, margin: 0, fontFace: FONT, fontSize: 15, color: C.white });
   });
-  s.addText("Detail tiap domain: deck NCA-GENL (materi pendamping).", { x: 7.45, y: 6.0, w: 5.0,
-    h: 0.4, margin: 0, fontFace: FONT, fontSize: 13, italic: true, color: C.gray });
+  s.addText("Detail tiap domain: deck sertifikasi NCA-GENL di folder materi bootcamp.", { x: 7.45, y: 5.85, w: 5.0,
+    h: 0.6, margin: 0, fontFace: FONT, fontSize: 13, italic: true, color: C.gray });
   s.addNotes(
     "Lima langkah ini sengaja tanpa tanggal: urutannya yang penting, bukan kecepatannya.\n\n" +
-    "Tautan di kanan bisa diklik saat deck dibagikan. Deck NCA-GENL pendamping membahas " +
+    "Tautan di kanan bisa diklik saat deck dibagikan. Deck sertifikasi NCA-GENL (file " +
+    "nca_genl_slides.pdf, di repo: docs/nca_genl_slides/) membahas " +
     "kelima domain ujian satu per satu dan cocok dipakai sebagai bahan belajar mandiri.\n\n" +
-    "Tutup sesi dengan mengingatkan pesan pembuka: sertifikat itu satu langkah. Yang membuat " +
+    "[Arahan: tutup sesi dengan pesan pembuka.] Ingat lagi pesan di awal: sertifikat itu satu langkah. Yang membuat " +
     "kamu dipercaya adalah proyek yang bisa ditunjukkan dan dijelaskan.");
 }
 
